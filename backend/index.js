@@ -8,3 +8,12 @@ const server = http.createServer(app);
 server.listen(config.PORT, () => {
   logger.info(`🌐Server running on port ${config.PORT}`);
 });
+
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+  })
+});
+
+module.exports = server;

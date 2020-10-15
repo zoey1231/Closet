@@ -1,6 +1,6 @@
 const config = require("../utils/config");
 const mongoose = require('mongoose')
-// const redisClient = require("../utils/redis")
+const server = require('../index')
 const supertest = require('supertest')
 
 const { app, redisClient } = require('../app')
@@ -22,6 +22,7 @@ describe('get version', () => {
 })
 
 afterAll(() => {
-  mongoose.connection.close();
   redisClient.quit();
+  mongoose.connection.close();
+  server.close();
 })
