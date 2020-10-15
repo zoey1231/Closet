@@ -1,0 +1,29 @@
+version: '3'
+services:
+  node:
+    container_name: closet-backend
+    restart: always
+    build: .
+    ports:
+      - '80:8080'
+    volumes:
+      - ./:/usr/src/app
+    external_links:
+      - mongo
+      - redis
+    depends_on: 
+      - mongo
+      - redis
+
+  mongo:
+    container_name: mongo
+    image: mongo:4
+    ports:
+      - '27017:27017'
+  
+  redis:
+    container_name: redis
+    image: redis:6
+    ports:
+      - "6379:6379"
+  
