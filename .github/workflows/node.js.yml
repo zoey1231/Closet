@@ -16,10 +16,6 @@ jobs:
     env:
       working-directory: ./backend
 
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x]
-
     steps:
     - uses: actions/cache@v2
       with:
@@ -29,11 +25,11 @@ jobs:
           ${{ runner.os }}-node-
 
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
-    
+        node-version: '14.x'
+
     - name: setup env
       working-directory: ${{ env.working-directory }}
       run: cp .env.sample .env
