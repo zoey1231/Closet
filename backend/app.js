@@ -1,5 +1,6 @@
 const config = require("./utils/config");
 const logger = require("./utils/logger");
+const morgan = require('morgan');
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -8,7 +9,7 @@ const mongoose = require("mongoose");
 const redis = require("redis");
 
 // routers
-const helloRouter = require("./controllers/hello");
+// const helloRouter = require("./controllers/hello");
 
 // connect to db
 logger.info("⌛connecting to", config.MONGODB_URI);
@@ -48,12 +49,13 @@ redisClient.on('error', (error) => {
 // app setting
 app.use(cors());
 app.use(express.json());
+app.use(morgan('tiny'));
 
 
 // api
-app.use("/hello", helloRouter);
+// app.use("/hello", helloRouter);
 app.get("/version", (req, res) => {
-  res.json(config.VERSION);
+  res.status(200).json(config.VERSION);
 })
 
 module.exports = { app, redisClient };
