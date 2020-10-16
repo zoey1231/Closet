@@ -21,6 +21,11 @@ if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development") {
   REDIS_URI = process.env.TEST_REDIS_URI;
 }
 
+if (process.env.NODE_ENV === "docker") {
+  MONGODB_URI = process.env.DOCKER_MONGODB_URI;
+  REDIS_URI = process.env.DOCKER_REDIS_URI;
+}
+
 console.log("#️⃣PORT:", PORT);
 console.log("#️⃣MONGODB_URI:", MONGODB_URI);
 console.log("#️⃣REDIS_URI:", REDIS_URI);
