@@ -4,8 +4,18 @@
 name: Node.js CI
 
 on:
+  member: [ steveny9911, JohnLi1999 ]
+  push:
+    paths:
+    - 'backend/**'
+    paths-ignore:
+    - 'frontend/**'
   pull_request:
     branches: [ master ]
+    paths:
+    - 'backend/**'
+    paths-ignore:
+    - 'frontend/**'
 
 jobs:
   build:
