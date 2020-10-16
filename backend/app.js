@@ -1,9 +1,11 @@
 const config = require("./utils/config");
 const logger = require("./utils/logger");
-const morgan = require('morgan');
+
+const cors = require("cors");
+
 const express = require("express");
 const app = express();
-const cors = require("cors");
+const morgan = require('morgan');
 
 const mongoose = require("mongoose");
 const redis = require("redis");
