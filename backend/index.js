@@ -1,7 +1,7 @@
-const http = require("http");
-const { app } = require("./app");
-const config = require("./utils/config");
-const logger = require("./utils/logger");
+const http = require('http');
+const { app } = require('./app');
+const config = require('./utils/config');
+const logger = require('./utils/logger');
 
 const server = http.createServer(app);
 
@@ -13,7 +13,7 @@ process.on('SIGTERM', () => {
   console.log('SIGTERM signal received: closing HTTP server');
   server.close(() => {
     console.log('HTTP server closed');
-  })
+  });
 });
 
 module.exports = server;
