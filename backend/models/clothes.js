@@ -1,37 +1,55 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const clothSchema = mongoose.Schema({
-  clothing_id: {
+  // id will be mongodb generated id
+
+  // required from request
+  category: {
     type: String,
-    index: true,
-    unique: true,
-    required: true
+    required: true,
   },
+  color: {
+    type: String,
+    required: true,
+  },
+  seasons: [
+    {
+      type: String,
+      required: true,
+      enum: ['Spring', 'Summer', 'Fall', 'Winter', 'All'],
+    },
+  ],
+  occasions: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
+
+  // optional
+  name: {
+    type: String,
+    required: false,
+  },
+
+  // set by backend
   image_url: String,
-  category: String,
-  color: String,
-  season: [{
-    type: String,
-    enum: ["Spring", "Summer", "Fall", "Winter", "All"]
-  }],
-  occasion: [String],
-  name: String,
-  updated: { 
-    type: Date, 
-    default: Date.now 
-  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
+    required: true,
+  },
+  updated: {
+    type: Date,
+    default: Date.now,
   },
 });
 
-clothSchema.set("toJSON", {
+clothSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
     delete returnedObject.__v;
   },
 });
 
-module.exports = mongoose.model("Clothes", clothSchema);
+module.exports = mongoose.model('Clothes', clothSchema);
