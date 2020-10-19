@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 
+require('dotenv').config();
 const HttpError = require('../model/http-error');
 
 module.exports = (req, res, next) => {
@@ -8,10 +9,7 @@ module.exports = (req, res, next) => {
     if (!token) {
       throw new Error('Authentication failed!');
     }
-    const decodedToken = jwt.verify(
-      token,
-      'cpen_211_zoey_summer_steven_john_super_secret_do_not_share'
-    );
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     req.userData = { userId: decodedToken.userId };
     next();
   } catch (err) {
