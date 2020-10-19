@@ -11,7 +11,7 @@ services:
     external_links:
       - mongo
       - redis
-    depends_on: 
+    depends_on:
       - mongo
       - redis
 
@@ -20,10 +20,9 @@ services:
     image: mongo:4
     ports:
       - '27017:27017'
-  
+
   redis:
     container_name: redis
     image: redis:6
     ports:
-      - "6379:6379"
-  
+      - '6379:6379'
