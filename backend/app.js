@@ -10,6 +10,9 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const redis = require('redis');
 
+const usersRoutes = require('./routes/users-routes');
+const HttpError = require('./model/http-error');
+
 // routers
 
 // connect to db
@@ -52,6 +55,36 @@ app.use(morgan('tiny'));
 // api
 app.get('/version', (req, res) => {
   res.status(200).json(config.VERSION);
+});
+
+// routes
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, PATCH'
+  );
+
+  next();
+});
+
+app.use('/api/users', usersRoutes);
+
+app.use((req, res, next) => {
+  const error = new HttpError('Could not find this route.', 404);
+  return next(error);
+});
+
+app.use((error, req, res, next) => {
+  if (res.headerSent) {
+    return next(error);
+  }
+  res.status(error.code || 500);
+  res.json({ message: error.message || 'An unknown error occurred!' });
 });
 
 module.exports = { app, redisClient };
