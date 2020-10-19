@@ -16,25 +16,6 @@ const signup = async (req, res, next) => {
   }
   const { name, email, password } = req.body;
 
-  let existingUser;
-  try {
-    existingUser = await User.findOne({ email: email });
-  } catch (err) {
-    const error = new HttpError(
-      'Signing up failed, please try again later',
-      500
-    );
-    return next(error);
-  }
-
-  if (existingUser) {
-    const error = new HttpError(
-      'User exists already, please login instead',
-      422
-    );
-    return next(error);
-  }
-
   let hashedPassword;
   try {
     hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT));
@@ -51,9 +32,14 @@ const signup = async (req, res, next) => {
   });
 
   try {
+    // Unique validator will check for duplicate automatically
     await createdUser.save();
   } catch (err) {
-    const error = new HttpError('Signing Up failed, please try again.', 500);
+    console.log(err);
+    const error = new HttpError(
+      'User exists already, please login instead',
+      422
+    );
     return next(error);
   }
 
