@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -35,7 +37,7 @@ const signup = async (req, res, next) => {
 
   let hashedPassword;
   try {
-    hashedPassword = await bcrypt.hash(password, 12);
+    hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT));
   } catch (err) {
     const error = new HttpError('Could not create user, please try again', 500);
     return next(error);
@@ -59,7 +61,7 @@ const signup = async (req, res, next) => {
   try {
     token = jwt.sign(
       { userId: createdUser.id, email: createdUser.email },
-      'cpen_211_zoey_summer_steven_john_super_secret_do_not_share',
+      process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
   } catch {
@@ -117,7 +119,7 @@ const login = async (req, res, next) => {
   try {
     token = jwt.sign(
       { userId: existingUser.id, email: existingUser.email },
-      'cpen_211_zoey_summer_steven_john_super_secret_do_not_share',
+      process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
   } catch {
