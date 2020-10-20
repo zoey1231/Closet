@@ -1,16 +1,11 @@
 require('dotenv').config();
 
-const jwt = require('jsonwebtoken');
-
-const HttpError = require('../model/http-error');
+const { check } = require('express-validator');
 
 const checkAuth = require('../middleware/check-auth');
 
 const clothesRouter = require('express').Router();
 const clothesController = require('../controller/clothes-controllers');
-const Clothes = require('../model/clothes');
-
-const { check } = require('express-validator');
 
 clothesRouter.use(checkAuth);
 
@@ -41,6 +36,6 @@ clothesRouter.post(
 /**
  * Delete one clothing
  */
-clothesRouter.delete('/:userId');
+clothesRouter.delete('/:userId/:clothingId', clothesController.deleteClothing);
 
 module.exports = clothesRouter;

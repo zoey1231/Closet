@@ -1,11 +1,14 @@
 require('dotenv').config();
 
-const jwt = require('jsonwebtoken');
 const HttpError = require('../model/http-error');
 
 const Clothes = require('../model/clothes');
 const User = require('../model/user');
 
+/**
+ * Get all clothes for a user
+ * - userId
+ */
 const getClothes = async (req, res, next) => {
   const userId = req.params.userId;
   // ===== validate token =====
@@ -104,8 +107,37 @@ const postClothing = async (req, res, next) => {
   }
 };
 
+/**
+ * Delete one clothing
+ * - userId
+ * - clothingId
+ */
+const deleteClothing = async (req, res, next) => {
+  const clothingId = req.params.clothingId;
+  const userId = req.params.userId;
+  // ===== validate token =====
+  if (!req.userData.userId || req.userData.userId != userId || !clothingId) {
+    return next(new HttpError('Token missing or invalid', 401));
+  }
+
+  try {
+    const deletedClothing = await Clothes.findOneAndDelete({
+      _id: clothingId,
+      user: userId,
+    });
+    if (!deletedClothing) {
+      res.status(404).end(); // not found or already deleted
+    } else {
+      res.status(200).end(); // deleted successfully
+    }
+  } catch (exception) {
+    next(new HttpError(`Failed getting clothes: ${exception}`, 500));
+  }
+};
+
 module.exports = {
   getClothes,
   getClothing,
   postClothing,
+  deleteClothing,
 };
