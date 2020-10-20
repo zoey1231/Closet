@@ -47,4 +47,6 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
 
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
+
 }
