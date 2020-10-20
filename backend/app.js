@@ -10,11 +10,11 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const redis = require('redis');
 
-const usersRoutes = require('./routes/users-routes');
 const HttpError = require('./model/http-error');
 
 // routers
-const clothesRouter = require('./routers/clothesRouter');
+const clothesRoutes = require('./routes/clothes-routes');
+const usersRoutes = require('./routes/users-routes');
 
 // connect to db
 logger.info('⌛connecting to', config.MONGODB_URI);
@@ -54,9 +54,6 @@ app.use(express.json());
 app.use(morgan('tiny'));
 
 // api
-// app.use("/hello", helloRouter);
-
-app.use('/clothes', clothesRouter);
 app.get('/version', (req, res) => {
   res.status(200).json(config.VERSION);
 });
@@ -77,6 +74,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/users', usersRoutes);
+app.use('/api/clothes', clothesRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError('Could not find this route.', 404);

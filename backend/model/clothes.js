@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const clothSchema = mongoose.Schema({
+const clothesSchema = mongoose.Schema({
   // id will be mongodb generated id
 
   // required from request
@@ -45,11 +45,11 @@ const clothSchema = mongoose.Schema({
   },
 });
 
-clothSchema.set('toJSON', {
+clothesSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject.__v;
   },
 });
 
-module.exports = mongoose.model('Clothes', clothSchema);
+module.exports = mongoose.model('Clothes', clothesSchema);
