@@ -22,7 +22,7 @@ clothesRouter.get('/:userId');
 /**
  * Get one clothing
  */
-clothesRouter.get('/:clothingId');
+clothesRouter.get('/:userId/:clothingId', clothesController.getClothing);
 
 /**
  * Add one clothing

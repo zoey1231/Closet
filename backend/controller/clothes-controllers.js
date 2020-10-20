@@ -6,6 +6,22 @@ const HttpError = require('../model/http-error');
 const Clothes = require('../model/clothes');
 const User = require('../model/user');
 
+const getClothing = async (req, res, next) => {
+  const clothingId = req.params.clothingId;
+  const userId = req.params.userId;
+  // ===== validate token =====
+  if (!req.userData.userId || req.userData.userId != userId || !clothingId) {
+    return next(new HttpError('Token missing or invalid', 401));
+  }
+
+  try {
+    const savedClothes = await Clothes.findById(clothingId);
+    res.status(200).json(savedClothes);
+  } catch (exception) {
+    next(new HttpError(`Failed getting clothes: ${exception}`, 500));
+  }
+};
+
 /**
  * Add one clothing (need userId)
  */
@@ -68,5 +84,6 @@ const postClothing = async (req, res, next) => {
 };
 
 module.exports = {
+  getClothing,
   postClothing,
 };
