@@ -17,7 +17,7 @@ clothesRouter.use(checkAuth);
 /**
  * Get all clothes for a user
  */
-clothesRouter.get('/:userId');
+clothesRouter.get('/:userId', clothesController.getClothes);
 
 /**
  * Get one clothing
