@@ -9,17 +9,17 @@ const User = require('../model/user');
 /**
  * Add one clothing (need userId)
  */
-const postClothing = async (req, res) => {
+const postClothing = async (req, res, next) => {
+  const body = req.body; // required(category, color, seasons, occasion) optional: (name) toBeFilled: (image_url, user)
+  const userId = req.params.userId;
+
   // ===== validate token =====
   if (req.userData.userId == null || req.userData.userId != userId) {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
   // ===== validate request body =====
-  const body = req.body; // required(category, color, seasons, occasion) optional: (name) toBeFilled: (image_url, user)
-  const userId = req.params.userId;
-
-  if (!body || !userId) {
+  if (Object.keys(body).length === 0 || !userId) {
     return next(new HttpError('Missing parameters', 400));
   }
 

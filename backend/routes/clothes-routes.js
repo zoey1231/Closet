@@ -10,6 +10,8 @@ const clothesRouter = require('express').Router();
 const clothesController = require('../controller/clothes-controllers');
 const Clothes = require('../model/clothes');
 
+const { check } = require('express-validator');
+
 clothesRouter.use(checkAuth);
 
 /**
@@ -20,12 +22,21 @@ clothesRouter.get('/:userId');
 /**
  * Get one clothing
  */
-clothesRouter.get('/:clothingId', clothesController.postClothing);
+clothesRouter.get('/:clothingId');
 
 /**
  * Add one clothing
  */
-clothesRouter.post('/:userId');
+clothesRouter.post(
+  '/:userId',
+  [
+    check('category').not().isEmpty(),
+    check('color').not().isEmpty(),
+    check('seasons').not().isEmpty(),
+    check('occasions').not().isEmpty(),
+  ],
+  clothesController.postClothing
+);
 
 /**
  * Delete one clothing
