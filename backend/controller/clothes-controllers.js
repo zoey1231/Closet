@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const LOG = require('../utils/logger');
+
 const HttpError = require('../model/http-error');
 
 const Clothes = require('../model/clothes');
@@ -20,7 +22,8 @@ const getClothes = async (req, res, next) => {
     const savedClothes = await Clothes.find({ user: userId });
     res.status(200).json(savedClothes);
   } catch (exception) {
-    next(new HttpError(`Failed getting clothes: ${exception}`, 500));
+    LOG.error(exception);
+    next(new HttpError('Failed getting clothes', 500));
   }
 };
 
@@ -41,7 +44,8 @@ const getClothing = async (req, res, next) => {
     const savedClothing = await Clothes.findById(clothingId);
     res.status(200).json(savedClothing);
   } catch (exception) {
-    next(new HttpError(`Failed getting clothes: ${exception}`, 500));
+    LOG.error(exception);
+    next(new HttpError('Failed getting clothes', 500));
   }
 };
 
@@ -103,7 +107,8 @@ const postClothing = async (req, res, next) => {
     await user.save();
     res.status(201).json(savedClothes);
   } catch (exception) {
-    next(new HttpError(`Failed adding new clothes: ${exception}`, 500));
+    LOG.error(exception);
+    next(new HttpError('Failed adding new clothes', 500));
   }
 };
 
@@ -131,7 +136,8 @@ const deleteClothing = async (req, res, next) => {
       res.status(200).end(); // deleted successfully
     }
   } catch (exception) {
-    next(new HttpError(`Failed getting clothes: ${exception}`, 500));
+    LOG.error(exception);
+    next(new HttpError('Failed getting clothes', 500));
   }
 };
 
