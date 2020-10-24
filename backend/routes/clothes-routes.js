@@ -38,4 +38,18 @@ clothesRouter.post(
  */
 clothesRouter.delete('/:userId/:clothingId', clothesController.deleteClothing);
 
+/**
+ * Update one clothing
+ */
+clothesRouter.put(
+  '/:userId/:clothingId',
+  [
+    check('category').not().isEmpty(),
+    check('color').not().isEmpty(),
+    check('seasons').not().isEmpty(),
+    check('occasions').not().isEmpty(),
+  ],
+  clothesController.updateClothing
+);
+
 module.exports = clothesRouter;
