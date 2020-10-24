@@ -13,7 +13,7 @@ imageRouter.use(checkAuth);
 /*
  * Get one image
  */
-// imageRouter.get('/:userId/:clothingId', imageController.getImage);
+imageRouter.get('/:userId/:clothingId', imageController.getImage);
 
 /**
  * Add one clothing
