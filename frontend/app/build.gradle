@@ -22,8 +22,14 @@ android {
         }
     }
 
-    dataBinding {
-        enabled = true
+    configurations {
+        all*.exclude module: 'jsr305'
+        all*.exclude group: 'commons-codec', module: 'commons-codec'
+        all*.exclude group: 'commons-logging', module: 'commons-logging'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
     }
 }
 
@@ -36,7 +42,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.1'
     implementation 'androidx.navigation:navigation-ui:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 

@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
@@ -31,8 +30,9 @@ public class CalendarActivity extends AppCompatActivity {
         // obtain OAuth 2.0 access token
         GoogleCredentials credentials = null;
         try {
-            credentials = GoogleCredentials.fromStream(new FileInputStream("C:/Users/giott/Documents/GitHub/CPEN_321/closet/frontend/app/src/main/res/credentials.json"))
-                    .createScoped("https://www.googleapis.com/auth/calendar", "https://www.googleapis.com/auth/calendar.events");
+            credentials = GoogleCredentials.fromStream(new FileInputStream("main/res/credentials.json"))
+                    .createScoped("https://www.googleapis.com/auth/calendar",
+                            "https://www.googleapis.com/auth/calendar.events");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,33 +44,41 @@ public class CalendarActivity extends AppCompatActivity {
         AccessToken token = credentials.getAccessToken();
 
         // call Calendar API
-        HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(credentials);
-        Calendar calendar = new Calendar.Builder(new NetHttpTransport(), new JacksonFactory(), requestInitializer).build();
+        Calendar calendar = new Calendar.Builder(new NetHttpTransport(),
+                new JacksonFactory(),
+                new HttpCredentialsAdapter(credentials))
+                .build();
 
         // example: insert event
-        Event event = new Event()
-                .setSummary("Google I/O 2015")
-                .setLocation("800 Howard St., San Francisco, CA 94103")
-                .setDescription("A chance to hear more about Google's developer products.");
+        Event insertEvent = new Event()
+                .setSummary("test");
 
-        DateTime startDateTime = new DateTime("2015-05-28T09:00:00-07:00");
+        DateTime startDateTime = new DateTime("2020-10-24T15:00:00");
         EventDateTime start = new EventDateTime()
                 .setDateTime(startDateTime)
-                .setTimeZone("America/Los_Angeles");
-        event.setStart(start);
+                .setTimeZone("Canada/Vancouver");
+        insertEvent.setStart(start);
 
-        DateTime endDateTime = new DateTime("2015-05-28T17:00:00-07:00");
+        DateTime endDateTime = new DateTime("2020-10-24T17:00:00");
         EventDateTime end = new EventDateTime()
                 .setDateTime(endDateTime)
-                .setTimeZone("America/Los_Angeles");
-        event.setEnd(end);
+                .setTimeZone("Canada/Vancouver");
+        insertEvent.setEnd(end);
 
-        String calendarId = "primary";
         try {
-            event = calendar.events().insert(calendarId, event).execute();
+            insertEvent = calendar.events().insert("primary", insertEvent).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.printf("Event created: %s\n", event.getHtmlLink());
+        System.out.printf("Event created: %s\n", insertEvent.getHtmlLink());
+
+        // example: get event
+        Event getEvent = null;
+        try {
+            getEvent = calendar.events().get("primary", insertEvent.getId()).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(getEvent.getSummary());
     }
 }
