@@ -1,3 +1,4 @@
+const assert = require('assert');
 require('dotenv').config();
 
 const LOG = require('../utils/logger');
@@ -202,10 +203,28 @@ const updateClothing = async (req, res, next) => {
       }
     );
 
+    assert(updateClothing.category === savedClothes.category);
+    assert(updateClothing.color === savedClothes.color);
+    assert(
+      updateClothing.seasons.length == savedClothes.seasons.length &&
+        updateClothing.seasons.every((u, i) => u === savedClothes.seasons[i])
+    );
+    assert(
+      updateClothing.occasions.length == savedClothes.occasions.length &&
+        updateClothing.occasions.every(
+          (u, i) => u === savedClothes.occasions[i]
+        )
+    );
+    assert(updateClothing.name === savedClothes.name);
+
     res.status(200).json(savedClothes);
   } catch (exception) {
     LOG.error(exception);
-    next(new HttpError('Failed getting clothes', 500));
+    if (exception.name === 'AssertionError') {
+      next(new HttpError('Error updating clothes', 500));
+    }
+
+    next(new HttpError('Failed updating clothes', 500));
   }
 };
 
