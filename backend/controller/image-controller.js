@@ -97,7 +97,31 @@ const postImage = async (req, res, next) => {
   res.status(201).json('Uploaded image!').end();
 };
 
-const deleteImage = async (req, res, next) => {};
+const deleteImage = async (req, res, next) => {
+  const clothingId = req.params.clothingId;
+  const userId = req.params.userId;
+  // ===== validate token =====
+  if (!req.userData.userId || req.userData.userId != userId || !clothingId) {
+    return next(new HttpError('Token missing or invalid', 401));
+  }
+
+  const imageFileExtension = '.jpg';
+  const targetPath = path.join(
+    `./${process.env.IMAGE_FOLDER_NAME}/${userId}/${clothingId}${imageFileExtension}`
+  );
+
+  try {
+    if (!fs.existsSync(targetPath)) {
+      return next(new HttpError('Image does not exist', 500));
+    }
+
+    fs.unlinkSync(targetPath);
+  } catch (exception) {
+    return next(new HttpError('Failed to get image', 500));
+  }
+
+  res.status(200).json('Deleted image').end();
+};
 
 module.exports = {
   getImage,

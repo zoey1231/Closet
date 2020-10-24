@@ -27,6 +27,6 @@ imageRouter.post(
 /**
  * Delete one clothing
  */
-// imageRouter.delete('/:userId/:clothingId', imageController.deleteImage);
+imageRouter.delete('/:userId/:clothingId', imageController.deleteImage);
 
 module.exports = imageRouter;
