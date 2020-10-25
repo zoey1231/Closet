@@ -1,5 +1,8 @@
+const fs = require('fs');
+const path = require('path');
+
 const config = require('./utils/config');
-const logger = require('./utils/logger');
+const LOG = require('./utils/logger');
 
 const cors = require('cors');
 
@@ -15,10 +18,11 @@ const HttpError = require('./model/http-error');
 // routers
 const clothesRoutes = require('./routes/clothes-routes');
 const usersRoutes = require('./routes/users-routes');
+const imageRoutes = require('./routes/image-routes');
 const notificationRoutes = require('./routes/notifications-routes');
 
 // connect to db
-logger.info('⌛connecting to', config.MONGODB_URI);
+LOG.info('⌛connecting to', config.MONGODB_URI);
 
 mongoose
   .connect(config.MONGODB_URI, {
@@ -26,27 +30,27 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    logger.info('✅connected to MongoDB');
+    LOG.info('✅connected to MongoDB');
   })
   .catch(error => {
-    logger.error('❌error connecting to MongoDB:', error.message);
+    LOG.error('❌error connecting to MongoDB:', error.message);
   });
 
 // connect to redis
-logger.info('⌛connecting to', config.REDIS_URI);
+LOG.info('⌛connecting to', config.REDIS_URI);
 
 const redisClient = redis.createClient({
   url: config.REDIS_URI,
 });
 
 redisClient.on('connect', async () => {
-  logger.error('✅connected to Redis');
+  LOG.error('✅connected to Redis');
   redisClient.flushall(); // TODO: comment this out!
 });
 
 redisClient.on('error', error => {
   redisClient.quit();
-  logger.error('❌error connecting redis:', error);
+  LOG.error('❌error connecting redis:', error);
 });
 
 // app setting
@@ -58,6 +62,16 @@ app.use(morgan('tiny'));
 app.get('/version', (req, res) => {
   res.status(200).json(config.VERSION);
 });
+
+// if this exceptions or fails - app.js will just break
+// TODO: should probably improve this
+const imageFolder = path.join(`./${process.env.IMAGE_FOLDER_NAME}`);
+if (!fs.existsSync(imageFolder)) {
+  LOG.info(
+    `Image storage path ${imageFolder} does not exist... making directory`
+  );
+  fs.mkdirSync(imageFolder);
+}
 
 // routes
 app.use((req, res, next) => {
@@ -76,6 +90,7 @@ app.use((req, res, next) => {
 
 app.use('/api/users', usersRoutes);
 app.use('/api/clothes', clothesRoutes);
+app.use('/api/images', imageRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 app.use((req, res, next) => {
