@@ -47,7 +47,7 @@ dependencies {
     implementation('com.google.apis:google-api-services-calendar:v3-rev99-1.19.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
     //firebase
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
     implementation 'com.google.firebase:firebase-analytics'

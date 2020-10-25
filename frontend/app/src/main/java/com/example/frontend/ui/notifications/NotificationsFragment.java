@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,14 +14,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.frontend.MainActivity;
 import com.example.frontend.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 public class NotificationsFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "NotificationFrag";
     private NotificationsViewModel notificationsViewModel;
+
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -36,57 +35,24 @@ public class NotificationsFragment extends Fragment implements View.OnClickListe
                 textView.setText(s);
             }
         });
-        Button subscribe_btn = root.findViewById(R.id.subscribeButton);
-        subscribe_btn.setOnClickListener(this);
+        TextView userEmail = root.findViewById(R.id.tv_userEmail);
+        TextView userId = root.findViewById(R.id.tv_userId);
+        Button logOutBtn = root.findViewById(R.id.logOut_btn);
+        logOutBtn.setOnClickListener(this);
 
-        Button logToken_btn = root.findViewById(R.id.logTokenButton);
-        logToken_btn.setOnClickListener(this);
+        //get Uer's data from Mainactivity and display them on fragment
+        MainActivity activity = (MainActivity) getActivity();
+        userEmail.setText("Email: "+activity.getUser().getEmail());
+        userId.setText("UserId: "+activity.getUser().getuserId());
         return root;
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.subscribeButton:
-                Log.d(TAG, "Subscribing to weather topic");
-                // [START subscribe_topics]
-                FirebaseMessaging.getInstance().subscribeToTopic("weather")
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                String msg = getString(R.string.msg_subscribed);
-                                if (!task.isSuccessful()) {
-                                    msg = getString(R.string.msg_subscribe_failed);
-                                }
-                                Log.d(TAG, msg);
-                                Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                // [END subscribe_topics]
+            case R.id.logOut_btn:
+                Log.d(TAG, "Try to log out");
 
-                break;
-            case R.id.logTokenButton:
-                // Get token
-                // [START log_reg_token]
-                FirebaseMessaging.getInstance().getToken()
-                        .addOnCompleteListener(new OnCompleteListener<String>() {
-                            @Override
-                            public void onComplete(@NonNull Task<String> task) {
-                                if (!task.isSuccessful()) {
-                                    Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                                    return;
-                                }
-
-                                // Get new FCM registration token
-                                String token = task.getResult();
-
-                                // Log and toast
-                                String msg = getString(R.string.msg_token_fmt, token);
-                                Log.d(TAG, msg);
-                                Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                // [END log_reg_token]
                 break;
         }
     }
