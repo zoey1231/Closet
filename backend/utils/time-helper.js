@@ -13,6 +13,11 @@ const months = [
   'Dec',
 ];
 
+/**
+ * Input a Unix Timestamp and return the time in 'YYYY-MMM-DD' format
+ *
+ * @param {String | Number} timestamp
+ */
 const timestampToDate = timestamp => {
   const time = new Date(timestamp * 1000);
   const year = time.getFullYear();

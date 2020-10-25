@@ -4,7 +4,13 @@ require('dotenv').config();
 const LOG = require('../utils/logger');
 const { timestampToDate } = require('../utils/weather-helper');
 
+/**
+ * Return the weather of the current and next day of the given place
+ *
+ * @param {String} place
+ */
 const getWeatherInfo = async place => {
+  // Get latitude and longitude of the given place
   const geoCode = await getGeoCode(place);
 
   if (!geoCode.success) {
@@ -50,6 +56,7 @@ const getWeatherInfo = async place => {
 
   const { current, daily } = response.data;
 
+  // Convert the timestamp to a more readable format
   const today_date = timestampToDate(current.dt);
   const tomorrow_date = timestampToDate(daily[1].dt);
 
@@ -64,6 +71,11 @@ const getWeatherInfo = async place => {
   };
 };
 
+/**
+ * Return the latitude and longitude of the input place
+ *
+ * @param {String} place
+ */
 const getGeoCode = async place => {
   const q = place;
   const key = process.env.GEO_API_KEY;
