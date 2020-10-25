@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const config = require('./utils/config');
 const LOG = require('./utils/logger');
 
@@ -15,6 +18,7 @@ const HttpError = require('./model/http-error');
 // routers
 const clothesRoutes = require('./routes/clothes-routes');
 const usersRoutes = require('./routes/users-routes');
+const imageRoutes = require('./routes/image-routes');
 
 // connect to db
 LOG.info('⌛connecting to', config.MONGODB_URI);
@@ -58,6 +62,16 @@ app.get('/version', (req, res) => {
   res.status(200).json({ message: config.VERSION });
 });
 
+// if this exceptions or fails - app.js will just break
+// TODO: should probably improve this
+const imageFolder = path.join(`./${process.env.IMAGE_FOLDER_NAME}`);
+if (!fs.existsSync(imageFolder)) {
+  LOG.info(
+    `Image storage path ${imageFolder} does not exist... making directory`
+  );
+  fs.mkdirSync(imageFolder);
+}
+
 // routes
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -75,6 +89,7 @@ app.use((req, res, next) => {
 
 app.use('/api/users', usersRoutes);
 app.use('/api/clothes', clothesRoutes);
+app.use('/api/images', imageRoutes);
 
 app.use((req, res, next) => {
   return next(new HttpError('Could not find this route', 404));

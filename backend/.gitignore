@@ -117,3 +117,7 @@ dist
 .pnp.*
 
 .idea/
+
+# image folders
+TempUserClothingImages
+UserClothingImages
