@@ -57,16 +57,16 @@ const getWeatherInfo = async place => {
   const { current, daily } = response.data;
 
   // Convert the timestamp to a more readable format
-  const today_date = timestampToDate(current.dt);
-  const tomorrow_date = timestampToDate(daily[1].dt);
+  const today_time = timestampToDate(current.dt);
+  const tomorrow_time = timestampToDate(daily[1].dt);
 
   return {
     success: true,
-    today: { ...current, dt: today_date, units: 'degree Celsius' },
+    today: { ...current, units: 'degree Celsius', time: today_time },
     tomorrow: {
       ...daily[1],
-      dt: tomorrow_date,
       units: 'degree Celsius',
+      time: tomorrow_time,
     },
   };
 };
@@ -115,6 +115,13 @@ const getGeoCode = async place => {
     };
   }
 };
+
+const temp = async place => {
+  const response = await getWeatherInfo(place);
+  console.log(response);
+};
+
+temp('vancouver');
 
 module.exports = {
   getWeatherInfo,
