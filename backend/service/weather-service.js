@@ -116,13 +116,6 @@ const getGeoCode = async place => {
   }
 };
 
-const temp = async place => {
-  const response = await getWeatherInfo(place);
-  console.log(response);
-};
-
-temp('vancouver');
-
 module.exports = {
   getWeatherInfo,
 };
