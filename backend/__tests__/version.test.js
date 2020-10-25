@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const server = require('../index');
 const supertest = require('supertest');
 
-const { app, redisClient } = require('../app');
+const app = require('../app');
 
 const api = supertest(app);
 
@@ -22,7 +22,6 @@ describe('get version', () => {
 });
 
 afterAll(() => {
-  redisClient.quit();
   mongoose.connection.close();
   server.close();
 });

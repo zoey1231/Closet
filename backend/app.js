@@ -11,7 +11,6 @@ const app = express();
 const morgan = require('morgan');
 
 const mongoose = require('mongoose');
-const redis = require('redis');
 
 const HttpError = require('./model/http-error');
 
@@ -35,23 +34,6 @@ mongoose
   .catch(error => {
     LOG.error('❌error connecting to MongoDB:', error.message);
   });
-
-// connect to redis
-LOG.info('⌛connecting to', config.REDIS_URI);
-
-const redisClient = redis.createClient({
-  url: config.REDIS_URI,
-});
-
-redisClient.on('connect', async () => {
-  LOG.error('✅connected to Redis');
-  redisClient.flushall(); // TODO: comment this out!
-});
-
-redisClient.on('error', error => {
-  redisClient.quit();
-  LOG.error('❌error connecting redis:', error);
-});
 
 // app setting
 app.use(cors());
@@ -105,4 +87,4 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || 'An unknown error occurred!' });
 });
 
-module.exports = { app, redisClient };
+module.exports = app;
