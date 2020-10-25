@@ -15,6 +15,7 @@ const HttpError = require('./model/http-error');
 // routers
 const clothesRoutes = require('./routes/clothes-routes');
 const usersRoutes = require('./routes/users-routes');
+const weatherRoutes = require('./routes/weather-routes');
 
 // connect to db
 logger.info('⌛connecting to', config.MONGODB_URI);
@@ -75,6 +76,7 @@ app.use((req, res, next) => {
 
 app.use('/api/users', usersRoutes);
 app.use('/api/clothes', clothesRoutes);
+app.use('/api/weather', weatherRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError('Could not find this route.', 404);
