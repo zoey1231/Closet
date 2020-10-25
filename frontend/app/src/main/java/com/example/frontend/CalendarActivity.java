@@ -30,20 +30,21 @@ public class CalendarActivity extends AppCompatActivity {
         // obtain OAuth 2.0 access token
         GoogleCredentials credentials = null;
         try {
-            credentials = GoogleCredentials.fromStream(new FileInputStream("main/res/credentials.json"))
+            credentials = GoogleCredentials.fromStream(new FileInputStream("/credentials.json")) //?why doesn't work
                     .createScoped("https://www.googleapis.com/auth/calendar",
                             "https://www.googleapis.com/auth/calendar.events");
+            try {
+                credentials.refreshIfExpired();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            AccessToken token = credentials.getAccessToken();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try {
-            credentials.refreshIfExpired();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        AccessToken token = credentials.getAccessToken();
 
         // call Calendar API
+        assert credentials != null;
         Calendar calendar = new Calendar.Builder(new NetHttpTransport(),
                 new JacksonFactory(),
                 new HttpCredentialsAdapter(credentials))

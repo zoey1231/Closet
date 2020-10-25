@@ -1,3 +1,6 @@
+ext {
+    CALENDAR_CREDENTIALS = 'C:\\Users\\giott\\Documents\\GitHub\\CPEN_321\\closet\\frontend\\app\\src\\main\\res\\credentials.json'
+}
 apply plugin: 'com.android.application'
 
 android {
