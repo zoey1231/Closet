@@ -17,7 +17,7 @@ describe('get version', () => {
   it('should get a version number', async () => {
     const res = await api.get('/version');
     expect(res.statusCode).toEqual(200);
-    expect(res.body).toEqual(config.VERSION);
+    expect(res.body).toEqual({ message: config.VERSION });
   });
 });
 
