@@ -2,7 +2,7 @@ const axios = require('axios');
 
 require('dotenv').config();
 const LOG = require('../utils/logger');
-const { timestampToDate } = require('../utils/weather-helper');
+const { timestampToDate } = require('../utils/time-helper');
 
 /**
  * Return the weather of the current and next day of the given place
