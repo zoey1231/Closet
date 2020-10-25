@@ -4,9 +4,9 @@ const { check } = require('express-validator');
 const usersController = require('../controller/users-controllers');
 const checkAuth = require('../middleware/check-auth');
 
-const router = express.Router();
+const usersRouter = express.Router();
 
-router.post(
+usersRouter.post(
   '/signup',
   [
     check('name').not().isEmpty(),
@@ -16,10 +16,10 @@ router.post(
   usersController.signup
 );
 
-router.post('/login', usersController.login);
+usersRouter.post('/login', usersController.login);
 
-router.use(checkAuth);
+usersRouter.use(checkAuth);
 
-router.get('/', usersController.getUsers);
+usersRouter.get('/', usersController.getUsers);
 
-module.exports = router;
+module.exports = usersRouter;
