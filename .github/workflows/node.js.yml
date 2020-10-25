@@ -43,9 +43,9 @@ jobs:
         working-directory: ${{ env.working-directory }}
         run: cp .env.sample .env
 
-      - name: npm ci
+      - name: npm install
         working-directory: ${{ env.working-directory }}
-        run: npm ci
+        run: npm install
 
       - name: npm test
         working-directory: ${{ env.working-directory }}
