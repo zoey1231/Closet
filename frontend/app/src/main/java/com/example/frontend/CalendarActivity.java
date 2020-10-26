@@ -1,87 +1,54 @@
 package com.example.frontend;
 
-import android.app.ActionBar;
-import android.os.Build;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.text.format.Time;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
-
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
-import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.AccessToken;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.api.services.calendar.Calendar;
-import com.riontech.calendar.CustomCalendar;
-import com.riontech.calendar.dao.EventData;
-import com.riontech.calendar.dao.dataAboutDate;
-import com.riontech.calendar.utils.CalendarUtils;
+
+import java.util.Calendar;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public class CalendarActivity extends AppCompatActivity {
 
-    private CustomCalendar calendar;
+    ExtendedCalendarView calendar = (ExtendedCalendarView)findViewById(R.id.calendar);
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+//    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_calendar);
 
-//        String[] arr = {"2016-06-10", "2016-06-11", "2016-06-15", "2016-06-16", "2016-06-25"};
-//        for (int i = 0; i < 5; i++) {
-//            int eventCount = 3;
-//            customCalendar.addAnEvent(arr[i], eventCount, getEventDataList(eventCount));
-//        }
-        dataAboutDate date = new dataAboutDate();
-        date.setTitle("test");
-        ArrayList<dataAboutDate> data = new ArrayList<>();
-        data.add(date);
-        EventData event = new EventData();
-        event.setData(data);
-        ArrayList<EventData> events = new ArrayList<>();
-        events.add(event);
-
-        calendar.addAnEvent("2020-10-25", 1, events);
-//        TextView test = new TextView(this);
-//        test.setText(data.get(0).getTitle());
-//        test.setLayoutParams(new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT));
-//        calendar.addView(test);
+//        addEvent((Calendar)calendar);
     }
 
-    public ArrayList<EventData> getEventDataList(ArrayList<EventData> eventDataList) {
-//        ArrayList<EventData> eventDataList = new ArrayList();
+//    private void addEvent(Calendar cal) {
+//        ContentValues values = new ContentValues();
 //
-//        for (int i = 0; i < count; i++) {
-//            EventData dateData = new EventData();
-//            ArrayList<dataAboutDate> dataAboutDates = new ArrayList();
+//        values.put(CalendarProvider.COLOR, Event.COLOR_RED);
+//        values.put(CalendarProvider.DESCRIPTION, "Some Description");
+//        values.put(CalendarProvider.LOCATION, "Some location");
+//                values.put(CalendarProvider.EVENT, "Event name");
 //
-//            dateData.setSection(CalendarUtils.getNAMES()[new Random().nextInt(CalendarUtils.getNAMES().length)]);
-//            dataAboutDate dataAboutDate = new dataAboutDate();
+//        cal.set(startDayYear, startDayMonth, startDayDay, startTimeHour, startTimeMin);
+//        values.put(CalendarProvider.START, cal.getTimeInMillis());
+//        values.put(CalendarProvider.START_DAY, julianDay);
+//        TimeZone tz = TimeZone.getDefault();
 //
-//            int index = new Random().nextInt(CalendarUtils.getEVENTS().length);
+//        cal.set(endDayYear, endDayMonth, endDayDay, endTimeHour, endTimeMin);
+//        int endDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
 //
-//            dataAboutDate.setTitle(CalendarUtils.getEVENTS()[index]);
-//            dataAboutDate.setSubject(CalendarUtils.getEventsDescription()[index]);
-//            dataAboutDates.add(dataAboutDate);
+//        values.put(CalendarProvider.END, cal.getTimeInMillis());
+//        values.put(CalendarProvider.END_DAY, endDayJulian);
 //
-//            dateData.setData(dataAboutDates);
-//            eventDataList.add(dateData);
-//        }
-
-        return eventDataList;
-    }
-
-//        // obtain OAuth 2.0 access token
+//        Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
+//    }
+//
+//        obtain OAuth 2.0 access token
 //        GoogleCredentials credentials = null;
 //        try {
 //            credentials = GoogleCredentials.fromStream(new FileInputStream("/credentials.json")) //?why doesn't work
