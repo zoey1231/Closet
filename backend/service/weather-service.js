@@ -57,12 +57,22 @@ const getWeatherInfo = async place => {
   const { current, daily } = response.data;
 
   // Convert the timestamp to a more readable format
-  const today_time = timestampToDate(current.dt);
+  const current_time = timestampToDate(current.dt);
+  const today_time = timestampToDate(daily[0].dt);
   const tomorrow_time = timestampToDate(daily[1].dt);
 
   return {
     success: true,
-    today: { ...current, units: 'degree Celsius', time: today_time },
+    current: {
+      ...current,
+      units: 'degree Celsius',
+      time: current_time,
+    },
+    today: {
+      ...daily[0],
+      units: 'degree Celsius',
+      time: today_time,
+    },
     tomorrow: {
       ...daily[1],
       units: 'degree Celsius',
