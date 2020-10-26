@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { version } = require('../package.json');
 
 console.log(`
  ::::::::  :::         ::::::::   ::::::::  :::::::::: ::::::::::: 
@@ -9,9 +10,8 @@ console.log(`
 #+#    #+# #+#        #+#    #+# #+#    #+# #+#            #+#     
  ########  ##########  ########   ########  ##########     ###     `);
 
-let VERSION = process.env.npm_package_version;
 console.log(
-  `===== environment:${process.env.NODE_ENV} version:${VERSION} =====\n`
+  `===== environment:${process.env.NODE_ENV} version:${version} =====\n`
 );
 
 let PORT = process.env.PORT;
@@ -37,5 +37,5 @@ console.log('#️⃣MONGODB_URI:', MONGODB_URI);
 module.exports = {
   PORT,
   MONGODB_URI,
-  VERSION,
+  VERSION: version,
 };
