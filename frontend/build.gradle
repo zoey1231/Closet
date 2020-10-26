@@ -3,6 +3,8 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url "https://dl.bintray.com/riontech/maven"
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.0'
