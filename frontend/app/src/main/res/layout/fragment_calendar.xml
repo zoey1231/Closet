@@ -20,12 +20,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.riontech.calendar.CustomCalendar
-        android:id="@+id/customCalendar"
-        android:layout_width="match_parent"
+    <ExtendedCalendarView
+        android:id="@+id/calendar"
         android:layout_height="match_parent"
-        app:endMonth="07"
-        app:endYear="2016"
-        app:startMonth="01"
-        app:startYear="2016" />
+        android:layout_width="match_parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
