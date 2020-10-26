@@ -143,6 +143,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
         final String data = userData.toString();
         Log.d(TAG,"usertoken in sendDataToServer is: "+userToken);
+
         serverCommunication.postWithAuthentication(url, data, userToken, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

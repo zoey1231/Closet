@@ -40,7 +40,7 @@ public class NotificationsFragment extends Fragment implements View.OnClickListe
         Button logOutBtn = root.findViewById(R.id.logOut_btn);
         logOutBtn.setOnClickListener(this);
 
-        //get Uer's data from Mainactivity and display them on fragment
+        //get User's data from MainActivity and display them on fragment
         MainActivity activity = (MainActivity) getActivity();
         userEmail.setText("Email: "+activity.getUser().getEmail());
         userId.setText("UserId: "+activity.getUser().getuserId());
