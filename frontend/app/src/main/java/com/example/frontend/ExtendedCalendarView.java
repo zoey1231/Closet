@@ -1,8 +1,5 @@
 package com.example.frontend;
 
-import java.util.Calendar;
-import java.util.Locale;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,13 +10,16 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.view.View.OnClickListener;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 class ExtendedCalendarView extends RelativeLayout implements OnItemClickListener,
         OnClickListener{
@@ -57,7 +57,7 @@ class ExtendedCalendarView extends RelativeLayout implements OnItemClickListener
         init();
     }
 
-    public ExtendedCalendarView(Context context, AttributeSet attrs,int defStyle) {
+    public ExtendedCalendarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.context = context;
         init();

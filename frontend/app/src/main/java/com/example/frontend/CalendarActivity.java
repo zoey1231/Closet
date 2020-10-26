@@ -23,7 +23,15 @@ public class CalendarActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_calendar);
 
-//        addEvent((Calendar)calendar);
+        addEvent(calendar);
+    }
+
+    private void addEvent(ExtendedCalendarView calendar) {
+        ContentValues values = new ContentValues();
+
+        values.put(CalendarProvider.EVENT, "test");
+        values.put(CalendarProvider.START_DAY, "today");
+
     }
 
 //    private void addEvent(Calendar cal) {
