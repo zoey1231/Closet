@@ -106,7 +106,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         final String data = userData.toString();
         Log.d(TAG,"prepared to sendUserDataToServer");
 
-        serverCommunication.post("http://10.0.2.2:8080/api/users/signup", data, new Callback() {
+        serverCommunication.post("http://closet.westus.cloudapp.azure.com/api/users/signup", data, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();

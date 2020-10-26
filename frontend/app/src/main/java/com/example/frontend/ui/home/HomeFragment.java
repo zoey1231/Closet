@@ -68,7 +68,7 @@ public class HomeFragment extends Fragment {
         ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
         Log.d(TAG,"prepared to sendUserDataToServer");
 
-        serverCommunication.getWithAuthentication("http://10.0.2.2:8080/api/weather/vancouver",userToken, new Callback() {
+        serverCommunication.getWithAuthentication("http://closet.westus.cloudapp.azure.com/api/weather/vancouver",userToken, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
