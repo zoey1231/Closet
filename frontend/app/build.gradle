@@ -53,5 +53,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-messaging:20.3.0'
 
-
+    implementation 'com.squareup.picasso:picasso:2.8'
 }
