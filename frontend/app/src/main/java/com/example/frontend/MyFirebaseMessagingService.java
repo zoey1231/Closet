@@ -131,7 +131,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             postData.put("message", message);
 
             Log.d(TAG,"prepared to send firebase token to server with token: "+token);
-            sendDataToServer(postData,userToken,"http://10.0.2.2:8080/api/notifications/");
+            sendDataToServer(postData,userToken,"http://closet.westus.cloudapp.azure.com/api/notifications/");
 
         } catch (JSONException e) {
             e.printStackTrace();

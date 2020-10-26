@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final String data = userData.toString();
         Log.d(TAG,"prepared to sendUserDataToServer");
 
-        serverCommunication.post("http://10.0.2.2:8080/api/users/login", data, new Callback() {
+        serverCommunication.post("http://closet.westus.cloudapp.azure.com/api/users/login", data, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
