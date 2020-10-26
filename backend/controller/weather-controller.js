@@ -28,8 +28,8 @@ const getWeather = async (req, res, next) => {
     );
   }
 
-  const { today, tomorrow } = response;
-  res.status(200).json({ today, tomorrow });
+  const { current, today, tomorrow } = response;
+  res.status(200).json({ current, today, tomorrow });
 };
 
 exports.getWeather = getWeather;
