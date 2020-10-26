@@ -82,7 +82,7 @@ const postImage = async (req, res, next) => {
     }
 
     // move image from temp location to userId location
-    fs.rename(tempPath, targetPath, err => {
+    fs.renameSync(tempPath, targetPath, err => {
       if (err) return next(new HttpError('Unable to move image', 500));
     });
 

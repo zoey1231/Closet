@@ -14,7 +14,6 @@ const User = require('../model/user');
  */
 const getClothes = async (req, res, next) => {
   const userId = req.params.userId;
-  // ===== validate token =====
   if (!req.userData.userId || req.userData.userId != userId) {
     return next(new HttpError('Token missing or invalid', 401));
   }
@@ -36,7 +35,6 @@ const getClothes = async (req, res, next) => {
 const getClothing = async (req, res, next) => {
   const clothingId = req.params.clothingId;
   const userId = req.params.userId;
-  // ===== validate token =====
   if (!req.userData.userId || req.userData.userId != userId || !clothingId) {
     return next(new HttpError('Token missing or invalid', 401));
   }
@@ -46,7 +44,7 @@ const getClothing = async (req, res, next) => {
     res.status(200).json(savedClothing);
   } catch (exception) {
     LOG.error(exception);
-    next(new HttpError('Failed getting clothes', 500));
+    next(new HttpError('Failed getting clothing', 500));
   }
 };
 
@@ -75,18 +73,13 @@ const postClothing = async (req, res, next) => {
   }
 
   if (!Array.isArray(occasions)) {
-    return next(
-      new HttpError(`Invalid occasions: ${occasions}; should be an array`, 400)
-    );
+    return next(new HttpError(`Invalid occasions; should be an array`, 400));
   }
 
   const seasonList = ['Spring', 'Summer', 'Fall', 'Winter', 'All'];
   if (!Array.isArray(seasons) || seasonList.every(i => seasons.includes(i))) {
     return next(
-      new HttpError(
-        `invalid seasons: ${seasons}; can only include ${seasonList}`,
-        400
-      )
+      new HttpError(`Invalid seasons; can only include ${seasonList}`, 400)
     );
   }
 
@@ -109,7 +102,7 @@ const postClothing = async (req, res, next) => {
     res.status(201).json(savedClothes);
   } catch (exception) {
     LOG.error(exception);
-    next(new HttpError('Failed adding new clothes', 500));
+    next(new HttpError('Failed adding clothing', 500));
   }
 };
 
@@ -132,13 +125,13 @@ const deleteClothing = async (req, res, next) => {
       user: userId,
     });
     if (!deletedClothing) {
-      res.status(404).end(); // not found or already deleted
+      next(new HttpError('Not found or already deleted', 400));
     } else {
-      res.status(200).end(); // deleted successfully
+      res.status(200).json({ message: 'Deleted clothing' }).end();
     }
   } catch (exception) {
     LOG.error(exception);
-    next(new HttpError('Failed getting clothes', 500));
+    next(new HttpError('Failed deleting clothing', 500));
   }
 };
 
@@ -168,18 +161,13 @@ const updateClothing = async (req, res, next) => {
   }
 
   if (!Array.isArray(occasions)) {
-    return next(
-      new HttpError(`Invalid occasions: ${occasions}; should be an array`, 400)
-    );
+    return next(new HttpError(`Invalid occasions; should be an array`, 400));
   }
 
   const seasonList = ['Spring', 'Summer', 'Fall', 'Winter', 'All'];
   if (!Array.isArray(seasons) || seasonList.every(i => seasons.includes(i))) {
     return next(
-      new HttpError(
-        `invalid seasons: ${seasons}; can only include ${seasonList}`,
-        400
-      )
+      new HttpError(`Invalid seasons; can only include ${seasonList}`, 400)
     );
   }
 

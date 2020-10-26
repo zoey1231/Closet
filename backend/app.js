@@ -11,7 +11,6 @@ const app = express();
 const morgan = require('morgan');
 
 const mongoose = require('mongoose');
-const redis = require('redis');
 
 const HttpError = require('./model/http-error');
 
@@ -37,23 +36,6 @@ mongoose
     LOG.error('❌error connecting to MongoDB:', error.message);
   });
 
-// connect to redis
-LOG.info('⌛connecting to', config.REDIS_URI);
-
-const redisClient = redis.createClient({
-  url: config.REDIS_URI,
-});
-
-redisClient.on('connect', async () => {
-  LOG.error('✅connected to Redis');
-  redisClient.flushall(); // TODO: comment this out!
-});
-
-redisClient.on('error', error => {
-  redisClient.quit();
-  LOG.error('❌error connecting redis:', error);
-});
-
 // app setting
 app.use(cors());
 app.use(express.json());
@@ -61,7 +43,7 @@ app.use(morgan('tiny'));
 
 // api
 app.get('/version', (req, res) => {
-  res.status(200).json(config.VERSION);
+  res.status(200).json({ message: config.VERSION });
 });
 
 // if this exceptions or fails - app.js will just break
@@ -96,8 +78,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/weather', weatherRoutes);
 
 app.use((req, res, next) => {
-  const error = new HttpError('Could not find this route.', 404);
-  return next(error);
+  return next(new HttpError('Could not find this route', 404));
 });
 
 app.use((error, req, res, next) => {
@@ -108,4 +89,4 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || 'An unknown error occurred!' });
 });
 
-module.exports = { app, redisClient };
+module.exports = app;
