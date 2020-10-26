@@ -5,6 +5,7 @@
 - Default user `closet`
 - Password: (feel free to save your ssh keys)
 - **Auto-shutdown**: 1:01:00 AM PST
+- Is the server up and running? `curl closet.westus.cloudapp.azure.com/version`
 
 # Backend deployment
 ### Pull backend code
