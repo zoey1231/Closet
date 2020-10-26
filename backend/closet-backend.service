@@ -1,0 +1,14 @@
+[Unit]
+Description=Closet Backend
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/node /home/closet/closet/backend/index.js
+Restart=on-failure
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/home/closet/closet/backend
+
+[Install]
+WantedBy=multi-user.target
