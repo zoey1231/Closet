@@ -34,9 +34,15 @@ journalctl -u closet-backend -f       # follow low
 ```
 
 ### Modify service
+- A copy of service file is in this repository `closet/backend/closet-backend.service`
 ```sh
 sudo vim /lib/systemd/system/closet-backend.service   # edit service file
 sudo systemctl daemon-reload                          # reload service file
 sudo systemctl start closet-backend                   # start service
+
+sudo chmod +x /home/closet/closet/backend/index.js    # add exceutable permissions to express app
+sudo chmod go+w /home/closet/closet/backend           # allows any users to write the app folder (for using fs)
 ```
+
+
 
