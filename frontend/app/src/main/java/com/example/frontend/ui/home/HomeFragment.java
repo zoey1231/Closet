@@ -5,7 +5,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -30,7 +32,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
     private String userToken;
     private HomeViewModel homeViewModel;
     private String TAG = String.valueOf(getContext());
@@ -41,6 +43,10 @@ public class HomeFragment extends Fragment {
 
     TextView tv_date_today,tv_date_tmr,tv_temp_today,tv_temp_tmr;
     ImageView iv_icon_today,iv_icon_tmr;
+    TextView tv_outfit1;
+    ImageView iv_outfit1_cloth1,iv_outfit1_cloth2,iv_outfit1_cloth3;
+    Button outfitIdea_btn;
+    LinearLayout ll_outfit;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -55,20 +61,36 @@ public class HomeFragment extends Fragment {
         iv_icon_today = root.findViewById(R.id.iv_icon_today);
         iv_icon_tmr = root.findViewById(R.id.iv_icon_tmr);
 
+
+        tv_outfit1 = root.findViewById(R.id.tv_outfit1);
+        iv_outfit1_cloth1 = root.findViewById(R.id.iv_outfit1_cloth1);
+        iv_outfit1_cloth2 = root.findViewById(R.id.iv_outfit1_cloth2);
+        iv_outfit1_cloth3 = root.findViewById(R.id.iv_outfit1_cloth3);
+        ll_outfit = root.findViewById(R.id.ll_outfit);
+        outfitIdea_btn = root.findViewById(R.id.outfitIdea_btn);
+        outfitIdea_btn.setOnClickListener(this);
+
         //get User's data from MainActivity and display them on fragment
         MainActivity activity = (MainActivity) getActivity();
         userToken = activity.getUser().getUserToken();
         getWeatherData(userToken);
-
+        getOutfitData(userToken);
         return root;
     }
 
-
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.outfitIdea_btn:
+            ll_outfit.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
     private void getWeatherData(String userToken) {
         ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
         Log.d(TAG,"prepared to sendUserDataToServer");
 
-        serverCommunication.getWithAuthentication("http://closet.westus.cloudapp.azure.com/api/weather/vancouver",userToken, new Callback() {
+        serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/weather/vancouver",userToken, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -135,6 +157,46 @@ public class HomeFragment extends Fragment {
                 } else {
                     // Request not successful
                     Log.d(TAG,"weather request is unsuccessful"+responseStr);
+                }
+            }
+        });
+    }
+
+    private void getOutfitData(String userToken) {
+        ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
+        Log.d(TAG,"prepared to sendUserDataToServer");
+
+        serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/one",userToken, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                Log.d(TAG,"Fail to send request to server");
+                Log.d(TAG, String.valueOf(e));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                String responseStr = response.body().string();
+
+                if (response.isSuccessful()) {
+
+                    Log.d(TAG,"Outfit request is successful"+responseStr);
+                    JSONObject responseJson = null;
+                    try {
+                        //retrieve outfit data from server's response
+                        responseJson = new JSONObject(responseStr);
+
+
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    // Request not successful
+                    Log.d(TAG,"Outfit request is unsuccessful: "+responseStr);
                 }
             }
         });
