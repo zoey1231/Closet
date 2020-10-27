@@ -54,6 +54,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         progressBar_register = findViewById(R.id.progressBar_register);
         btn_signup.setOnClickListener(this);
         linkToLogin.setOnClickListener(this);
+
+
     }
 
 

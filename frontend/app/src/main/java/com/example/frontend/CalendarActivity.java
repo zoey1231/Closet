@@ -1,60 +1,24 @@
 package com.example.frontend;
 
-import android.content.ContentValues;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.format.Time;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.api.services.calendar.model.Event;
-
-import java.util.Calendar;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 public class CalendarActivity extends AppCompatActivity {
 
-    ExtendedCalendarView calendar = (ExtendedCalendarView)findViewById(R.id.calendar);
+    MaterialCalendarView calendar = findViewById(R.id.calendar);
 
-//    @RequiresApi(api = Build.VERSION_CODES.O)
+    //    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_calendar);
 
-        addEvent(calendar);
     }
 
-    private void addEvent(ExtendedCalendarView calendar) {
-        ContentValues values = new ContentValues();
 
-        values.put(CalendarProvider.EVENT, "test");
-        values.put(CalendarProvider.START_DAY, "today");
-
-    }
-
-//    private void addEvent(Calendar cal) {
-//        ContentValues values = new ContentValues();
-//
-//        values.put(CalendarProvider.COLOR, Event.COLOR_RED);
-//        values.put(CalendarProvider.DESCRIPTION, "Some Description");
-//        values.put(CalendarProvider.LOCATION, "Some location");
-//                values.put(CalendarProvider.EVENT, "Event name");
-//
-//        cal.set(startDayYear, startDayMonth, startDayDay, startTimeHour, startTimeMin);
-//        values.put(CalendarProvider.START, cal.getTimeInMillis());
-//        values.put(CalendarProvider.START_DAY, julianDay);
-//        TimeZone tz = TimeZone.getDefault();
-//
-//        cal.set(endDayYear, endDayMonth, endDayDay, endTimeHour, endTimeMin);
-//        int endDayJulian = Time.getJulianDay(cal.getTimeInMillis(), TimeUnit.MILLISECONDS.toSeconds(tz.getOffset(cal.getTimeInMillis())));
-//
-//        values.put(CalendarProvider.END, cal.getTimeInMillis());
-//        values.put(CalendarProvider.END_DAY, endDayJulian);
-//
-//        Uri uri = getContentResolver().insert(CalendarProvider.CONTENT_URI, values);
-//    }
 //
 //        obtain OAuth 2.0 access token
 //        GoogleCredentials credentials = null;
