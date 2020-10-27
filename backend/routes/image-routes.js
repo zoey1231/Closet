@@ -10,11 +10,6 @@ const imageController = require('../controller/image-controller');
 
 imageRouter.use(checkAuth);
 
-/*
- * Get one image
- */
-imageRouter.get('/:userId/:clothingId', imageController.getImage);
-
 /**
  * Add one clothing
  */

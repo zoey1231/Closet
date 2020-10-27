@@ -1,17 +1,18 @@
 # Azure Server
 - VM Name: `closet`
 - Public IP: `138.91.146.226`
-- DNS: `closet.westus.cloudapp.azure.com`
-- Default user `closet`
+- DNS: `closet-cpen321.westus.cloudapp.azure.com`
+- User `closet`
 - Password: (feel free to save your ssh keys)
 - **Auto-shutdown**: 1:01:00 AM PST
-- Is the server up and running? `curl closet.westus.cloudapp.azure.com/version`
+- Is the server up and running? `curl http://closet-cpen321.westus.cloudapp.azure.com/version`
 
 # Backend deployment
 ### Pull backend code
 ```sh
 cd /home/closet/closet/backend    # change directory
-git pull                          # pull code
+git fetch --all                   # fetch all
+git reset --hard origin/master    # remove all local chanegs!!!
 npm install                       # if not installed
 npm run test                      # feel free to run test to check
 ```
