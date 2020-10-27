@@ -1,11 +1,11 @@
 # Azure Server
 - VM Name: `closet`
 - Public IP: `138.91.146.226`
-- DNS: `closet.westus.cloudapp.azure.com`
+- DNS: `closet-cpen321.westus.cloudapp.azure.com`
 - Default user `closet`
 - Password: (feel free to save your ssh keys)
 - **Auto-shutdown**: 1:01:00 AM PST
-- Is the server up and running? `curl closet.westus.cloudapp.azure.com/version`
+- Is the server up and running? `curl http://closet-cpen321.westus.cloudapp.azure.com/version`
 
 # Backend deployment
 ### Pull backend code
