@@ -22,7 +22,8 @@
         </activity>
         <activity android:name=".LoginActivity" />
 
-
+        <!--        <activity android:name=".CalendarActivity"></activity>-->
+<!--        <fragment android:name=".CalendarFragment"></fragment>-->
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -59,7 +60,6 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".CalendarActivity"></activity>
     </application>
 
 </manifest>

@@ -46,15 +46,4 @@
 <!--        app:layout_constraintVertical_bias="0.0"-->
 <!--        app:navGraph="@navigation/mobile_navigation" />-->
 
-
-
-    <Button
-        android:id="@+id/calendar_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/calendar_button"
-        tools:layout_editor_absoluteX="161dp"
-        tools:layout_editor_absoluteY="272dp"
-        tools:ignore="MissingConstraints" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,53 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.dashboard.DashboardFragment"
+    tools:context=".ui.calendar.CalendarFragment"
     android:orientation="vertical">
 
-     <LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:background="#2E353D"
         android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_gravity="center_horizontal"
-        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
 
-<!--    <ImageView-->
-<!--        android:layout_width="30dp"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:padding="3dp"-->
-<!--        android:src="@mipmap/calander" />-->
+            <!--    <ImageView-->
+            <!--        android:layout_width="30dp"-->
+            <!--        android:layout_height="match_parent"-->
+            <!--        android:padding="3dp"-->
+            <!--        android:src="@mipmap/calander" />-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="8dp"
-        android:text="Calendar"
-        android:textColor="#fff"
-        android:textSize="17dp"
-        android:textStyle="bold" />
-
-    </LinearLayout>
         </LinearLayout>
+    </LinearLayout>
 
 
-    <MaterialCalendarView
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
     android:id="@+id/calendarView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_centerInParent="true" />
+    android:layout_centerInParent="true"/>
 
 
-        <!--  <CalendarView
-            android:id="@+id/calendar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />     -->
+<!--    <CalendarView-->
+<!--    android:id="@+id/calendarView"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:layout_centerInParent="true" />-->
 
 
     <ListView
