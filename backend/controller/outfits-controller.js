@@ -1,43 +1,64 @@
 require('dotenv').config();
+
+const LOG = require('../utils/logger');
+
 const HttpError = require('../model/http-error');
+const Clothes = require('../model/clothes');
 const Outfit = require('../model/outfit');
 
-const getOneOutfit = (req, res, next) => {
+const getOneOutfit = async (req, res, next) => {
   const userId = req.userData.userId;
 
-  const exampleBody = {
-    id: '1234567890',
-    clothes: [
-      {
-        seasons: ['Summer', 'Fall'],
-        occasions: ['home'],
-        category: 't-shirt',
-        color: 'blue',
-        name: '',
-        image_url: '',
-        user: '5f8e85a397320028983485e1',
-        updated: '2020-10-24T01:34:03.990Z',
-        id: '5f93848bbe8de13900c31f3c',
-      },
-      {
-        seasons: ['Summer', 'Fall'],
-        occasions: ['home'],
-        category: 't-shirt',
-        color: 'blue',
-        name: '',
-        image_url: '',
-        user: '5f8e85a397320028983485e1',
-        updated: '2020-10-24T01:34:49.217Z',
-        id: '5f9384b9be8de13900c31f3d',
-      },
-    ],
-  };
+  const events = parseInt(req.query.events) || 0;
+
+  let savedClothes; // array
+  try {
+    savedClothes = await Clothes.find({ user: userId });
+  } catch (exception) {
+    LOG.error(exception);
+    next(new HttpError('Failed getting outfit: failed getting clothes', 500));
+  }
+
+  // won't generate an outfit if less than 3 clothes
+  if (savedClothes.length <= 3) {
+    // TODO:
+    // - generate hash and check database
+    // - save into database if not present
+    return res.status.json({ message: savedClothes }).end();
+  }
+
+  const currentSeason = getSeasonNorth();
 
   res.status(200).json(exampleBody).end();
 };
 
-const getMultipleOutfits = (req, res, next) => {
+const getMultipleOutfits = async (req, res, next) => {
   // Complex Logic + Notification go here
+};
+
+/**
+ * Get Northern hemisphere season
+ * @returns one of ['Winter', 'Spring', 'Summer', 'Fall']
+ */
+const getSeasonNorth = () =>
+  ['Winter', 'Spring', 'Summer', 'Fall'][
+    Math.floor((new Date().getMonth() / 12) * 4) % 4
+  ];
+
+/**
+ * Java's String.hashCode()
+ * https://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
+ * @param {String} source
+ */
+const hashCode = source => {
+  let hash = 0;
+  for (let i = 0; i < source.length; i++) {
+    let char = source.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+
+  return hash;
 };
 
 module.exports = {
