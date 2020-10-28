@@ -1,3 +1,5 @@
+![](https://github.com/JohnLi1999/closet/workflows/Node.js%20CI/badge.svg)
+
 # Azure Server
 - VM Name: `closet`
 - Public IP: `138.91.146.226`
