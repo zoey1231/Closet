@@ -53,7 +53,7 @@ const getClothing = async (req, res, next) => {
  * - userId
  */
 const postClothing = async (req, res, next) => {
-  const body = req.body; // required(category, color, seasons, occasion) optional: (name) toBeFilled: (image_url, user)
+  const body = req.body; // required(category, color, seasons, occasion) optional: (name) toBeFilled: (user)
   const userId = req.params.userId;
 
   // ===== validate token =====
@@ -92,7 +92,6 @@ const postClothing = async (req, res, next) => {
       seasons: seasons,
       occasions: occasions,
       name: body.name || '',
-      image_url: '', // TODO: handle upload and store image
       user: userId, // TODO: perhaps use the validated id
     });
 

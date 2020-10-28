@@ -33,7 +33,6 @@ const clothesSchema = mongoose.Schema({
   },
 
   // set by backend
-  image_url: String,
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
