@@ -39,13 +39,19 @@ const getClothing = async (req, res, next) => {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
+  let savedClothing;
   try {
-    const savedClothing = await Clothes.findById(clothingId);
-    res.status(200).json(savedClothing);
+    savedClothing = await Clothes.findById(clothingId);
+
+    if (!savedClothing) {
+      return res.status(404).json({ message: 'Not found' });
+    }
   } catch (exception) {
     LOG.error(exception);
     next(new HttpError('Failed getting clothing', 500));
   }
+
+  res.status(200).json(savedClothing);
 };
 
 /**
@@ -96,7 +102,7 @@ const postClothing = async (req, res, next) => {
     });
 
     const savedClothes = await clothes.save();
-    user.clothes = user.clothes.concat(savedClothes.id);
+    await user.clothes.push(savedClothes.id);
     await user.save();
     res.status(201).json(savedClothes);
   } catch (exception) {
@@ -123,15 +129,20 @@ const deleteClothing = async (req, res, next) => {
       _id: clothingId,
       user: userId,
     });
+
     if (!deletedClothing) {
-      next(new HttpError('Not found or already deleted', 400));
-    } else {
-      res.status(200).json({ message: 'Deleted clothing' }).end();
+      next(new HttpError('Not found or already deleted', 404));
     }
+
+    const user = await User.findById(userId);
+    await user.clothes.remove(clothingId);
+    await user.save();
   } catch (exception) {
     LOG.error(exception);
     next(new HttpError('Failed deleting clothing', 500));
   }
+
+  res.status(200).json({ message: 'Deleted clothing' }).end();
 };
 
 /**
