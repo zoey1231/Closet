@@ -39,6 +39,12 @@ jobs:
         with:
           node-version: "14.x"
 
+      - uses: mattallty/jest-github-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          working-directory: ${{ env.working-directory }}
+
       - name: setup env
         working-directory: ${{ env.working-directory }}
         run: cp .env.sample .env
