@@ -7,7 +7,8 @@
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "docker": "cross-env NODE_ENV=docker node index.js",
-    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage"
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage",
+    "testCoverage": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage --json --outputFile=jest.results.json"
   },
   "author": "",
   "license": "ISC",

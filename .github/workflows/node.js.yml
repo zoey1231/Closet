@@ -43,6 +43,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          test-command: "npm run testCoverage"
+          changes-only: true
           working-directory: ${{ env.working-directory }}
 
       - name: setup env
