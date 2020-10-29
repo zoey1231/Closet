@@ -1,10 +1,10 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+name: Backend CD
 
 on:
-  pull_request:
+  push:
     branches: [master]
     paths:
       - "backend/**"
@@ -43,14 +43,28 @@ jobs:
         working-directory: ${{ env.working-directory }}
         run: npm ci
 
-      - name: npm run testCoverage
+      - name: npm test
         working-directory: ${{ env.working-directory }}
-        run: npm run testCoverage
+        run: npm test
 
-      - uses: mattallty/jest-github-action@v1.0.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: remote ssh commands
+        uses: appleboy/ssh-action@master
         with:
-          test-command: "npm run testCoverage"
-          changes-only: true
-          working-directory: ${{ env.working-directory }}
+          host: "closet-cpen321.westus.cloudapp.azure.com"
+          username: "closet"
+          password: "CLOSETCPEN321!"
+          port: 22
+          script_stop: true
+          script: |
+            cd /home/closet/closet/backend
+            git fetch --all
+            git reset --hard origin/master
+            npm ci
+            echo "🚀--- Deployment time: $(TZ='America/Vancouver' date) ---🚀"
+            sudo systemctl restart closet-backend
+            sleep 1
+            sudo systemctl status closet-backend
