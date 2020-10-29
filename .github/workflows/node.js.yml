@@ -39,6 +39,13 @@ jobs:
         with:
           node-version: "14.x"
 
+      - name: Jest Annotations & Coverage
+      - uses: mattallty/jest-github-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          working-directory: ${{ env.working-directory }}
+
       - name: setup env
         working-directory: ${{ env.working-directory }}
         run: cp .env.sample .env
@@ -50,10 +57,3 @@ jobs:
       - name: npm test
         working-directory: ${{ env.working-directory }}
         run: npm test
-
-      - name: Jest Annotations & Coverage
-      - uses: mattallty/jest-github-action@v1.0.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          working-directory: ${{ env.working-directory }}
