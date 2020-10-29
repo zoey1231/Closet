@@ -3,6 +3,8 @@ name: Android CI
 on:
   push:
     branches: [master]
+    paths:
+      - "frontend/**"
   pull_request:
     branches: [master]
     paths:
@@ -37,4 +39,4 @@ jobs:
     
     - name: Build with Gradle
       working-directory: ${{ env.working-directory }}
-      run: ./gradlew build
+      run: ./gradlew test
