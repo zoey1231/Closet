@@ -39,14 +39,6 @@ jobs:
         with:
           node-version: "14.x"
 
-      - uses: mattallty/jest-github-action@v1.0.3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          test-command: "npm run testCoverage"
-          changes-only: true
-          working-directory: ${{ env.working-directory }}
-
       - name: setup env
         working-directory: ${{ env.working-directory }}
         run: cp .env.sample .env
@@ -55,6 +47,14 @@ jobs:
         working-directory: ${{ env.working-directory }}
         run: npm install
 
-      - name: npm test
+      - name: npm run testCoverage
         working-directory: ${{ env.working-directory }}
-        run: npm test
+        run: npm run testCoverage
+
+      - uses: mattallty/jest-github-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          test-command: "npm run testCoverage"
+          changes-only: true
+          working-directory: ${{ env.working-directory }}
