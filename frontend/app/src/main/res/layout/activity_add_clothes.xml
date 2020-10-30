@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/title_add"
+        android:layout_width="201dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="16dp"
+        android:text="Add Clothes"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/image_add"
+        android:layout_width="411dp"
+        android:layout_height="225dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.158"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <TextView
+        android:id="@+id/text_add"
+        android:layout_width="165dp"
+        android:layout_height="18dp"
+        android:text="Click here to select image"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/image_add"
+        app:layout_constraintEnd_toEndOf="@+id/image_add"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/image_add"
+        app:layout_constraintTop_toBottomOf="@+id/title_add"
+        app:layout_constraintVertical_bias="0.075" />
+
+    <ImageButton
+        android:id="@+id/button_add_image"
+        android:layout_width="139dp"
+        android:layout_height="127dp"
+        app:layout_constraintBottom_toBottomOf="@+id/image_add"
+        app:layout_constraintEnd_toEndOf="@+id/image_add"
+        app:layout_constraintStart_toStartOf="@+id/image_add"
+        app:layout_constraintTop_toBottomOf="@+id/title_add"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
