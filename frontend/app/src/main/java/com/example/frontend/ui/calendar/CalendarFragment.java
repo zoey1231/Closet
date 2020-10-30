@@ -8,15 +8,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.frontend.CalendarAdapter;
 import com.example.frontend.Event;
 import com.example.frontend.EventDecorator;
 import com.example.frontend.R;
+import com.example.frontend.ui.clothes.ClothesViewModel;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
@@ -28,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,6 +44,7 @@ import static android.content.ContentValues.TAG;
 
 public class CalendarFragment extends Fragment implements OnDateSelectedListener {
 
+    private CalendarViewModel calendarViewModel;
     private MaterialCalendarView calendarView;
     private HashMap<CalendarDay, List<Event>> map = new HashMap<>();
     private ListView listView;
@@ -50,17 +55,20 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_calendar, container, false);
-//
-        listView = view.findViewById(R.id.listView);
+        calendarViewModel =
+                ViewModelProviders.of(this).get(CalendarViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_calendar, container, false);
+
+        listView = root.findViewById(R.id.listView);
 
         adapter = new CalendarAdapter(getActivity(), eventList);
         listView.setAdapter(adapter);
 
 
-        calendarView = view.findViewById(R.id.calendarView);
+        calendarView = root.findViewById(R.id.calendarView);
         calendarView.setDateTextAppearance(View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
 
         calendarView.setSelectedDate(LocalDate.now());
@@ -69,51 +77,11 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
         makeJsonObjectRequest();
 
-        Log.d(TAG,"Trying to add events on calendar...");
-
-        LocalDate date1 = LocalDate.now();
-        LocalDate date2 = LocalDate.of(2020,10,28);
-
-        List<Event> eList = new ArrayList<>();
-        Event event1 = new Event(date1, "test1");
-        Event event2 = new Event(date2, "test3");
-        Event event3 = new Event(date2, "test3");
-        eList.add(event1);
-        eList.add(event2);
-        eList.add(event3);
-
-        for (Event event: eList) {
-            LocalDate day = event.getDate();
-            if(!map.containsKey(day))
-            {
-                List<Event> events = new ArrayList<>();
-                for (Event e: eList) {
-                    if (e.getDate().equals(day)) {
-                        events.add(event);
-                    }
-                }
-                map.put(CalendarDay.from(day),events);
-            }else {
-                List<Event> events = map.get(day);
-                events.add(event);
-                map.put(CalendarDay.from(day),events);
-            }
-        }
-
-        List<Event> events =  map.get(CalendarDay.from(LocalDate.now()));
-        if(!events.isEmpty()) {
-            adapter.addItems(events);
-        }else {
-            adapter.clear();
-        }
-
-        Log.d(TAG,"Finished adding events");
-
         //add small dots on event days
         EventDecorator eventDecorator = new EventDecorator(Color.RED, map.keySet());
         calendarView.addDecorator(eventDecorator);
 
-        return view;
+        return root;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
