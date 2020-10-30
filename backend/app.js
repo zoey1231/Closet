@@ -52,6 +52,11 @@ morgan.token('id', function getId(req) {
 morgan.token('body', function getBody(req) {
   return JSON.stringify(req.body);
 });
+morgan.token('date', function () {
+  return new Date().toLocaleString('en-CA', {
+    timeZone: 'America/Vancouver',
+  });
+});
 app.use((req, res, next) => {
   req._id = uuid.v4();
   next();
@@ -68,7 +73,7 @@ if (process.env.NODE_ENV !== 'test') {
   );
   app.use(
     morgan(
-      '<-- [:date[web]] :id status::status response-time::response-time[digits] content-length::res[content-length]',
+      '<-- [:date[web]] :id status::status response-time::response-time[digits]ms content-length::res[content-length]',
       {
         immediate: false,
       }
