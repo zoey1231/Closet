@@ -22,7 +22,7 @@ const getClothes = async (req, res, next) => {
     const savedClothes = await Clothes.find({ user: userId });
     res.status(200).json(savedClothes);
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(req._id, exception.message);
     next(new HttpError('Failed getting clothes', 500));
   }
 };
@@ -47,7 +47,7 @@ const getClothing = async (req, res, next) => {
       return res.status(404).json({ message: 'Not found' });
     }
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(req._id, exception.message);
     next(new HttpError('Failed getting clothing', 500));
   }
 
@@ -106,7 +106,7 @@ const postClothing = async (req, res, next) => {
     await user.save();
     res.status(201).json(savedClothes);
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(req._id, exception.message);
     next(new HttpError('Failed adding clothing', 500));
   }
 };
@@ -138,7 +138,7 @@ const deleteClothing = async (req, res, next) => {
     await user.clothes.remove(clothingId);
     await user.save();
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(req._id, exception.message);
     next(new HttpError('Failed deleting clothing', 500));
   }
 
@@ -217,7 +217,7 @@ const updateClothing = async (req, res, next) => {
 
     res.status(200).json(savedClothes);
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(req._id, exception.message);
     if (exception.name === 'AssertionError') {
       next(new HttpError('Error updating clothes', 500));
     }

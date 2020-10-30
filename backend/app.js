@@ -8,7 +8,9 @@ const cors = require('cors');
 
 const express = require('express');
 const app = express();
+
 const morgan = require('morgan');
+const uuid = require('node-uuid');
 
 const mongoose = require('mongoose');
 
@@ -36,12 +38,43 @@ mongoose
   .catch(error => {
     LOG.error('❌error connecting to MongoDB:', error.message);
   });
+mongoose.set('useCreateIndex', true);
 
 // app setting
 app.use(cors());
 app.use(express.json());
-app.use(morgan('tiny'));
 app.use(express.static(__dirname + '/static'));
+
+// morgan logging
+morgan.token('id', function getId(req) {
+  return req._id;
+});
+morgan.token('body', function getBody(req) {
+  return JSON.stringify(req.body);
+});
+app.use((req, res, next) => {
+  req._id = uuid.v4();
+  next();
+});
+
+if (process.env.NODE_ENV !== 'test') {
+  app.use(
+    morgan(
+      '--> [:date[web]] :id :remote-addr :remote-user :method :url :body content-length::req[content-length]',
+      {
+        immediate: true,
+      }
+    )
+  );
+  app.use(
+    morgan(
+      '<-- [:date[web]] :id status::status response-time::response-time[digits] content-length::res[content-length]',
+      {
+        immediate: false,
+      }
+    )
+  );
+}
 
 // api
 app.get('/version', (req, res) => {

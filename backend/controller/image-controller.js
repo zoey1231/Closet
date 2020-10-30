@@ -70,6 +70,7 @@ const postImage = async (req, res, next) => {
       return next(new HttpError('Error moving image', 500));
     }
   } catch (exception) {
+    LOG.error(req._id, exception.message);
     return next(new HttpError('Failed uploading image', 500));
   }
 
@@ -96,6 +97,7 @@ const deleteImage = async (req, res, next) => {
 
     fs.unlinkSync(targetPath);
   } catch (exception) {
+    LOG.error(req._id, exception.message);
     return next(new HttpError('Failed to get image', 500));
   }
 
