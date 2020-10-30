@@ -21,6 +21,7 @@ const outfitsRoutes = require('./routes/outfits-routes');
 const imageRoutes = require('./routes/image-routes');
 const notificationRoutes = require('./routes/notifications-routes');
 const weatherRoutes = require('./routes/weather-routes');
+const calendarRoutes = require('./routes/calendar-routes');
 
 // connect to db
 LOG.info('⌛connecting to', config.MONGODB_URI);
@@ -79,6 +80,7 @@ app.use('/api/outfits', outfitsRoutes);
 app.use('/api/images', imageRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/weather', weatherRoutes);
+app.use('/api/calendar', calendarRoutes);
 
 app.use((req, res, next) => {
   return next(new HttpError('Could not find this route', 404));
