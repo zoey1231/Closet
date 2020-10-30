@@ -1,6 +1,5 @@
 const config = require('../utils/config');
 const mongoose = require('mongoose');
-// const server = require('../index');
 const supertest = require('supertest');
 const http = require('http');
 
@@ -25,8 +24,8 @@ describe('signup and login', () => {
 
     expect(res.statusCode).toEqual(201);
     expect(res.body.email).toEqual(newUser.email.toLowerCase());
-    expect(res.body.id);
-    expect(res.body.token);
+    expect(res.body.userId).toBeTruthy();
+    expect(res.body.token).toBeTruthy();
   });
 
   it('sign up 422 for existing user', async () => {
@@ -53,9 +52,9 @@ describe('signup and login', () => {
     const res = await api.post('/api/users/login').send(loginInfo);
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body.userId);
+    expect(res.body.userId).toBeTruthy();
     expect(res.body.email).toEqual(loginInfo.email);
-    expect(res.body.token);
+    expect(res.body.token).toBeTruthy();
   });
 
   it('login 401 invalid user password or no user', async () => {

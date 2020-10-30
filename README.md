@@ -1,4 +1,6 @@
-![](https://github.com/JohnLi1999/closet/workflows/Node.js%20CI/badge.svg)
+![Backend CD](https://github.com/JohnLi1999/closet/workflows/Backend%20CD/badge.svg)
+![Node.js CI](https://github.com/JohnLi1999/closet/workflows/Node.js%20CI/badge.svg)
+![Android CI](https://github.com/JohnLi1999/closet/workflows/Android%20CI/badge.svg)
 
 # Azure Server
 - VM Name: `closet`

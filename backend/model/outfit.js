@@ -3,20 +3,23 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const Schema = mongoose.Schema;
 
-const outfitSchema = new Schema({
-  // set by backend
-  _id: Number, // we wil be setting _id manually --- hashing so that we do not create duplicate outfits
-  clothes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Clothes',
+const outfitSchema = new Schema(
+  {
+    // set by backend
+    _id: Number, // we wil be setting _id manually --- hashing so that we do not create duplicate outfits
+    clothes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Clothes',
+      },
+    ],
+    created: {
+      type: Date,
+      default: Date.now,
     },
-  ],
-  created: {
-    type: Date,
-    default: Date.now,
   },
-});
+  { versionKey: false }
+);
 
 outfitSchema.plugin(uniqueValidator);
 
