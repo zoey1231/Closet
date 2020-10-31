@@ -18,13 +18,25 @@ const getClothes = async (req, res, next) => {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
+  let savedClothes;
   try {
-    const savedClothes = await Clothes.find({ user: userId });
-    res.status(200).json({ clothes: savedClothes });
+    savedClothes = req.query.category
+      ? await Clothes.find({ user: userId, category: req.query.category })
+      : await Clothes.find({ user: userId });
+
+    if (
+      !savedClothes ||
+      savedClothes.length === 0 ||
+      !Array.isArray(savedClothes)
+    ) {
+      return res.status(404).json({ message: 'Not found' });
+    }
   } catch (exception) {
     LOG.error(req._id, exception.message);
     next(new HttpError('Failed getting clothes', 500));
   }
+
+  res.status(200).json({ clothes: savedClothes });
 };
 
 /**
