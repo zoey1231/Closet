@@ -35,7 +35,7 @@ describe('clothes', () => {
     userId = res.body.userId;
   });
 
-  const oneClothing = {
+  const clothingOne = {
     category: 't-shirt',
     color: 'blue',
     seasons: ['Summer', 'Fall'],
@@ -47,19 +47,36 @@ describe('clothes', () => {
     const res = await api
       .post(`/api/clothes/${userId}`)
       .set('Authorization', `Bear ${token}`)
-      .send(oneClothing);
+      .send(clothingOne);
 
     expect(res.statusCode).toEqual(201);
 
-    expect(res.body.seasons).toEqual(oneClothing.seasons);
-    expect(res.body.occasions).toEqual(oneClothing.occasions);
-    expect(res.body.color).toEqual(oneClothing.color);
-    expect(res.body.category).toEqual(oneClothing.category);
+    expect(res.body.seasons).toEqual(clothingOne.seasons);
+    expect(res.body.occasions).toEqual(clothingOne.occasions);
+    expect(res.body.color).toEqual(clothingOne.color);
+    expect(res.body.category).toEqual(clothingOne.category);
 
     expect(res.body.user).toBeTruthy();
     expect(res.body.id).toBeTruthy();
 
     oneClothingId = res.body.id;
+  });
+
+  it('200 get all clothes should return one clothing for now', async () => {
+    const res = await api
+      .get(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`);
+
+    expect(res.statusCode).toEqual(200);
+
+    let resClothes = res.body.clothes;
+    expect(Array.isArray(res.body.clothes));
+    expect(resClothes.length).toEqual(1);
+
+    expect(resClothes[0].seasons).toEqual(clothingOne.seasons);
+    expect(resClothes[0].occasions).toEqual(clothingOne.occasions);
+    expect(resClothes[0].color).toEqual(clothingOne.color);
+    expect(resClothes[0].category).toEqual(clothingOne.category);
   });
 
   it('200 get one clothing', async () => {
@@ -69,10 +86,10 @@ describe('clothes', () => {
 
     expect(res.statusCode).toEqual(200);
 
-    expect(res.body.seasons).toEqual(oneClothing.seasons);
-    expect(res.body.occasions).toEqual(oneClothing.occasions);
-    expect(res.body.color).toEqual(oneClothing.color);
-    expect(res.body.category).toEqual(oneClothing.category);
+    expect(res.body.seasons).toEqual(clothingOne.seasons);
+    expect(res.body.occasions).toEqual(clothingOne.occasions);
+    expect(res.body.color).toEqual(clothingOne.color);
+    expect(res.body.category).toEqual(clothingOne.category);
 
     expect(res.body.user).toBeTruthy();
     expect(res.body.id).toBeTruthy();
@@ -90,6 +107,90 @@ describe('clothes', () => {
   it('404 deleted clothing should not be get', async () => {
     const res = await api
       .get(`/api/clothes/${userId}/${oneClothingId}`)
+      .set('Authorization', `Bear ${token}`);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body.message).toEqual('Not found');
+  });
+
+  it('404 delete all clothes should not be found', async () => {
+    const res = await api
+      .get(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.statusCode).toEqual(404);
+    expect(res.body.message).toEqual('Not found');
+  });
+
+  const clothingTwo = {
+    category: 'jacket',
+    color: 'yellow',
+    seasons: ['All'],
+    occasions: ['work'],
+  };
+
+  it('200 posted multiple clothes should get all clothes', async () => {
+    await api
+      .post(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`)
+      .send(clothingOne);
+
+    await api
+      .post(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`)
+      .send(clothingOne);
+
+    await api
+      .post(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`)
+      .send(clothingTwo);
+
+    const res = await api
+      .get(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`);
+
+    expect(res.statusCode).toEqual(200);
+
+    const resClothes = res.body.clothes;
+    expect(Array.isArray(resClothes));
+    expect(resClothes.length).toEqual(3);
+
+    for (let i = 0; i < 2; i++) {
+      expect(resClothes[i].seasons).toEqual(clothingOne.seasons);
+      expect(resClothes[i].occasions).toEqual(clothingOne.occasions);
+      expect(resClothes[i].color).toEqual(clothingOne.color);
+      expect(resClothes[i].category).toEqual(clothingOne.category);
+    }
+
+    expect(resClothes[2].seasons).toEqual(clothingTwo.seasons);
+    expect(resClothes[2].occasions).toEqual(clothingTwo.occasions);
+    expect(resClothes[2].color).toEqual(clothingTwo.color);
+    expect(resClothes[2].category).toEqual(clothingTwo.category);
+  });
+
+  it('200 get clothes by category', async () => {
+    const res = await api
+      .get(`/api/clothes/${userId}?category=${clothingOne.category}`)
+      .set('Authorization', `Bear ${token}`);
+
+    expect(res.statusCode).toEqual(200);
+
+    const resClothes = res.body.clothes;
+    expect(Array.isArray(resClothes));
+    expect(resClothes.length).toEqual(2);
+
+    for (let i = 0; i < 2; i++) {
+      expect(resClothes[i].seasons).toEqual(clothingOne.seasons);
+      expect(resClothes[i].occasions).toEqual(clothingOne.occasions);
+      expect(resClothes[i].color).toEqual(clothingOne.color);
+      expect(resClothes[i].category).toEqual(clothingOne.category);
+    }
+  });
+
+  it('404 get clothes by category not found', async () => {
+    const res = await api
+      .get(`/api/clothes/${userId}?category=NOT_FOUND`)
       .set('Authorization', `Bear ${token}`);
 
     expect(res.statusCode).toEqual(404);
