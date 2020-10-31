@@ -40,7 +40,7 @@
         app:layout_constraintVertical_bias="0.075" />
 
     <ImageButton
-        android:id="@+id/button_add_image"
+        android:id="@+id/button_image_add"
         android:layout_width="139dp"
         android:layout_height="127dp"
         app:layout_constraintBottom_toBottomOf="@+id/image_add"
@@ -48,5 +48,15 @@
         app:layout_constraintStart_toStartOf="@+id/image_add"
         app:layout_constraintTop_toBottomOf="@+id/title_add"
         app:srcCompat="@android:drawable/ic_input_add" />
+
+    <Button
+        android:id="@+id/button_save_add"
+        android:layout_width="128dp"
+        android:layout_height="43dp"
+        android:layout_marginBottom="24dp"
+        android:text="Save Clothes"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

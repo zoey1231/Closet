@@ -23,6 +23,7 @@ import java.io.InputStream;
 public class AddClothesActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView image;
     private ImageButton buttonImage;
+    private Button buttonSave;
     private TextView textAdd;
     private static final int IMAGE = 1;
 
@@ -32,23 +33,28 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_add_clothes);
 
         image = findViewById(R.id.image_add);
-        buttonImage = findViewById(R.id.button_add_image);
+        buttonImage = findViewById(R.id.button_image_add);
+        buttonSave = findViewById(R.id.button_save_add);
         textAdd = findViewById(R.id.text_add);
 
         buttonImage.setOnClickListener(this);
+        buttonSave.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.button_add_image:
+            case R.id.button_image_add:
                 buttonImage.setVisibility(View.GONE);
                 textAdd.setVisibility(View.GONE);
                 Intent intentImage = new Intent(Intent.ACTION_PICK);
                 intentImage.setType("image/*");
                 startActivityForResult(intentImage, IMAGE);
                 break;
-
+            case R.id.button_save_add:
+                Intent intentSave = new Intent(AddClothesActivity.this, ClothesFragment.class);
+                startActivity(intentSave);
+                break;
         }
     }
 
