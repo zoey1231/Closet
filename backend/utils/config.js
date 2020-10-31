@@ -1,7 +1,9 @@
 require('dotenv').config();
 const { version } = require('../package.json');
 
-console.log(`
+const LOG = require('./logger');
+
+LOG.info(`
  ::::::::  :::         ::::::::   ::::::::  :::::::::: ::::::::::: 
 :+:    :+: :+:        :+:    :+: :+:    :+: :+:            :+:     
 +:+        +:+        +:+    +:+ +:+        +:+            +:+     
@@ -10,9 +12,12 @@ console.log(`
 #+#    #+# #+#        #+#    #+# #+#    #+# #+#            #+#     
  ########  ##########  ########   ########  ##########     ###     `);
 
-console.log(
-  `===== environment:${process.env.NODE_ENV} version:${version} =====\n`
+LOG.info(
+  `🚀server startup time: ${new Date().toLocaleString(undefined, {
+    timeZone: 'America/Vancouver',
+  })}`
 );
+LOG.info(`🌲environment:${process.env.NODE_ENV} version:${version}`);
 
 let PORT = process.env.PORT;
 let MONGODB_URI = process.env.MONGODB_URI;
@@ -31,8 +36,8 @@ if (process.env.NODE_ENV === 'docker') {
   MONGODB_URI = process.env.DOCKER_MONGODB_URI;
 }
 
-console.log('#️⃣PORT:', PORT);
-console.log('#️⃣MONGODB_URI:', MONGODB_URI);
+LOG.info('🔢PORT:', PORT);
+LOG.info('🔢MONGODB_URI:', MONGODB_URI);
 
 module.exports = {
   PORT,

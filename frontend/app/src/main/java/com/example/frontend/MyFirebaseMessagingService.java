@@ -25,7 +25,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -131,7 +130,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             postData.put("message", message);
 
             Log.d(TAG,"prepared to send firebase token to server with token: "+token);
-            sendDataToServer(postData,userToken,"http://closet.westus.cloudapp.azure.com/api/notifications/");
+            sendDataToServer(postData,userToken,"http://closet-cpen321.westus.cloudapp.azure.com/api/notifications/");
 
         } catch (JSONException e) {
             e.printStackTrace();

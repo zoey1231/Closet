@@ -1,13 +1,14 @@
 {
   "name": "closet-backend",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "docker": "cross-env NODE_ENV=docker node index.js",
-    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles"
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage",
+    "testCoverage": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage --json --outputFile=jest.results.json"
   },
   "author": "",
   "license": "ISC",
@@ -20,11 +21,13 @@
     "express": "^4.17.1",
     "express-validator": "^6.6.1",
     "firebase-admin": "^9.3.0",
+    "googleapis": "^39.2.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.9",
     "mongoose-unique-validator": "^2.0.3",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
+    "node-uuid": "^1.4.8",
     "redis": "^3.0.2"
   },
   "devDependencies": {

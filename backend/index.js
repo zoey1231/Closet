@@ -1,18 +1,19 @@
 const http = require('http');
 const app = require('./app');
 const config = require('./utils/config');
-const logger = require('./utils/logger');
+
+const LOG = require('./utils/logger');
 
 const server = http.createServer(app);
 
 server.listen(config.PORT, () => {
-  logger.info(`🌐Server running on port ${config.PORT}`);
+  LOG.info(`🌐Server running on port ${config.PORT}`);
 });
 
 process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
+  LOG.info('SIGTERM signal received: closing HTTP server');
   server.close(() => {
-    console.log('HTTP server closed');
+    LOG.info('HTTP server closed');
   });
 });
 

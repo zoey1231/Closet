@@ -4,6 +4,8 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const LOG = require('../utils/logger');
+
 const HttpError = require('../model/http-error');
 const User = require('../model/user');
 
@@ -20,6 +22,7 @@ const signup = async (req, res, next) => {
   try {
     hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT));
   } catch (err) {
+    LOG.error(req._id, err.message);
     return next(new HttpError('Could not create user, please try again', 500));
   }
 
@@ -33,6 +36,7 @@ const signup = async (req, res, next) => {
   try {
     await createdUser.save();
   } catch (err) {
+    LOG.error(req._id, err.message);
     return next(
       new HttpError('User exists already, please login instead', 422)
     );
@@ -61,6 +65,7 @@ const login = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
+    LOG.error(req._id, err.message);
     return next(
       new HttpError('Logging in failed, please try again later', 500)
     );
@@ -76,6 +81,7 @@ const login = async (req, res, next) => {
   try {
     isValidPassword = await bcrypt.compare(password, existingUser.password);
   } catch (err) {
+    LOG.error(req._id, err.message);
     return next(
       new HttpError(
         'Could not log you in, please check your credentials and try again',
@@ -113,6 +119,7 @@ const getUsers = async (req, res, next) => {
   try {
     users = await User.find({}, '-password');
   } catch (err) {
+    LOG.error(req._id, err.message);
     return next(
       new HttpError('Fetching users failed, please try again later', 500)
     );

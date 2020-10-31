@@ -4,10 +4,6 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [master]
-    paths:
-      - "backend/**"
   pull_request:
     branches: [master]
     paths:
@@ -43,10 +39,18 @@ jobs:
         working-directory: ${{ env.working-directory }}
         run: cp .env.sample .env
 
-      - name: npm install
+      - name: npm ci
         working-directory: ${{ env.working-directory }}
-        run: npm install
+        run: npm ci
 
-      - name: npm test
+      - name: npm run testCoverage
         working-directory: ${{ env.working-directory }}
-        run: npm test
+        run: npm run testCoverage
+
+      - uses: mattallty/jest-github-action@v1.0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          test-command: "npm run testCoverage"
+          changes-only: true
+          working-directory: ${{ env.working-directory }}

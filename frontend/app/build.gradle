@@ -1,15 +1,25 @@
+ext {
+    CALENDAR_CREDENTIALS = 'C:\\Users\\giott\\Documents\\GitHub\\CPEN_321\\closet\\frontend\\app\\src\\main\\res\\credentials.json'
+}
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 29
     buildToolsVersion "30.0.2"
 
+    lintOptions {
+        checkReleaseBuilds false
+    }
+
     defaultConfig {
         applicationId "com.example.frontend"
+        minSdkVersion 15
+        targetSdkVersion 30
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -19,6 +29,16 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    configurations {
+        all*.exclude module: 'jsr305'
+        all*.exclude group: 'commons-codec', module: 'commons-codec'
+        all*.exclude group: 'commons-logging', module: 'commons-logging'
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
     }
 }
 
@@ -31,10 +51,21 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.1'
     implementation 'androidx.navigation:navigation-ui:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    testImplementation 'junit:junit:4.13.1'
+    implementation 'androidx.navigation:navigation-fragment:2.3.1'
+    implementation 'androidx.navigation:navigation-ui:2.3.1'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    // Calendar API
+//    implementation 'com.google.android.gms:play-services:12.0.1'
+//    compile 'com.google.auth:google-auth-library-oauth2-http:0.22.0'
+//    compile 'com.google.apis:google-api-services-com.example.frontend.ui.calendar:v3-rev20200917-1.30.10'
 
     //Google API services
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -44,14 +75,20 @@ dependencies {
     implementation('com.google.api-client:google-api-client-android:1.30.11') {
         exclude group: 'org.apache.httpcomponents'
     }
-    implementation('com.google.apis:google-api-services-calendar:v3-rev99-1.19.0') {
-        exclude group: 'org.apache.httpcomponents'
-    }
-    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+//    implementation('com.google.apis:google-api-services-com.example.frontend.ui.calendar:v3-rev99-1.19.0') {
+//        exclude group: 'org.apache.httpcomponents'
+//    }
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
     //firebase
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-messaging:20.3.0'
 
-    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    implementation 'com.github.prolificinteractive:material-calendarview:2.0.0'
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.2.1'
+
+
 }
+

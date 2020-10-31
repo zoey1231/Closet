@@ -10,7 +10,7 @@ const getWeather = async (req, res, next) => {
   try {
     response = await getWeatherInfo(place);
   } catch (err) {
-    LOG.error(err);
+    LOG.error(req._id, err.message);
     return next(
       new HttpError(
         'Could not get weather information, please try again later',

@@ -121,3 +121,7 @@ dist
 # image folders
 TempUserClothingImages
 UserClothingImages
+static/UserClothingImages
+static/**
+
+jest.results.json
