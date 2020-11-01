@@ -35,7 +35,7 @@ import okhttp3.Response;
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private String userToken;
     private HomeViewModel homeViewModel;
-    private String TAG = String.valueOf(getContext());
+    private String TAG = "HomeFragment";
     private String icon_today,icon_tmr;
     private String monthDesc_today,dayDesc_today,date_today;
     private String monthDesc_tmr,dayDesc_tmr,date_tmr;
@@ -94,72 +94,79 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
-                Log.d(TAG,"Fail to send request to server");
+                Log.d(TAG,"Fail to send weather request to server");
                 Log.d(TAG, String.valueOf(e));
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                JSONObject today,tomorrow, time_today, time_tmr,temp_today,temp_tmr;
-                JSONArray weather_today,weather_tmr;
                 String responseStr = response.body().string();
-
                 if (response.isSuccessful()) {
-
                     Log.d(TAG,"weather request is successful"+responseStr);
                     JSONObject responseJson = null;
                     try {
-                        //retrieve weather data from OpenWeather's response
+                        //retrieve weather data from OpenWeather's response and display on UI
                         responseJson = new JSONObject(responseStr);
-                        today = responseJson.getJSONObject("today");
-                        tomorrow = responseJson.getJSONObject("tomorrow");
-                        weather_today = today.getJSONArray("weather");
-                        weather_tmr = tomorrow.getJSONArray("weather");
-                        for(int i = 0; i < weather_today.length();i++){
-                            icon_today =weather_today.getJSONObject(i).getString("icon");
-                            icon_tmr =weather_tmr.getJSONObject(i).getString("icon");
-                        }
-                        temp_today = today.getJSONObject("temp");
-                        temp_min_today = temp_today.getString("min");
-                        temp_max_today = temp_today.getString("max");
-                        temp_tmr = tomorrow.getJSONObject("temp");
-                        temp_min_tmr = temp_tmr.getString("min");
-                        temp_max_tmr = temp_tmr.getString("max");
-
-                        //retrieve time data from OpenWeather's response
-                        time_today = today.getJSONObject("time");
-                        time_tmr = tomorrow.getJSONObject("time");
-                        monthDesc_today = time_today.getJSONObject("month").getString("monthDesc");
-                        dayDesc_today = time_today.getJSONObject("day").getString("dayDesc");
-                        date_today = time_today.getString("date");
-                        monthDesc_tmr = time_tmr.getJSONObject("month").getString("monthDesc");
-                        dayDesc_tmr = time_tmr.getJSONObject("day").getString("dayDesc");
-                        date_tmr = time_tmr.getString("date");
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                //update weather and time data on the UI
-                                tv_date_today.setText(monthDesc_today+" "+date_today+" ("+dayDesc_today+")");
-                                tv_temp_today.setText("Max "+temp_max_today+"°C "+"Min "+temp_min_today+"°C");
-                                tv_date_tmr.setText(monthDesc_tmr+" "+date_tmr +" ("+dayDesc_tmr+")");
-                                tv_temp_tmr.setText("Max "+temp_max_tmr+"°C "+"Min "+temp_min_tmr+"°C");
-                                Picasso.get().load("http://openweathermap.org/img/wn/"+icon_today+"@2x.png").resize(50, 50).centerCrop().into(iv_icon_today);
-                                Picasso.get().load("http://openweathermap.org/img/wn/"+icon_tmr+"@2x.png").resize(50, 50).centerCrop().into(iv_icon_tmr);
-                            }
-                        });
-
-
+                        extractResponseData(responseJson);
+                        updateWeatherOnUI();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 } else {
                     // Request not successful
                     Log.d(TAG,"weather request is unsuccessful"+responseStr);
                 }
             }
         });
+    }
+
+    private void updateWeatherOnUI() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //update weather and time data on the UI
+                tv_date_today.setText(monthDesc_today+" "+date_today+" ("+dayDesc_today+")");
+                tv_temp_today.setText("Max "+temp_max_today+"°C "+"Min "+temp_min_today+"°C");
+                tv_date_tmr.setText(monthDesc_tmr+" "+date_tmr +" ("+dayDesc_tmr+")");
+                tv_temp_tmr.setText("Max "+temp_max_tmr+"°C "+"Min "+temp_min_tmr+"°C");
+                Picasso.get().load("http://openweathermap.org/img/wn/"+icon_today+"@2x.png").resize(50, 50).centerCrop().into(iv_icon_today);
+                Picasso.get().load("http://openweathermap.org/img/wn/"+icon_tmr+"@2x.png").resize(50, 50).centerCrop().into(iv_icon_tmr);
+            }
+        });
+    }
+
+    private void extractResponseData(JSONObject responseJson) {
+        JSONObject today,tomorrow, time_today, time_tmr,temp_today,temp_tmr;
+        JSONArray weather_today,weather_tmr;
+        try {
+            today = responseJson.getJSONObject("today");
+            tomorrow = responseJson.getJSONObject("tomorrow");
+            weather_today = today.getJSONArray("weather");
+            weather_tmr = tomorrow.getJSONArray("weather");
+            for(int i = 0; i < weather_today.length();i++){
+                icon_today =weather_today.getJSONObject(i).getString("icon");
+                icon_tmr =weather_tmr.getJSONObject(i).getString("icon");
+            }
+            temp_today = today.getJSONObject("temp");
+            temp_min_today = temp_today.getString("min");
+            temp_max_today = temp_today.getString("max");
+            temp_tmr = tomorrow.getJSONObject("temp");
+            temp_min_tmr = temp_tmr.getString("min");
+            temp_max_tmr = temp_tmr.getString("max");
+
+            //retrieve time data from OpenWeather's response
+            time_today = today.getJSONObject("time");
+            time_tmr = tomorrow.getJSONObject("time");
+            monthDesc_today = time_today.getJSONObject("month").getString("monthDesc");
+            dayDesc_today = time_today.getJSONObject("day").getString("dayDesc");
+            date_today = time_today.getString("date");
+            monthDesc_tmr = time_tmr.getJSONObject("month").getString("monthDesc");
+            dayDesc_tmr = time_tmr.getJSONObject("day").getString("dayDesc");
+            date_tmr = time_tmr.getString("date");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void getOutfitData(String userToken) {

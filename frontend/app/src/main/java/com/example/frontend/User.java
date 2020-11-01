@@ -24,6 +24,7 @@ public class User implements Parcelable {
     };
 
     public User(String userId, String  userToken, String email) {
+
         this.userId = userId;
         this.userToken = userToken;
         this.email = email;
@@ -55,13 +56,11 @@ public class User implements Parcelable {
     }
 
 
-
     //parcelling part
     protected User(Parcel in) {
         userId = in.readString();
         userToken = in.readString();
         email = in.readString();
-
     }
     @Override
     public int describeContents() {
@@ -72,6 +71,5 @@ public class User implements Parcelable {
         parcel.writeString(userId);
         parcel.writeString(userToken);
         parcel.writeString(email);
-
     }
 }

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +20,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.frontend.AddClothesActivity;
+import com.example.frontend.MainActivity;
 import com.example.frontend.R;
+import com.example.frontend.User;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class ClothesFragment extends Fragment implements View.OnClickListener {
-
+    private static final String TAG ="ClothesFragment" ;
+    private User user;
     private ClothesViewModel clothesViewModel;
     private ImageButton buttonAdd;
     private ImageView image;
@@ -64,7 +68,14 @@ public class ClothesFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.button_add:
+                MainActivity activity = (MainActivity) getActivity();
+                user = activity.getUser();
                 Intent intent = new Intent(ClothesFragment.this.getActivity(), AddClothesActivity.class);
+                intent.putExtra("user", user);
+                Log.d(TAG,"send user to addClothActivity: ");
+                Log.d(TAG,user.getEmail());
+                Log.d(TAG,user.getuserId());
+                Log.d(TAG,user.getUserToken());
                 startActivity(intent);
                 break;
         }

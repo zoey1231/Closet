@@ -163,8 +163,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     }
 
-
-
                 } else {
                     // Request not successful
 
@@ -173,7 +171,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             public void run() {
                                 final Toast toast = makeText(LoginActivity.this,message,Toast.LENGTH_LONG);
                                 toast.show();
-
                             }
                         });
                         startActivity(new Intent(getApplicationContext(),LoginActivity.class));

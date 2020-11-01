@@ -1,63 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".UpdateClothesActivity">
 
     <TextView
-        android:id="@+id/title_add"
-        android:layout_width="201dp"
+        android:id="@+id/title_update"
+        android:layout_width="wrap_content"
         android:layout_height="47dp"
-        android:text="Add Clothes"
+        android:text="Update Clothes"
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.372"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.021" />
+        app:layout_constraintVertical_bias="0.035" />
 
     <ImageView
-        android:id="@+id/image_add"
+        android:id="@+id/image_update"
         android:layout_width="match_parent"
         android:layout_height="225dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_add"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@id/text_update"
+        app:layout_constraintVertical_bias="0.061" />
 
     <TextView
-        android:id="@+id/text_add"
+        android:id="@+id/text_update"
         android:layout_width="165dp"
         android:layout_height="18dp"
-        android:text="Click here to select image"
+        android:layout_marginBottom="236dp"
+        android:text="Click here to update clothes' image"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.097"
+        app:layout_constraintHorizontal_bias="0.211"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_add"
+        app:layout_constraintTop_toBottomOf="@+id/title_update"
         app:layout_constraintVertical_bias="0.03" />
 
     <ImageButton
-        android:id="@+id/button_image_add"
+        android:id="@+id/button_image_update"
         android:layout_width="139dp"
         android:layout_height="127dp"
-        app:layout_constraintBottom_toBottomOf="@+id/image_add"
-        app:layout_constraintEnd_toEndOf="@+id/image_add"
-        app:layout_constraintStart_toStartOf="@+id/image_add"
-        app:layout_constraintTop_toBottomOf="@+id/title_add"
+        android:layout_marginBottom="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/image_update"
+        app:layout_constraintEnd_toEndOf="@+id/image_update"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="@+id/image_update"
+        app:layout_constraintTop_toBottomOf="@+id/title_update"
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <Button
-        android:id="@+id/button_save_add"
+        android:id="@+id/button_save_update"
         android:layout_width="128dp"
         android:layout_height="43dp"
         android:layout_marginBottom="24dp"
-        android:text="Save Clothes"
+        android:text="Save Updates"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -74,7 +77,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_add"
+        app:layout_constraintTop_toBottomOf="@+id/image_update"
         app:layout_constraintVertical_bias="0.0">
 
         <TableRow
