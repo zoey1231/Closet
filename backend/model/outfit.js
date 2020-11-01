@@ -17,6 +17,8 @@ const outfitSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+    tag: { type: String, required: true },
+    opinion: { type: String, required: true, default: 'unknown' },
   },
   { versionKey: false }
 );
