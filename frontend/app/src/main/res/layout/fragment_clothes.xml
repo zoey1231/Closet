@@ -165,15 +165,97 @@
         android:layout_marginEnd="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.388"
+        app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView"
-        app:layout_constraintVertical_bias="0.972">
+        app:layout_constraintVertical_bias="0.0">
 
-        <TableLayout
+        <GridLayout
+            android:id="@+id/grid"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:columnCount="3"
+            android:gravity="center"
+            android:padding="25dp">
 
+            <ImageView
+                android:id="@+id/image_display_1"
+                android:layout_width="100dp"
+                android:layout_height="100dp" />
+
+            <ImageView
+                android:id="@+id/image_display_2"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="30dp" />
+
+            <ImageView
+                android:id="@+id/image_display_3"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="30dp" />
+
+            <ImageView
+                android:id="@+id/image_display_4"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="30dp" />
+
+            <ImageView
+                android:id="@+id/image_display_5"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp" />
+
+            <ImageView
+                android:id="@+id/image_display_6"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp" />
+
+            <ImageView
+                android:id="@+id/image_display_7"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="30dp" />
+
+            <ImageView
+                android:id="@+id/image_display_8"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp" />
+
+            <ImageView
+                android:id="@+id/image_display_9"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp" />
+
+            <ImageView
+                android:id="@+id/image_display_10"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="30dp" />
+
+            <ImageView
+                android:id="@+id/image_display_11"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp" />
+
+            <ImageView
+                android:id="@+id/image_display_12"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp" />
+
+        </GridLayout>
     </ScrollView>
 
 
