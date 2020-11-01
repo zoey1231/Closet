@@ -73,7 +73,17 @@ const getTodayEvents = async () => {
   };
 };
 
+/**
+ * Get Northern hemisphere season
+ * @returns one of ['Winter', 'Spring', 'Summer', 'Fall']
+ */
+const getSeasonNorth = () =>
+  ['Winter', 'Spring', 'Summer', 'Fall'][
+    Math.floor((new Date().getMonth() / 12) * 4) % 4
+  ];
+
 module.exports = {
   getTodayWeather,
   getTodayEvents,
+  getSeasonNorth,
 };
