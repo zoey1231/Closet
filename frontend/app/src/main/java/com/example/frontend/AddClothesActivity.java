@@ -74,7 +74,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private Button buttonSave;
     private TextView textAdd;
 
-    private static final int ADD = 1;
+    private File file;
 
     private static final int IMAGE = 1;
     private JSONObject clothAttribute = new JSONObject();
@@ -208,7 +208,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 textAdd.setVisibility(View.GONE);
                 Intent intentAdd = new Intent(Intent.ACTION_PICK);
                 intentAdd.setType("image/*");
-                startActivityForResult(intentAdd, ADD);
+                startActivityForResult(intentAdd, 1);
 
                 break;
 
@@ -217,6 +217,13 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 constructClothAttribute_clothName();
                 //send the cloth data to server
                 sendClothDataToServer(clothAttribute);
+
+                while (cloth_id.equals(EMPTY_STRING)) { };
+                sendImageToServer(file);
+                Bundle bundle = new Bundle();
+                bundle.putString("clothingId", cloth_id);
+                ClothesFragment clothesFragment = new ClothesFragment();
+                clothesFragment.setArguments(bundle);
 
 //                FragmentManager manager = getSupportFragmentManager();
 //                FragmentTransaction transaction = manager.beginTransaction();
@@ -383,33 +390,23 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == ADD) {
-            if (resultCode == RESULT_OK) {
-                try {
-                    final Uri uri = data.getData();
-                    final InputStream stream = getContentResolver().openInputStream(uri);
-                    final Bitmap bitmap = BitmapFactory.decodeStream(stream);
-                    image.setImageBitmap(bitmap);
-                    String path = getPath(uri);
-                    File file = new File(path);
-                    sendImageToServer(file);
+        if (resultCode == RESULT_OK) {
+            try {
+                Uri uri = data.getData();
+                InputStream stream = getContentResolver().openInputStream(uri);
+                final Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                image.setImageBitmap(bitmap);
+                String path = getPath(uri);
+                file = new File(path);
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString("userToken", user.getUserToken());
-                    bundle.putString("clothingId", cloth_id);
-                    ClothesFragment clothesFragment = new ClothesFragment();
-                    clothesFragment.setArguments(bundle);
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    Toast.makeText(AddClothesActivity.this, "Something went wrong", Toast.LENGTH_LONG);
-                }
-            } else {
-                Toast.makeText(AddClothesActivity.this, "You haven't picked image", Toast.LENGTH_LONG);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(AddClothesActivity.this, "Something went wrong", Toast.LENGTH_LONG);
             }
+        } else {
+            Toast.makeText(AddClothesActivity.this, "You haven't picked image", Toast.LENGTH_LONG);
         }
     }
-
 
     private String getPath(Uri uri) {
         String[] projection = {MediaStore.MediaColumns.DATA};
