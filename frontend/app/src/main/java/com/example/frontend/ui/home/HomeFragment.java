@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -36,6 +37,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String userToken;
     private HomeViewModel homeViewModel;
     private String TAG = "HomeFragment";
+    private static final String EMPTY_STRING = "";
+
     private String icon_today,icon_tmr;
     private String monthDesc_today,dayDesc_today,date_today;
     private String monthDesc_tmr,dayDesc_tmr,date_tmr;
@@ -47,6 +50,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     ImageView iv_outfit1_cloth1,iv_outfit1_cloth2,iv_outfit1_cloth3;
     Button outfitIdea_btn;
     LinearLayout ll_outfit;
+
+    private String message = EMPTY_STRING;
+    private String cloth_id = EMPTY_STRING;
+    private String category= EMPTY_STRING;
+    private String color= EMPTY_STRING;
+    private String name= EMPTY_STRING;
+    private String updated= EMPTY_STRING;
+    private String cloth_user= EMPTY_STRING;
+    private ArrayList<String> seasons = new ArrayList<>();
+    private ArrayList<String> occasions = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -61,12 +74,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         iv_icon_today = root.findViewById(R.id.iv_icon_today);
         iv_icon_tmr = root.findViewById(R.id.iv_icon_tmr);
 
-
         tv_outfit1 = root.findViewById(R.id.tv_outfit1);
         iv_outfit1_cloth1 = root.findViewById(R.id.iv_outfit1_cloth1);
         iv_outfit1_cloth2 = root.findViewById(R.id.iv_outfit1_cloth2);
         iv_outfit1_cloth3 = root.findViewById(R.id.iv_outfit1_cloth3);
         ll_outfit = root.findViewById(R.id.ll_outfit);
+        ll_outfit.setVisibility(View.GONE);
         outfitIdea_btn = root.findViewById(R.id.outfitIdea_btn);
         outfitIdea_btn.setOnClickListener(this);
 
@@ -74,7 +87,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         MainActivity activity = (MainActivity) getActivity();
         userToken = activity.getUser().getUserToken();
         getWeatherData(userToken);
-        getOutfitData(userToken);
+
         return root;
     }
 
@@ -82,7 +95,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.outfitIdea_btn:
-            ll_outfit.setVisibility(View.VISIBLE);
+                getOutfitData(userToken);
+                ll_outfit.setVisibility(View.VISIBLE);
                 break;
         }
     }
@@ -185,7 +199,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onResponse(Call call, Response response) throws IOException {
 
                 String responseStr = response.body().string();
-
                 if (response.isSuccessful()) {
 
                     Log.d(TAG,"Outfit request is successful"+responseStr);
@@ -193,9 +206,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     try {
                         //retrieve outfit data from server's response
                         responseJson = new JSONObject(responseStr);
-
-
-
+                        extractResponseData(responseJson);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -208,7 +219,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         });
     }
-
 
 
 }

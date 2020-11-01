@@ -46,15 +46,9 @@ public class ClothesFragment extends Fragment implements View.OnClickListener {
         grid = root.findViewById(R.id.grid);
         buttonAdd.setOnClickListener(this);
 
-//        Uri uri = Uri.parse(getArguments().getString("uri"));
-//        try {
-//            InputStream stream = getActivity().getContentResolver().openInputStream(uri);
-//            Bitmap bitmap = BitmapFactory.decodeStream(stream);
-//            image.setImageBitmap(bitmap);
-//
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
+//        String userToke = getArguments().getString("userToken");
+//        String clothingId = getArguments().getString("clothingId");
+//        Log.d(TAG, "get arguments: " + userToke + " " + clothingId);
 
 //        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
 //        params.rowSpec = GridLayout.spec(0);

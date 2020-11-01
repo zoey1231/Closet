@@ -1,6 +1,8 @@
 package com.example.frontend;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,6 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -56,6 +61,7 @@ import okhttp3.Response;
 
 
 import static android.widget.Toast.makeText;
+import static com.google.common.io.Files.copy;
 
 
 public class AddClothesActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
@@ -69,7 +75,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private TextView textAdd;
 
     private static final int ADD = 1;
-    private Bundle bundle;
 
     private static final int IMAGE = 1;
     private JSONObject clothAttribute = new JSONObject();
@@ -193,14 +198,25 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_image_add:
+                if (ContextCompat.checkSelfPermission(AddClothesActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(AddClothesActivity.this, new String[]
+                            {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
+                }
+
                 buttonImage.setVisibility(View.GONE);
                 textAdd.setVisibility(View.GONE);
                 Intent intentAdd = new Intent(Intent.ACTION_PICK);
                 intentAdd.setType("image/*");
                 startActivityForResult(intentAdd, ADD);
+
                 break;
 
             case R.id.button_save_add:
+                constructClothAttributeFromCheckBoxes();
+                constructClothAttribute_clothName();
+                //send the cloth data to server
+                sendClothDataToServer(clothAttribute);
 
 //                FragmentManager manager = getSupportFragmentManager();
 //                FragmentTransaction transaction = manager.beginTransaction();
@@ -208,14 +224,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 ////                fragment.setArguments(bundle);
 //                transaction.replace(R.id.nav_host_fragment_container, fragment);
 //                transaction.commit();
-
-                constructClothAttributeFromCheckBoxes();
-                constructClothAttribute_clothName();
-
-                //send the cloth data to server
-                sendClothDataToServer(clothAttribute);
-//                Intent intentSave = new Intent(AddClothesActivity.this, ClothesFragment.class);
-//                startActivity(intentSave);
 
                 break;
         }
@@ -382,10 +390,15 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                     final InputStream stream = getContentResolver().openInputStream(uri);
                     final Bitmap bitmap = BitmapFactory.decodeStream(stream);
                     image.setImageBitmap(bitmap);
-//                    bundle.putString("uri", String.valueOf(uri));
                     String path = getPath(uri);
                     File file = new File(path);
                     sendImageToServer(file);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("userToken", user.getUserToken());
+                    bundle.putString("clothingId", cloth_id);
+                    ClothesFragment clothesFragment = new ClothesFragment();
+                    clothesFragment.setArguments(bundle);
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -411,10 +424,11 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("image_url", file.getName(), RequestBody.create(MediaType.parse("image/*"), file))
+                .addFormDataPart("ClothingImage", file.getName(), RequestBody.create(MediaType.parse("image/*"), file))
                 .build();
         Request request = new Request.Builder()
-                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes")
+                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getuserId() + "/" + cloth_id)
+                .addHeader("Authorization","Bearer "+ user.getUserToken())
                 .post(body)
                 .build();
         Log.d(TAG,"prepared to sendImageToServer");
@@ -428,7 +442,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
+                String responseStr = response.body().string();
+                Log.d(TAG, responseStr);
             }
         });
 

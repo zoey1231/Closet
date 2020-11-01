@@ -15,7 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true">
+
         <activity android:name=".UpdateClothesActivity"></activity>
         <activity android:name=".RegisterActivity">
             <intent-filter>
@@ -26,10 +28,8 @@
         </activity>
         <activity android:name=".LoginActivity" />
 
-        <activity
-            android:name=".AddClothesActivity"
-            android:requestLegacyExternalStorage="true"
-            />
+        <activity android:name=".AddClothesActivity"/>
+
 
         <!--        <activity android:name=".CalendarActivity"></activity>-->
 <!--        <fragment android:name=".CalendarFragment"></fragment>-->
