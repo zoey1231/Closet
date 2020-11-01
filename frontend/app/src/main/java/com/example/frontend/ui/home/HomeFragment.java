@@ -84,8 +84,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         outfitIdea_btn.setOnClickListener(this);
 
         //get User's data from MainActivity and display them on fragment
-        MainActivity activity = (MainActivity) getActivity();
-        userToken = activity.getUser().getUserToken();
+        userToken = MainActivity.getUser().getUserToken();
         getWeatherData(userToken);
 
         return root;
