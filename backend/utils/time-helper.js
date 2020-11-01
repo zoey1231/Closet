@@ -31,7 +31,7 @@ const daysInMonth = [
 ];
 
 /**
- * Input a Unix Timestamp and return the following values
+ * Input a Unix Timestamp (in milliseconds) and return the following values
  *    - Year
  *    - Month values (includes month description, month index, month number)
  *    - Date
@@ -40,7 +40,7 @@ const daysInMonth = [
  * @param {String | Number} timestamp
  */
 const timestampToDate = timestamp => {
-  const time = new Date(timestamp * 1000);
+  const time = new Date(timestamp);
 
   const year = time.getFullYear();
   const monthDesc = months[time.getMonth()];
