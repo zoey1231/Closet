@@ -14,7 +14,7 @@ const getOneOutfit = async (req, res, next) => {
     response = await generateOutfit(userId);
   } catch (exception) {
     LOG.error(exception);
-    next(new HttpError('Failed getting outfit: failed getting clothes', 500));
+    next(new HttpError('Failed to generate an outfit', 500));
   }
 
   if (!response.success) {
