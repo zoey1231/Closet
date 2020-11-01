@@ -14,6 +14,20 @@ const hashCode = source => {
   return hash;
 };
 
+/**
+ * Generate a random number between 0 (inclusive) and max (exclusive)
+ * if the max is less than or equal to 0, return -1
+ *
+ * @param { Number} max  the upper limit of range
+ */
+const randomInt = max => {
+  if (max <= 0) {
+    return -1;
+  }
+  return Math.floor(Math.random() * Math.floor(max));
+};
+
 module.exports = {
   hashCode,
+  randomInt,
 };
