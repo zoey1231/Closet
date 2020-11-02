@@ -3,6 +3,8 @@ package com.example.frontend;
 import java.util.ArrayList;
 
 public class Clothes {
+    private static final String EMPTY_STRING = "";
+
     private String id;
     private String category;
     private String color;
@@ -11,6 +13,17 @@ public class Clothes {
     private String user;
     private ArrayList<String> seasons;
     private ArrayList<String> occasions;
+
+    public Clothes() {
+        this.id = EMPTY_STRING;
+        this.category = EMPTY_STRING;
+        this.color = EMPTY_STRING;
+        this.name = EMPTY_STRING;
+        this.updated = EMPTY_STRING;
+        this.user = EMPTY_STRING;
+        this.seasons = new ArrayList<>();
+        this.occasions = new ArrayList<>();
+    }
 
     public Clothes(String id, String category, String color, String name, String updated,
                    String user, ArrayList<String> seasons, ArrayList<String> occasions) {

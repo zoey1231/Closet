@@ -66,7 +66,7 @@ public class LoginTest {
                                         0),
                                 2),
                         isDisplayed()));
-        appCompatEditText4.perform(typeText("test@test.com"), closeSoftKeyboard());
+        appCompatEditText4.perform(replaceText("hi@test.com"), closeSoftKeyboard());
 
         ViewInteraction appCompatEditText5 = onView(
                 allOf(withId(R.id.etPassword_login),
@@ -76,7 +76,7 @@ public class LoginTest {
                                         0),
                                 1),
                         isDisplayed()));
-        appCompatEditText5.perform(typeText("123wrong"), closeSoftKeyboard());
+        appCompatEditText5.perform(replaceText("123wrong"), closeSoftKeyboard());
 
         ViewInteraction appCompatButton2 = onView(
                 allOf(withId(R.id.btn_login), withText("Login"),

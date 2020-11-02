@@ -5,10 +5,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -49,9 +51,7 @@ import okhttp3.ResponseBody;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
-    private String userToken;
-    private String userId;
-    private String clothId;
+    private String userToken, userId;
     private HomeViewModel homeViewModel;
     private String TAG = "HomeFragment";
     private static final String EMPTY_STRING = "";
@@ -64,16 +64,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     TextView tv_date_today,tv_date_tmr,tv_temp_today,tv_temp_tmr;
     ImageView iv_icon_today,iv_icon_tmr;
     TextView tv_outfit1;
-    ImageView iv_outfit1_cloth1,iv_outfit1_cloth2,iv_outfit1_cloth3;
+    ImageView iv_outfit1_cloth1,iv_outfit1_cloth2;
     Button outfitIdea_btn;
     LinearLayout ll_outfit;
 
     private String message = EMPTY_STRING;
     private String outfitId = EMPTY_STRING;
-    private ArrayList<JSONObject> clothes = new ArrayList<>();
+    private ArrayList<JSONObject> clothesData = new ArrayList<>();
+    private ArrayList<Clothes> clothes = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -88,7 +93,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         tv_outfit1 = root.findViewById(R.id.tv_outfit1);
         iv_outfit1_cloth1 = root.findViewById(R.id.iv_outfit1_cloth1);
         iv_outfit1_cloth2 = root.findViewById(R.id.iv_outfit1_cloth2);
-        iv_outfit1_cloth3 = root.findViewById(R.id.iv_outfit1_cloth3);
         ll_outfit = root.findViewById(R.id.ll_outfit);
         ll_outfit.setVisibility(View.GONE);
         outfitIdea_btn = root.findViewById(R.id.outfitIdea_btn);
@@ -96,6 +100,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         //get User's data from MainActivity and display them on fragment
         userToken = MainActivity.getUser().getUserToken();
+        userId = MainActivity.getUser().getuserId();
         getWeatherData(userToken);
 
         return root;
@@ -107,10 +112,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.outfitIdea_btn:
                 getOutfitData(userToken);
                 ll_outfit.setVisibility(View.VISIBLE);
+                for (int i = 0; i < clothes.size(); i++) {
+                    String clothId = clothes.get(i).getId();
+                    //for test
+                    if (i == 0)
+                        iv_outfit1_cloth1.setBackground(getClothesImage(userId, clothId));
+                    else iv_outfit1_cloth2.setBackground(getClothesImage(userId, clothId));
+                }
 
                 break;
         }
     }
+    
     private void getWeatherData(String userToken) {
         ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
         Log.d(TAG,"prepared to sendUserDataToServer");
@@ -218,7 +231,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         //retrieve outfit data from server's response
                         responseJson = new JSONObject(responseStr);
                         extractResponseOutfitData(responseJson);
-
+                        for (int i = 0; i < clothesData.size(); i++) {
+                            clothes.add(extractClothesData(clothesData.get(i)));
+                        }
+                        
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -232,70 +248,46 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void extractResponseOutfitData(JSONObject responseJson) {
-        JSONArray clothes_jsonArray, seasons_jsonArray,occasions_jsonArray;
+        JSONArray clothes_jsonArray;
         try {
-            if(responseJson.has("message"))
-                message = responseJson.getString("message");
             if (responseJson.has("id"))
                 outfitId = responseJson.getString("id");
             if(responseJson.has("clothes")){
                 clothes_jsonArray = responseJson.getJSONArray("clothes");
                 for (int i=0;i<clothes_jsonArray.length();i++){
-                    clothes.add(clothes_jsonArray.getJSONObject(i));
+                    clothesData.add(clothes_jsonArray.getJSONObject(i));
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
-    private void extractClothesData(JSONObject clothesData, Clothes cloth) {
-        JSONArray seasons_jsonArray,occasions_jsonArray;
-        ArrayList<String> seasons = new ArrayList<>();
-        ArrayList<String> occasions = new ArrayList<>();
+    private Clothes extractClothesData(JSONObject clothesData) {
+        Clothes cloth = new Clothes();
 
         try {
-            if(clothesData.has("seasons")){
-                seasons_jsonArray = clothesData.getJSONArray("seasons");
-                for (int i=0;i<seasons_jsonArray.length();i++){
-                    seasons.add(seasons_jsonArray.getString(i));
-                }
-                cloth.setSeasons(seasons);
-            }
-            if(clothesData.has("occasions")){
-                occasions_jsonArray = clothesData.getJSONArray("occasions");
-                for (int i=0;i<occasions_jsonArray.length();i++){
-                    occasions.add(occasions_jsonArray.getString(i));
-                }
-                cloth.setOccasions(occasions);
-            }
-            if(clothesData.has("category"))
-                cloth.setCategory(clothesData.getString("category"));
-            if(clothesData.has("color"))
-                cloth.setColor(clothesData.getString("color"));
             if(clothesData.has("name"))
                 cloth.setName(clothesData.getString("name"));
-            if(clothesData.has("user"))
-                cloth.setUser(clothesData.getString("user"));
-            if(clothesData.has("updated"))
-                cloth.setUpdated(clothesData.getString("updated"));
             if(clothesData.has("id"))
                 cloth.setId(clothesData.getString("id"));
 
+            return cloth;
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
+        return null;
     }
 
-    private Drawable getOutfitImage(String userId, String clothId) {
+    private Drawable getClothesImage(String userId, String clothId) {
         URL url;
         InputStream stream;
         BufferedInputStream buffer;
 
         try {
-            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/api/UserClothingImages/" + userId + "/" + clothId + ".jpg");
+            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".jpg");
             stream = url.openStream();
             buffer = new BufferedInputStream(stream);
             Bitmap bitmap = BitmapFactory.decodeStream(buffer);
@@ -311,25 +303,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
 
         return null;
-
-
-//        OkHttpClient client = new OkHttpClient();
-//
-//        Request request = new Request.Builder()
-//                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/UserClothingImages/" + userId + "/" + clothingId + ".jpg")
-//                .build();
-//        Call call = client.newCall(request);
-//        call.enqueue(new Callback() {
-//            @Override
-//            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            @Override
-//            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//
-//            }
-//        });
 
     }
 
