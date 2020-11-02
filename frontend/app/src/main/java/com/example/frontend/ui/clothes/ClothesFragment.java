@@ -67,8 +67,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.button_add:
-                MainActivity activity = (MainActivity) getActivity();
-                user = activity.getUser();
+                user = MainActivity.getUser();
                 Intent intent = new Intent(ClothesFragment.this.getActivity(), AddClothesActivity.class);
                 intent.putExtra("user", user);
                 Log.d(TAG,"send user to addClothActivity: ");
