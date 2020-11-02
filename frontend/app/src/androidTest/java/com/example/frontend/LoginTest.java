@@ -65,7 +65,9 @@ public class LoginTest {
                                         0),
                                 2),
                         isDisplayed()));
-        appCompatEditText4.perform(replaceText("test@test.com"), closeSoftKeyboard());
+
+        appCompatEditText4.perform(replaceText("hi@test.com"), closeSoftKeyboard());
+
 
         ViewInteraction appCompatEditText5 = onView(
                 allOf(withId(R.id.etPassword_login),
