@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_clothes"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.clothes.ClothesFragment" >
@@ -179,81 +180,42 @@
             android:padding="25dp">
 
             <ImageView
-                android:id="@+id/image_display_1"
+                android:id="@+id/iv_clothes1"
                 android:layout_width="100dp"
                 android:layout_height="100dp" />
 
             <ImageView
-                android:id="@+id/image_display_2"
+                android:id="@+id/iv_clothes2"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginLeft="30dp" />
 
             <ImageView
-                android:id="@+id/image_display_3"
+                android:id="@+id/iv_clothes3"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginLeft="30dp" />
 
             <ImageView
-                android:id="@+id/image_display_4"
+                android:id="@+id/iv_clothes4"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="30dp" />
 
             <ImageView
-                android:id="@+id/image_display_5"
+                android:id="@+id/iv_clothes5"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="30dp" />
 
             <ImageView
-                android:id="@+id/image_display_6"
+                android:id="@+id/iv_clothes6"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="30dp" />
 
-            <ImageView
-                android:id="@+id/image_display_7"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginTop="30dp" />
-
-            <ImageView
-                android:id="@+id/image_display_8"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="30dp" />
-
-            <ImageView
-                android:id="@+id/image_display_9"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="30dp" />
-
-            <ImageView
-                android:id="@+id/image_display_10"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginTop="30dp" />
-
-            <ImageView
-                android:id="@+id/image_display_11"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="30dp" />
-
-            <ImageView
-                android:id="@+id/image_display_12"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="30dp" />
 
         </GridLayout>
     </ScrollView>

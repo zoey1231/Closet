@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaSync;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -26,7 +25,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -43,21 +41,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 
 import static android.widget.Toast.makeText;
@@ -91,7 +84,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<String> seasons = new ArrayList<>();
     private ArrayList<String> occasions = new ArrayList<>();
 
-    private java.util.HashMap<String,Cloth> clothHashMap =new HashMap<String,Cloth>();
+    private java.util.HashMap<String, Clothes> clothHashMap =new HashMap<String, Clothes>();
 
 
     @Override
@@ -218,18 +211,15 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 //send the cloth data to server
                 sendClothDataToServer(clothAttribute);
 
-                while (cloth_id.equals(EMPTY_STRING)) { };
+                while (cloth_id.equals(EMPTY_STRING));
                 sendImageToServer(file);
-                Bundle bundle = new Bundle();
-                bundle.putString("clothingId", cloth_id);
-                ClothesFragment clothesFragment = new ClothesFragment();
-                clothesFragment.setArguments(bundle);
 
 //                FragmentManager manager = getSupportFragmentManager();
-//                FragmentTransaction transaction = manager.beginTransaction();
 //                ClothesFragment fragment = new ClothesFragment();
-////                fragment.setArguments(bundle);
-//                transaction.replace(R.id.nav_host_fragment_container, fragment);
+//                Bundle bundle = new Bundle();
+//                bundle.putString("clothingId", cloth_id);
+//                FragmentTransaction transaction = manager.beginTransaction();
+//                transaction.replace(R.id.fragment_clothes, fragment);
 //                transaction.commit();
 
                 break;
@@ -304,7 +294,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 JSONObject responseJson = null;
                 try {
                     responseJson = new JSONObject(responseStr);
-                    extractResponseData(responseJson);
+                    extractResponseClothesData(responseJson);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -328,8 +318,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                         });
 
                         //create a new cloth instance and add it the the clothes' collection
-                        Cloth cloth = new Cloth(cloth_id,category,color,name,updated,cloth_user,seasons,occasions);
-                        clothHashMap.put(cloth_id,cloth);
+                        Clothes clothes = new Clothes(cloth_id,category,color,name,updated,cloth_user,seasons,occasions);
+                        clothHashMap.put(cloth_id, clothes);
 
                         //startActivity(new Intent(getApplicationContext(),MainActivity.class).putExtra("user",new User(userId,userToken,email)));
                     }
@@ -350,7 +340,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
-    private void extractResponseData(JSONObject responseJson) {
+    private void extractResponseClothesData(JSONObject responseJson) {
         JSONArray seasons_jsonArray,occasions_jsonArray;
         try {
             if(responseJson.has("message"))
@@ -446,6 +436,5 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
         Log.d(TAG,"finished sendImageToServer");
     }
-
 
 }

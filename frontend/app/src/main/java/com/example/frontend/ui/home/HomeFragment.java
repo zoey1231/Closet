@@ -1,5 +1,9 @@
 package com.example.frontend.ui.home;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,25 +20,38 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.frontend.Clothes;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommunicationAsync;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private String userToken;
+    private String userId;
+    private String clothId;
     private HomeViewModel homeViewModel;
     private String TAG = "HomeFragment";
     private static final String EMPTY_STRING = "";
@@ -52,14 +69,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     LinearLayout ll_outfit;
 
     private String message = EMPTY_STRING;
-    private String cloth_id = EMPTY_STRING;
-    private String category= EMPTY_STRING;
-    private String color= EMPTY_STRING;
-    private String name= EMPTY_STRING;
-    private String updated= EMPTY_STRING;
-    private String cloth_user= EMPTY_STRING;
-    private ArrayList<String> seasons = new ArrayList<>();
-    private ArrayList<String> occasions = new ArrayList<>();
+    private String outfitId = EMPTY_STRING;
+    private ArrayList<JSONObject> clothes = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -97,6 +108,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.outfitIdea_btn:
                 getOutfitData(userToken);
                 ll_outfit.setVisibility(View.VISIBLE);
+
                 break;
         }
     }
@@ -121,7 +133,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     try {
                         //retrieve weather data from OpenWeather's response and display on UI
                         responseJson = new JSONObject(responseStr);
-                        extractResponseData(responseJson);
+                        extractResponseWeatherData(responseJson);
                         updateWeatherOnUI();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -149,7 +161,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void extractResponseData(JSONObject responseJson) {
+    private void extractResponseWeatherData(JSONObject responseJson) {
         JSONObject today,tomorrow, time_today, time_tmr,temp_today,temp_tmr;
         JSONArray weather_today,weather_tmr;
         try {
@@ -206,7 +218,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     try {
                         //retrieve outfit data from server's response
                         responseJson = new JSONObject(responseStr);
-                        extractResponseData(responseJson);
+                        extractResponseOutfitData(responseJson);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -220,5 +232,106 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    private void extractResponseOutfitData(JSONObject responseJson) {
+        JSONArray clothes_jsonArray, seasons_jsonArray,occasions_jsonArray;
+        try {
+            if(responseJson.has("message"))
+                message = responseJson.getString("message");
+            if (responseJson.has("id"))
+                outfitId = responseJson.getString("id");
+            if(responseJson.has("clothes")){
+                clothes_jsonArray = responseJson.getJSONArray("clothes");
+                for (int i=0;i<clothes_jsonArray.length();i++){
+                    clothes.add(clothes_jsonArray.getJSONObject(i));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void extractClothesData(JSONObject clothesData, Clothes cloth) {
+        JSONArray seasons_jsonArray,occasions_jsonArray;
+        ArrayList<String> seasons = new ArrayList<>();
+        ArrayList<String> occasions = new ArrayList<>();
+
+        try {
+            if(clothesData.has("seasons")){
+                seasons_jsonArray = clothesData.getJSONArray("seasons");
+                for (int i=0;i<seasons_jsonArray.length();i++){
+                    seasons.add(seasons_jsonArray.getString(i));
+                }
+                cloth.setSeasons(seasons);
+            }
+            if(clothesData.has("occasions")){
+                occasions_jsonArray = clothesData.getJSONArray("occasions");
+                for (int i=0;i<occasions_jsonArray.length();i++){
+                    occasions.add(occasions_jsonArray.getString(i));
+                }
+                cloth.setOccasions(occasions);
+            }
+            if(clothesData.has("category"))
+                cloth.setCategory(clothesData.getString("category"));
+            if(clothesData.has("color"))
+                cloth.setColor(clothesData.getString("color"));
+            if(clothesData.has("name"))
+                cloth.setName(clothesData.getString("name"));
+            if(clothesData.has("user"))
+                cloth.setUser(clothesData.getString("user"));
+            if(clothesData.has("updated"))
+                cloth.setUpdated(clothesData.getString("updated"));
+            if(clothesData.has("id"))
+                cloth.setId(clothesData.getString("id"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private Drawable getOutfitImage(String userId, String clothId) {
+        URL url;
+        InputStream stream;
+        BufferedInputStream buffer;
+
+        try {
+            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/api/UserClothingImages/" + userId + "/" + clothId + ".jpg");
+            stream = url.openStream();
+            buffer = new BufferedInputStream(stream);
+            Bitmap bitmap = BitmapFactory.decodeStream(buffer);
+            if (stream != null) {
+                stream.close();
+            }
+            buffer.close();
+
+            return new BitmapDrawable(bitmap);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
+
+//        OkHttpClient client = new OkHttpClient();
+//
+//        Request request = new Request.Builder()
+//                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/UserClothingImages/" + userId + "/" + clothingId + ".jpg")
+//                .build();
+//        Call call = client.newCall(request);
+//        call.enqueue(new Callback() {
+//            @Override
+//            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            @Override
+//            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+//
+//            }
+//        });
+
+    }
 
 }

@@ -24,7 +24,7 @@ public class UpdateClothesActivity extends AppCompatActivity implements AdapterV
     private Spinner spinner_category, spinner_color, spinner_occasion;
     private EditText et_clothName;
 
-    private Cloth cloth;
+    private Clothes clothes;
     private AddClothesActivity activity;
 
     @Override
@@ -65,24 +65,24 @@ public class UpdateClothesActivity extends AppCompatActivity implements AdapterV
         //show cloth's existing attributes as default values
         //TODO: get cloth's info, now cloth is NULL
         String[] stringArray = getResources().getStringArray(R.array.category_array);
-        int index = Arrays.asList(stringArray).indexOf(cloth.getCategory());
+        int index = Arrays.asList(stringArray).indexOf(clothes.getCategory());
         spinner_category.setSelection(index);
 
         stringArray = getResources().getStringArray(R.array.color_array);
-        index = Arrays.asList(stringArray).indexOf(cloth.getColor());
+        index = Arrays.asList(stringArray).indexOf(clothes.getColor());
         spinner_category.setSelection(index);
 
         stringArray = getResources().getStringArray(R.array.occasion_array);
-        index = Arrays.asList(stringArray).indexOf(cloth.getOccasions().get(0));
+        index = Arrays.asList(stringArray).indexOf(clothes.getOccasions().get(0));
         spinner_category.setSelection(index);
 
-        et_clothName.setText(cloth.getName());
+        et_clothName.setText(clothes.getName());
 
-        checkBox_spring.setChecked(cloth.getSeasons().contains("Spring")?true:false);
-        checkBox_summer.setChecked(cloth.getSeasons().contains("Summer")?true:false);
-        checkBox_fall.setChecked(cloth.getSeasons().contains("Fall")?true:false);
-        checkBox_winter.setChecked(cloth.getSeasons().contains("Winter")?true:false);
-        checkBox_all.setChecked(cloth.getSeasons().contains("All")?true:false);
+        checkBox_spring.setChecked(clothes.getSeasons().contains("Spring")?true:false);
+        checkBox_summer.setChecked(clothes.getSeasons().contains("Summer")?true:false);
+        checkBox_fall.setChecked(clothes.getSeasons().contains("Fall")?true:false);
+        checkBox_winter.setChecked(clothes.getSeasons().contains("Winter")?true:false);
+        checkBox_all.setChecked(clothes.getSeasons().contains("All")?true:false);
 
     }
 

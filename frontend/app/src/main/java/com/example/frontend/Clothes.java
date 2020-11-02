@@ -2,7 +2,7 @@ package com.example.frontend;
 
 import java.util.ArrayList;
 
-public class Cloth {
+public class Clothes {
     private String id;
     private String category;
     private String color;
@@ -12,8 +12,8 @@ public class Cloth {
     private ArrayList<String> seasons;
     private ArrayList<String> occasions;
 
-    public Cloth(String id, String category, String color, String name, String updated,
-                 String user, ArrayList<String> seasons, ArrayList<String> occasions) {
+    public Clothes(String id, String category, String color, String name, String updated,
+                   String user, ArrayList<String> seasons, ArrayList<String> occasions) {
         this.id = id;
         this.category = category;
         this.color = color;

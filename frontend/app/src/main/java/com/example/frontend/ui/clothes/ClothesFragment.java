@@ -20,16 +20,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.frontend.AddClothesActivity;
+import com.example.frontend.Clothes;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.User;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 public class ClothesFragment extends Fragment implements View.OnClickListener {
     private static final String TAG ="ClothesFragment" ;
     private User user;
+    private String clothingId;
     private ClothesViewModel clothesViewModel;
     private ImageButton buttonAdd;
     private ImageView image;
@@ -46,9 +52,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener {
         grid = root.findViewById(R.id.grid);
         buttonAdd.setOnClickListener(this);
 
-//        String userToke = getArguments().getString("userToken");
-//        String clothingId = getArguments().getString("clothingId");
-//        Log.d(TAG, "get arguments: " + userToke + " " + clothingId);
+//        clothingId = getArguments().getString("clothingId");
+        Log.d(TAG, "clothingId: " + clothingId);
 
 //        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
 //        params.rowSpec = GridLayout.spec(0);
@@ -74,4 +79,5 @@ public class ClothesFragment extends Fragment implements View.OnClickListener {
                 break;
         }
     }
+
 }
