@@ -8,11 +8,32 @@ const LOG = require('../utils/logger');
 const Clothes = require('../model/clothes');
 const Outfit = require('../model/outfit');
 
+const FORMAL_KEYWORDS = [
+  'conference',
+  'interview',
+  'meeting',
+  'presentation',
+  'speech',
+];
+
+const COLOURS = [
+  'Red',
+  'Orange',
+  'Yellow',
+  'Blue',
+  'Green',
+  'Purple',
+  'Pink',
+  'Grey',
+  'White',
+  'Black',
+];
+
 let userId;
 let allOutfits = [];
 let todayFormalOutfits = [];
 let todayFormalEvents = [];
-let allClothes = [];
+let allClothes = []; // Array of Clothes object
 let todayWhether = {};
 
 /**
@@ -168,9 +189,7 @@ const createFormalOutfit = async () => {
     };
   }
 
-  let chosenUpperClothes;
-  let chosenTrousers;
-  let chosenShoes;
+  let chosenUpperClothes, chosenTrousers, chosenShoes;
   if (!formalOuterwear.length) {
     chosenUpperClothes = formalShirt[randomInt(formalShirt.length)];
   } else if (!formalShirt.length) {
@@ -201,13 +220,116 @@ const createFormalOutfit = async () => {
     chosenTrousers,
     chosenShoes,
     occasions: ['formal'],
-    seasons: ['all'],
+    seasons: ['All'],
   };
 };
 
 // Create a normal outfit
 const createNormalOutfit = async () => {
-  // TODO
+  await getAllClothes();
+
+  let normalOuterwear = [];
+  let normalShirt = [];
+  let normalTrousers = [];
+  let normalShoes = [];
+
+  allClothes.forEach(c => {
+    switch (c.category) {
+      case 'outerwear':
+        if (!c.occasions.includes('formal')) {
+          normalOuterwear.push(c);
+        }
+        break;
+      case 'shirt':
+        if (!c.occasions.includes('formal')) {
+          normalShirt.push(c);
+        }
+        break;
+      case 'trousers':
+        if (!c.occasions.includes('formal')) {
+          normalTrousers.push(c);
+        }
+        break;
+      case 'shoes':
+        if (!c.occasions.includes('formal')) {
+          normalShoes.push(c);
+        }
+        break;
+      default:
+        break;
+    }
+  });
+
+  // Must have the follow three
+  // 1. outerwear OR shirt
+  // 2. trousers
+  // 3. shoe
+
+  if (
+    (!normalOuterwear.length && !normalShirt.length) ||
+    !normalTrousers.length ||
+    !normalShoes.length
+  ) {
+    return {
+      success: false,
+      message: 'Add more clothes to get outfit!',
+    };
+  }
+
+  // TODO: need better weather implementation!
+
+  // get weather & season tag
+  // await getTodayWeather();
+
+  // const { temperature, description } = todayWhether;
+  // let season = getSeasonFromTemperature(temperature);
+
+  let currSeason = getSeasonNorth();
+
+  // filter out other seasons
+  normalOuterwear = normalOuterwear.filter(c => c.seasons.includes(currSeason));
+  normalShirt = normalShirt.filter(c => c.seasons.includes(currSeason));
+  normalShoes = normalShoes.filter(c => c.seasons.includes(currSeason));
+  normalTrousers = normalTrousers.filter(c => c.seasons.includes(currSeason));
+
+  // check if outfit exists
+  let allOutfitIds = await (await Outfit.find({ user: userId })).map(
+    outfit => outfit.id
+  );
+
+  // loop through all current clothing
+  // TODO: these loops looks bad bad bad --- look into cartesian product
+  let chosenUpperClothes, chosenTrousers, chosenShoes;
+  for (const outerwear in normalOuterwear) {
+    for (const shirt in normalShirt) {
+      for (const trousers in normalTrousers) {
+        for (const shoes in normalShoes) {
+          let random = randomInt(1);
+
+          let outfitId = random
+            ? hashCode(shirt.id + trousers.id + shoes.id)
+            : hashCode(outerwear.id + trousers.id + shoes.id);
+
+          // if this outfit does not already exist
+          if (!allOutfitIds.includes(outfitId)) {
+            chosenUpperClothes = random ? shirt : outerwear;
+            chosenTrousers = trousers;
+            chosenShoes = shoes;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    success: true,
+    chosenUpperClothes,
+    chosenTrousers,
+    chosenShoes,
+    occasions: '', // TODO: what about occasion?
+    seasons: [currSeason],
+  };
 };
 
 // Return all clothes in database
@@ -215,7 +337,7 @@ const getAllClothes = async () => {
   try {
     allClothes = await Clothes.find({ user: userId });
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(exception.message);
   }
 };
 
@@ -236,7 +358,7 @@ const getAllOutfits = async () => {
   try {
     allOutfits = await Outfit.find({ user: userId });
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(exception.message);
   }
 };
 
@@ -259,25 +381,17 @@ const getTodayFormalEvents = async () => {
   let response;
   try {
     response = await getCalendarEvents(date);
-  } catch (err) {
-    LOG.error(err);
+  } catch (exception) {
+    LOG.error(exception.message);
     return;
   }
-
-  const formalKeywords = [
-    'conference',
-    'interview',
-    'meeting',
-    'presentation',
-    'speech',
-  ];
 
   const { events } = response;
 
   events.forEach(e => {
     const keyword = e.summary.toLowerCase().split(' ');
     for (const word of keyword) {
-      if (formalKeywords.includes(word)) {
+      if (FORMAL_KEYWORDS.includes(word)) {
         todayFormalEvents.push(e.summary);
         break;
       }
@@ -292,8 +406,8 @@ const getTodayWeather = async () => {
   let response;
   try {
     response = await getWeatherInfo('vancouver');
-  } catch (err) {
-    LOG.error(err);
+  } catch (exception) {
+    LOG.error(exception.message);
     return;
   }
 
@@ -311,6 +425,18 @@ const getSeasonNorth = () =>
   ['Winter', 'Spring', 'Summer', 'Fall'][
     Math.floor((new Date().getMonth() / 12) * 4) % 4
   ];
+
+/**
+ * Get season from temperature
+ * @param {int} temperature
+ * @return {String} Season "Spring" "Summer" "Fall" "Winter"
+ */
+const getSeasonFromTemperature = temperature => {
+  if (temperature > 20) return 'Summer';
+  if (temperature <= 20 && temperature >= 15) return 'Fall';
+  if (temperature < 15 && temperature >= 10) return 'Spring';
+  if (temperature > 10) return 'Winter';
+};
 
 module.exports = {
   generateOutfit,

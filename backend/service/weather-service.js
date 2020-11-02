@@ -40,7 +40,7 @@ const getWeatherInfo = async place => {
       }
     );
   } catch (err) {
-    LOG.error(err);
+    LOG.error(err.message);
     return {
       success: false,
       message: 'Could not get weather information, please try again later',
@@ -101,7 +101,7 @@ const getGeoCode = async place => {
       },
     });
   } catch (err) {
-    LOG.error(err);
+    LOG.error(err.message);
 
     return {
       success: false,
