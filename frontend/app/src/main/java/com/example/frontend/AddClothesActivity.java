@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -67,6 +69,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private Button buttonSave;
     private TextView textAdd;
 
+    private String path;
     private File file;
 
     private static final int IMAGE = 1;
@@ -210,13 +213,10 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 while (cloth_id.equals(EMPTY_STRING));
                 sendImageToServer(file);
 
-//                FragmentManager manager = getSupportFragmentManager();
-//                ClothesFragment fragment = new ClothesFragment();
-//                Bundle bundle = new Bundle();
-//                bundle.putString("clothingId", cloth_id);
-//                FragmentTransaction transaction = manager.beginTransaction();
-//                transaction.replace(R.id.fragment_clothes, fragment);
-//                transaction.commit();
+                Intent intent = new Intent();
+                intent.putExtra("path", path);
+                setResult(RESULT_OK, intent);
+                finish();
 
                 break;
         }
@@ -375,14 +375,17 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Uri uri;
+        InputStream stream;
+        Bitmap bitmap;
 
         if (resultCode == RESULT_OK) {
             try {
-                Uri uri = data.getData();
-                InputStream stream = getContentResolver().openInputStream(uri);
-                final Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                uri = data.getData();
+                stream = getContentResolver().openInputStream(uri);
+                bitmap = BitmapFactory.decodeStream(stream);
                 image.setImageBitmap(bitmap);
-                String path = getPath(uri);
+                path = getPath(uri);
                 file = new File(path);
 
             } catch (FileNotFoundException e) {
@@ -428,11 +431,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 String responseStr = response.body().string();
                 Log.d(TAG, "Successfully upload image to server:"+responseStr);
 
-                Log.d(TAG, "Prepare to send cloth_id to ClothesFragment:"+cloth_id);
-                Intent intent = new Intent();
-                intent.putExtra("cloth_id", cloth_id);
-                setResult(RESULT_OK, intent );
-                finish();
             }
         });
 

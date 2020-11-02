@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,11 +37,9 @@ import okhttp3.Request;
 public class ClothesFragment extends Fragment implements View.OnClickListener {
     private static final String TAG ="ClothesFragment" ;
     private User user;
-    private String clothingId;
     private ClothesViewModel clothesViewModel;
     private ImageButton buttonAdd;
-    private ImageView image;
-    private GridLayout grid;
+    private ImageView clothes1;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -48,17 +48,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener {
         View root = inflater.inflate(R.layout.fragment_clothes, container, false);
 
         buttonAdd = root.findViewById(R.id.button_add);
-        image = root.findViewById(R.id.image_add);
-        grid = root.findViewById(R.id.grid);
         buttonAdd.setOnClickListener(this);
-
-//        clothingId = getArguments().getString("clothingId");
-//        Log.d(TAG, "clothingId: " + clothingId);
-
-//        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-//        params.rowSpec = GridLayout.spec(0);
-//        params.columnSpec = GridLayout.spec(0);
-//        grid.addView(image, params);
+        clothes1 = root.findViewById(R.id.iv_clothes1);
 
         return root;
     }
@@ -67,15 +58,6 @@ public class ClothesFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.button_add:
-//                user = MainActivity.getUser();
-//                Intent intent = new Intent(ClothesFragment.this.getActivity(), AddClothesActivity.class);
-//                intent.putExtra("user", user);
-//                Log.d(TAG,"send user to addClothActivity: ");
-//                Log.d(TAG,user.getEmail());
-//                Log.d(TAG,user.getuserId());
-//                Log.d(TAG,user.getUserToken());
-//                startActivity(intent);
-
                 user = MainActivity.getUser();
                 Intent myIntent = new Intent(ClothesFragment.this.getContext(), AddClothesActivity.class);
                 myIntent.putExtra("user", user);
@@ -93,8 +75,9 @@ public class ClothesFragment extends Fragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == 1) {
             // here you can retrieve your bundle data.
-            clothingId = data.getStringExtra("cloth_id");
-            Log.d(TAG, "clothingId: " + clothingId);
+            String path = data.getStringExtra("path");
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            clothes1.setImageBitmap(bitmap);
         }
     }
 

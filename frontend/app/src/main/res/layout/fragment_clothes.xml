@@ -190,33 +190,6 @@
                 android:layout_height="100dp"
                 android:layout_marginLeft="30dp" />
 
-            <ImageView
-                android:id="@+id/iv_clothes3"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="30dp" />
-
-            <ImageView
-                android:id="@+id/iv_clothes4"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginTop="30dp" />
-
-            <ImageView
-                android:id="@+id/iv_clothes5"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="30dp" />
-
-            <ImageView
-                android:id="@+id/iv_clothes6"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="30dp" />
-
-
         </GridLayout>
     </ScrollView>
 
