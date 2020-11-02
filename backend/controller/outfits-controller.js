@@ -7,11 +7,9 @@ const { generateOutfit } = require('../service/outfits-service');
 const LOG = require('../utils/logger');
 
 const getOneOutfit = async (req, res, next) => {
-  const userId = req.userData.userId;
-
   let response;
   try {
-    response = await generateOutfit(userId);
+    response = await generateOutfit(req);
   } catch (exception) {
     LOG.error(req._id, exception.message);
     next(new HttpError('Failed to generate an outfit', 500));
