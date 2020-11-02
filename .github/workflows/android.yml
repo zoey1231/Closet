@@ -11,9 +11,10 @@ on:
       - "frontend/**"
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
+  build_and_test:
+    name: Build and run tests
+    #runs-on: ubuntu-latest
+    runs-on: macos-latest # Switched to macOS
     env:
       working-directory: ./frontend
 
@@ -26,6 +27,12 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
+ 
+    - uses: actions/checkout@v2
+    - name: set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
 
     - uses: actions/checkout@v2
     - name: set up JDK 1.8
@@ -39,4 +46,40 @@ jobs:
     
     - name: Build with Gradle
       working-directory: ${{ env.working-directory }}
-      run: ./gradlew test
+      run: ./gradlew build
+      
+    - name: Run instrumentation tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        arch: x86_64
+        avd-name: test
+        emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        script: ./gradlew connectedCheck
+    - name: Upload Reports
+      uses: actions/upload-artifact@v1
+      with:
+         name: reports
+         path: ./frontend/app/build/reports
+     
+  generate-apk:
+    name: Generate apk
+    runs-on: ubuntu-latest
+    needs: [build_and_test]
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Generate apk
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v1
+        with:
+          name: build-output
+          path: app/build/outputs/apk/debug/app-debug.apk
