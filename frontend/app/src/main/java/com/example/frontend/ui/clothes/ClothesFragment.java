@@ -53,7 +53,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener {
         buttonAdd.setOnClickListener(this);
 
 //        clothingId = getArguments().getString("clothingId");
-        Log.d(TAG, "clothingId: " + clothingId);
+//        Log.d(TAG, "clothingId: " + clothingId);
 
 //        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
 //        params.rowSpec = GridLayout.spec(0);
@@ -67,15 +67,34 @@ public class ClothesFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.button_add:
+//                user = MainActivity.getUser();
+//                Intent intent = new Intent(ClothesFragment.this.getActivity(), AddClothesActivity.class);
+//                intent.putExtra("user", user);
+//                Log.d(TAG,"send user to addClothActivity: ");
+//                Log.d(TAG,user.getEmail());
+//                Log.d(TAG,user.getuserId());
+//                Log.d(TAG,user.getUserToken());
+//                startActivity(intent);
+
                 user = MainActivity.getUser();
-                Intent intent = new Intent(ClothesFragment.this.getActivity(), AddClothesActivity.class);
-                intent.putExtra("user", user);
+                Intent myIntent = new Intent(ClothesFragment.this.getContext(), AddClothesActivity.class);
+                myIntent.putExtra("user", user);
                 Log.d(TAG,"send user to addClothActivity: ");
                 Log.d(TAG,user.getEmail());
                 Log.d(TAG,user.getuserId());
                 Log.d(TAG,user.getUserToken());
-                startActivity(intent);
+                startActivityForResult(myIntent, 1);
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && requestCode == 1) {
+            // here you can retrieve your bundle data.
+            clothingId = data.getStringExtra("cloth_id");
+            Log.d(TAG, "clothingId: " + clothingId);
         }
     }
 

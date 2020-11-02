@@ -27,7 +27,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -66,7 +65,7 @@ public class LoginTest {
                                         0),
                                 2),
                         isDisplayed()));
-        appCompatEditText4.perform(typeText("test@test.com"), closeSoftKeyboard());
+        appCompatEditText4.perform(replaceText("test@test.com"), closeSoftKeyboard());
 
         ViewInteraction appCompatEditText5 = onView(
                 allOf(withId(R.id.etPassword_login),
@@ -76,7 +75,7 @@ public class LoginTest {
                                         0),
                                 1),
                         isDisplayed()));
-        appCompatEditText5.perform(typeText("123wrong"), closeSoftKeyboard());
+        appCompatEditText5.perform(replaceText("123wrong"), closeSoftKeyboard());
 
         ViewInteraction appCompatButton2 = onView(
                 allOf(withId(R.id.btn_login), withText("Login"),

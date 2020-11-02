@@ -126,10 +126,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     }
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
-        // retrieve the selected item using parent.getItemAtPosition(pos)
-        String text = parent.getItemAtPosition(pos).toString();
-        Toast.makeText(parent.getContext(),text,Toast.LENGTH_SHORT).show();
-
         //construct the clothAttribute JSONObject we want to send to server
         constructClothAttribute(parent,view,pos);
     }
@@ -430,7 +426,13 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = response.body().string();
-                Log.d(TAG, responseStr);
+                Log.d(TAG, "Successfully upload image to server:"+responseStr);
+
+                Log.d(TAG, "Prepare to send cloth_id to ClothesFragment:"+cloth_id);
+                Intent intent = new Intent();
+                intent.putExtra("cloth_id", cloth_id);
+                setResult(RESULT_OK, intent );
+                finish();
             }
         });
 
