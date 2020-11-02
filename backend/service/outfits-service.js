@@ -73,7 +73,7 @@ const saveOutfit = async result => {
   if (!result.success) {
     return {
       success: result.success,
-      message: 'TBD',
+      message: 'Failed to generate an outfit',
     };
   }
 
@@ -90,6 +90,38 @@ const saveOutfit = async result => {
     chosenUpperClothes.id + chosenTrousers.id + chosenShoes.id
   );
 
+  let existingOutfit;
+  try {
+    existingOutfit = await Outfit.find({ _id: _id });
+  } catch (exception) {
+    LOG.error(exception.message);
+    return {
+      success: false,
+      message: 'Failed to search outfit',
+    };
+  }
+
+  // If the outfit has generated before, return it
+  if (existingOutfit.length && existingOutfit[0] instanceof Outfit) {
+    return {
+      success: true,
+      message: 'New outfit generated successfully!',
+      warning,
+      outfit: {
+        id: existingOutfit.id,
+        clothes: existingOutfit.clothes,
+        created: existingOutfit.created,
+        occasions,
+        seasons,
+        opinion: existingOutfit.opinion,
+        user: userId,
+        chosenUpperClothes,
+        chosenTrousers,
+        chosenShoes,
+      },
+    };
+  }
+
   const newOutfit = new Outfit({
     _id,
     clothes: [chosenUpperClothes.id, chosenTrousers.id, chosenShoes.id],
@@ -105,7 +137,7 @@ const saveOutfit = async result => {
     LOG.error(exception.message);
     return {
       success: false,
-      message: 'TBD',
+      message: 'Failed to save outfit',
     };
   }
 
@@ -327,7 +359,7 @@ const createNormalOutfit = async () => {
     chosenUpperClothes,
     chosenTrousers,
     chosenShoes,
-    occasions: '', // TODO: what about occasion?
+    occasions: ['normal'], // TODO: what about occasion?
     seasons: [currSeason],
   };
 };
