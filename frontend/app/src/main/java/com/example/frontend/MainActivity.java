@@ -15,7 +15,7 @@ import androidx.navigation.ui.NavigationUI;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private User user;
+    private static User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,10 +26,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG,"email: "+user.getEmail()+" userId: "+ user.getuserId()+ " userToken: "+ user.getUserToken());
 
         //send firebase registration token to the server
-        MyFirebaseMessagingService firebaseMessagingService = new MyFirebaseMessagingService();
-        firebaseMessagingService.getTokenNSendToServer(user.getUserToken());
-
-
+        MyFirebaseMessagingService.getTokenNSendToServer(user.getUserToken());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -44,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public User getUser(){
+    public static User getUser(){
         return user;
     }
 }

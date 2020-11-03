@@ -1,6 +1,7 @@
 package com.example.frontend;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,7 +39,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public String message = EMPTY_STRING;
     public String email = EMPTY_STRING;
 
-
+    static CountingIdlingResource idlingResource_login = new CountingIdlingResource("send_login_data");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +70,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void login() {
+        idlingResource_login.increment();
         String inputEmail = eEmail.getText().toString().trim();
         String inputPassword = ePassword.getText().toString().trim();
 
@@ -103,6 +105,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 e.printStackTrace();
                 Log.d(TAG,"Fail to send request to server");
                 Log.d(TAG, String.valueOf(e));
+                idlingResource_login.decrement();
             }
 
             @Override
@@ -149,6 +152,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
                         });
                         startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                        idlingResource_login.decrement();
                     }
                     //start the app's main activity if register successfully
                     else{
@@ -160,10 +164,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         });
                         Log.d(TAG,"email: "+email+" userId: "+ userId+ " userToken: "+ userToken);
                         startActivity(new Intent(getApplicationContext(),MainActivity.class).putExtra("user",new User(userId,userToken,email)));
-
+                        idlingResource_login.decrement();
                     }
-
-
 
                 } else {
                     // Request not successful
@@ -173,14 +175,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             public void run() {
                                 final Toast toast = makeText(LoginActivity.this,message,Toast.LENGTH_LONG);
                                 toast.show();
-
                             }
                         });
                         startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                        idlingResource_login.decrement();
                     }
                 }
             }
         });
     }
 
+    public static CountingIdlingResource getRegisterIdlingResourceInTest() {
+        return idlingResource_login;
+    }
 }

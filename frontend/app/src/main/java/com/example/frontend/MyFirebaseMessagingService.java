@@ -1,3 +1,4 @@
+
 package com.example.frontend;
 
 import android.app.NotificationChannel;
@@ -34,8 +35,8 @@ import static android.widget.Toast.makeText;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     private static final String EMPTY_STRING = "";
-    private String message = EMPTY_STRING;
-    String userToken;
+    private static String message = EMPTY_STRING;
+    private static String user_Token;
 
     /**
      * Called when message is received.
@@ -77,15 +78,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // FCM registration token to your app server.
-        MainActivity activity = new MainActivity();
-        sendRegistrationToServer(userToken,token);
+
+        sendRegistrationToServer(user_Token,token);
     }
 
-    public void getTokenNSendToServer(final String userToken) {
+    public static void getTokenNSendToServer(String userToken) {
+        user_Token = userToken;
         Log.d(TAG,"userToken: "+userToken);
-        this.userToken = userToken;
 
         // [START log_reg_token]
+        final String finalUserToken = userToken;
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
                     @Override
@@ -98,7 +100,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         String token = task.getResult();
 
                         //send token to server
-                        sendRegistrationToServer(userToken,token);
+                        sendRegistrationToServer(finalUserToken,token);
 
                     }
                 });
@@ -117,7 +119,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String userToken, String token) {
+    private static void sendRegistrationToServer(String userToken, String token) {
         JSONObject postData = new JSONObject();
         JSONObject message = new JSONObject();
         JSONObject messageBody = new JSONObject();
@@ -138,7 +140,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
-    private void sendDataToServer(final JSONObject userData,String userToken, String url) {
+    private static void sendDataToServer(final JSONObject userData, String userToken, String url) {
         ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
         final String data = userData.toString();
         Log.d(TAG,"usertoken in sendDataToServer is: "+userToken);

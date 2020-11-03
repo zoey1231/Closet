@@ -23,4 +23,31 @@
     <string name="friday">FRI</string>
     <string name="saturday">SAT</string>
     <string name="sunday">SUN</string>
+
+    <string-array name="category_array">
+        <item>Outerwear</item>
+        <item>Shirts</item>
+        <item>Trousers</item>
+        <item>Shoes</item>
+        <item>Accessories</item>
+    </string-array>
+
+    <string-array name="color_array">
+        <item>Red</item>
+        <item>Orange</item>
+        <item>Yellow</item>
+        <item>Blue</item>
+        <item>Green</item>
+        <item>Purple</item>
+        <item>Pink</item>
+        <item>Grey</item>
+        <item>White</item>
+        <item>Black</item>
+    </string-array>
+
+    <string-array name="occasion_array">
+        <item>Formal</item>
+        <item>Casual</item>
+        <item>Home</item>
+    </string-array>
 </resources>

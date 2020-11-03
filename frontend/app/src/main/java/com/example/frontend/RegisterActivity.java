@@ -1,6 +1,7 @@
 package com.example.frontend;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,13 +35,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private EditText eName, eEmail, ePassword;
     private Button btn_signup;
     private TextView linkToLogin;
-    public ProgressBar progressBar_register;
-    public String userId = EMPTY_STRING;
-    public String userToken = EMPTY_STRING;
-    public String message = EMPTY_STRING;
-    public String email = EMPTY_STRING;
+    private ProgressBar progressBar_register;
+    private String message = EMPTY_STRING;
+    private String userId = EMPTY_STRING;
+    private String userToken = EMPTY_STRING;
+    private String email = EMPTY_STRING;
 
 
+    static CountingIdlingResource idlingResource = new CountingIdlingResource("send_register_data");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void register() {
-
+        idlingResource.increment();
         String inputName = eName.getText().toString().trim();
         String inputEmail = eEmail.getText().toString().trim();
         String inputPassword = ePassword.getText().toString().trim();
@@ -112,6 +114,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 e.printStackTrace();
                 Log.d(TAG,"Fail to send request to server");
                 Log.d(TAG, String.valueOf(e));
+                idlingResource.decrement();
             }
 
             @Override
@@ -121,9 +124,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 //retrieve user data from server's response
                 JSONObject responseJson = null;
                 try {
-                    inputEmail = userData.getString("email");
-
                     responseJson = new JSONObject(responseStr);
+                    inputEmail = userData.getString("email");
                     if(responseJson.has("userId"))
                         userId = responseJson.getString("userId");
                     if(responseJson.has("token"))
@@ -158,6 +160,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             }
                         });
                         startActivity(new Intent(getApplicationContext(),RegisterActivity.class));
+                        idlingResource.decrement();
                     }
                     //start the app's main activity if register successfully
                     else{
@@ -169,10 +172,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         });
                         Log.d(TAG,"email: "+email+" userId: "+ userId+ " userToken: "+ userToken);
                         startActivity(new Intent(getApplicationContext(),MainActivity.class).putExtra("user",new User(userId,userToken,email)));
-
+                        idlingResource.decrement();
                     }
-
-
 
                 } else {
                     // Request not successful
@@ -182,15 +183,19 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             public void run() {
                                 final Toast toast = makeText(RegisterActivity.this,message,Toast.LENGTH_LONG);
                                 toast.show();
-
                             }
                         });
                         startActivity(new Intent(getApplicationContext(),RegisterActivity.class));
+                        idlingResource.decrement();
                     }
                 }
             }
         });
+
     }
 
+    public static CountingIdlingResource getRegisterIdlingResourceInTest() {
+        return idlingResource;
+    }
 
 }

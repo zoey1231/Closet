@@ -154,19 +154,19 @@
         android:text="Give me some outfit ideas"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.445"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sv_weather"
-        app:layout_constraintVertical_bias="0.024" />
+        app:layout_constraintVertical_bias="0.025" />
 
     <ScrollView
         android:id="@+id/sv_outfit"
-        android:layout_width="match_parent"
-        android:layout_height="380dp"
+        android:layout_width="404dp"
+        android:layout_height="442dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="80dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -181,15 +181,15 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/tv_outfit1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:text="Brown coat, check pant with platform shoes"
+                    android:layout_marginBottom="4dp"
+                    android:text=""
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -203,150 +203,58 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:padding="25dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_outfit1">
+                    app:layout_constraintTop_toBottomOf="@id/tv_outfit1"
+                    app:layout_constraintVertical_bias="0.00">
 
                     <ImageView
                         android:id="@+id/iv_outfit1_cloth1"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/outwear_sample1"
-                        tools:src="@tools:sample/avatars" />
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_weight="1" />
 
                     <ImageView
                         android:id="@+id/iv_outfit1_cloth2"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/trouser_sample2"
-                        tools:src="@tools:sample/avatars" />
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginLeft="30dp"
+                        android:layout_weight="1" />
 
-                    <ImageView
-                        android:id="@+id/iv_outfit1_cloth3"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/shoes_1"
-                        tools:src="@tools:sample/avatars" />
                 </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="150dp">
-
-                <TextView
-                    android:id="@+id/tv_outfit2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:text="Pink shirt, track pants with sneakers"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.056" />
 
                 <LinearLayout
-                    android:id="@+id/ll_outfit2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_outfit2"
-                    app:layout_constraintVertical_bias="1.0">
+                    app:layout_constraintTop_toBottomOf="@+id/ll_outfit1">
 
-                    <ImageView
-                        android:id="@+id/iv_outfit2_cloth1"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
+                    <Button
+                        android:id="@+id/likeBtn"
+                        android:layout_width="0dip"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="40dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/shirt_sample2"
-                        tools:src="@tools:sample/avatars" />
+                        android:text="LIke it!" />
 
-                    <ImageView
-                        android:id="@+id/iv_outfit2_cloth2"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
+                    <Button
+                        android:id="@+id/disLikeBtn"
+                        android:layout_width="0dip"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="40dp"
                         android:layout_weight="1"
-                        app:srcCompat="@drawable/trouser_sample3"
-                        tools:src="@tools:sample/avatars" />
-
-                    <ImageView
-                        android:id="@+id/iv_outfit2_cloth3"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/shoes_sample2"
-                        tools:src="@tools:sample/avatars" />
+                        android:text="Dislike" />
                 </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="200dp">
-
-                <TextView
-                    android:id="@+id/tv_outfit3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:text="Beige shirt, check pants with platform shoes"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.056" />
-
-                <LinearLayout
-                    android:id="@+id/ll_outfit3"
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_outfit3"
-                    app:layout_constraintVertical_bias="1.0">
-
-                    <ImageView
-                        android:id="@+id/iv_outfit3_cloth1"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/shirt_sample1"
-                        tools:src="@tools:sample/avatars" />
-
-                    <ImageView
-                        android:id="@+id/iv_outfit3_cloth2"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/trouser_sample2"
-                        tools:src="@tools:sample/avatars" />
-
-                    <ImageView
-                        android:id="@+id/iv_outfit3_cloth3"
-                        android:layout_width="110dp"
-                        android:layout_height="110dp"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/shoes_1"
-                        tools:src="@tools:sample/avatars" />
-                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
