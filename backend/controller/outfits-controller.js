@@ -1,40 +1,29 @@
 require('dotenv').config();
+
 const HttpError = require('../model/http-error');
+const Clothes = require('../model/clothes');
 const Outfit = require('../model/outfit');
+const { generateOutfit } = require('../service/outfits-service');
+const LOG = require('../utils/logger');
 
-const getOneOutfit = (req, res, next) => {
-  const userId = req.userData.userId;
+const getOneOutfit = async (req, res, next) => {
+  let response;
+  try {
+    response = await generateOutfit(req);
+  } catch (exception) {
+    LOG.error(req._id, exception.message);
+    next(new HttpError('Failed to generate an outfit', 500));
+  }
 
-  const exampleBody = {
-    id: '1234567890',
-    clothes: [
-      {
-        seasons: ['Summer', 'Fall'],
-        occasions: ['home'],
-        category: 't-shirt',
-        color: 'blue',
-        name: '',
-        user: '5f8e85a397320028983485e1',
-        updated: '2020-10-24T01:34:03.990Z',
-        id: '5f93848bbe8de13900c31f3c',
-      },
-      {
-        seasons: ['Summer', 'Fall'],
-        occasions: ['home'],
-        category: 't-shirt',
-        color: 'blue',
-        name: '',
-        user: '5f8e85a397320028983485e1',
-        updated: '2020-10-24T01:34:49.217Z',
-        id: '5f9384b9be8de13900c31f3d',
-      },
-    ],
-  };
+  if (!response.success) {
+    const { message, warning } = response;
+    return res.status(400).json({ message, warning });
+  }
 
-  res.status(200).json(exampleBody).end();
+  res.status(200).json(response);
 };
 
-const getMultipleOutfits = (req, res, next) => {
+const getMultipleOutfits = async (req, res, next) => {
   // Complex Logic + Notification go here
 };
 
