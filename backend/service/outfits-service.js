@@ -62,7 +62,9 @@ const generateOutfit = async req => {
 
   // Return formal outfits generated today
   const getTodayFormalOutfits = async () => {
-    const today = new Date().toISOString().substr(0, 10);
+    const today = new Date()
+      .toLocaleString('sv', { timeZoneName: 'short' })
+      .substr(0, 10);
 
     TodayFormalOutfits = AllOutfits.filter(
       outfit =>
@@ -137,9 +139,9 @@ const generateOutfit = async req => {
       chosenUpperClothes.id + chosenTrousers.id + chosenShoes.id
     );
 
-    let existingOutfit;
+    let existingOutfits;
     try {
-      existingOutfit = await Outfit.find({ _id: _id });
+      existingOutfits = await Outfit.find({ _id: _id });
     } catch (exception) {
       LOG.error(exception.message);
       return {
@@ -149,18 +151,18 @@ const generateOutfit = async req => {
     }
 
     // If the outfit has generated before, return it
-    if (existingOutfit.length && existingOutfit[0] instanceof Outfit) {
+    if (existingOutfits.length && existingOutfits[0] instanceof Outfit) {
       return {
         success: true,
         message: 'New outfit generated successfully!',
         warning,
         outfit: {
-          id: existingOutfit.id,
-          clothes: existingOutfit.clothes,
-          created: existingOutfit.created,
+          id: existingOutfits[0].id,
+          clothes: existingOutfits[0].clothes,
+          created: existingOutfits[0].created,
           occasions,
           seasons,
-          opinion: existingOutfit.opinion,
+          opinion: existingOutfits[0].opinion,
           user: userId,
           chosenUpperClothes,
           chosenTrousers,
@@ -176,6 +178,9 @@ const generateOutfit = async req => {
       seasons,
       opinion: 'unknown',
       user: userId,
+      created: new Date().setTime(
+        new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
+      ),
     });
 
     try {
@@ -193,7 +198,7 @@ const generateOutfit = async req => {
       message: 'New outfit generated successfully!',
       warning,
       outfit: {
-        id: newOutfit.id,
+        _id: newOutfit._id,
         clothes: newOutfit.clothes,
         created: newOutfit.created,
         occasions,
@@ -286,10 +291,10 @@ const generateOutfit = async req => {
 
     const allNormal = AllClothes.filter(c => !c.occasions.includes('formal'));
 
-    const normalOuterwear = allNormal.filter(c => c.category === 'outerwear');
-    const normalShirt = allNormal.filter(c => c.category === 'shirt');
-    const normalTrousers = allNormal.filter(c => c.category === 'trousers');
-    const normalShoes = allNormal.filter(c => c.category === 'shoes');
+    let normalOuterwear = allNormal.filter(c => c.category === 'outerwear');
+    let normalShirt = allNormal.filter(c => c.category === 'shirt');
+    let normalTrousers = allNormal.filter(c => c.category === 'trousers');
+    let normalShoes = allNormal.filter(c => c.category === 'shoes');
 
     // Must have the follow three
     // 1. outerwear OR shirt
@@ -318,12 +323,18 @@ const generateOutfit = async req => {
     let currSeason = getSeasonNorth();
 
     // filter out other seasons
-    normalOuterwear = normalOuterwear.filter(c =>
-      c.seasons.includes(currSeason)
+    normalOuterwear = normalOuterwear.filter(
+      c => c.seasons.includes(currSeason) || c.seasons.includes('All')
     );
-    normalShirt = normalShirt.filter(c => c.seasons.includes(currSeason));
-    normalShoes = normalShoes.filter(c => c.seasons.includes(currSeason));
-    normalTrousers = normalTrousers.filter(c => c.seasons.includes(currSeason));
+    normalShirt = normalShirt.filter(
+      c => c.seasons.includes(currSeason) || c.seasons.includes('All')
+    );
+    normalShoes = normalShoes.filter(
+      c => c.seasons.includes(currSeason) || c.seasons.includes('All')
+    );
+    normalTrousers = normalTrousers.filter(
+      c => c.seasons.includes(currSeason) || c.seasons.includes('All')
+    );
 
     // check if outfit exists
     let allOutfitIds = await (await Outfit.find({ user: userId })).map(
@@ -342,11 +353,11 @@ const generateOutfit = async req => {
     );
 
     let chosenUpperClothes, chosenTrousers, chosenShoes;
-    for (const outerwear in normalOuterwear) {
-      for (const shirt in normalShirt) {
-        for (const trousers in normalTrousers) {
-          for (const shoes in normalShoes) {
-            let random = randomInt(1);
+    for (const outerwear of normalOuterwear) {
+      for (const shirt of normalShirt) {
+        for (const trousers of normalTrousers) {
+          for (const shoes of normalShoes) {
+            let random = randomInt(2);
 
             let outfitId = random
               ? hashCode(shirt.id + trousers.id + shoes.id)
@@ -363,6 +374,8 @@ const generateOutfit = async req => {
         }
       }
     }
+
+    // TODO (M8): return error if run out of clothes
 
     return {
       success: true,
@@ -389,7 +402,7 @@ const generateOutfit = async req => {
     LOG.error(exception.message);
     return {
       success: false,
-      message: 'Failed to initalize',
+      message: 'Failed to initialize',
       warning: exception.message,
     };
   }
