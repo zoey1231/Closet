@@ -35,27 +35,26 @@ const COLOURS = [
  * @param {String} userId
  */
 const generateOutfit = async req => {
-  let userId = req.userData.userId;
-  let allOutfits = [];
-  let todayFormalOutfits = [];
-  let todayFormalEvents = [];
-  let allClothes = []; // Array of Clothes object
-  let todayWhether = {};
+  const userId = req.userData.userId;
+  let AllOutfits = [];
+  let TodayFormalOutfits = [];
+  let TodayFormalEvents = [];
+  let AllClothes = []; // Array of Clothes object
+  let TodayWhether = {};
 
-  /* Preparation
-   * Initialize the following things
-   * 1. all outfits in database
-   * 2. formal outfits generated today
-   * 3. today's formal events
-   */
-  await getAllOutfits();
-  await getTodayFormalOutfits();
-  await getTodayFormalEvents();
+  // Return all clothes in database
+  const getAllClothes = async () => {
+    try {
+      AllClothes = await Clothes.find({ user: userId });
+    } catch (exception) {
+      LOG.error(exception.message);
+    }
+  };
 
   // Return all outfits in the database
   const getAllOutfits = async () => {
     try {
-      allOutfits = await Outfit.find({ user: userId });
+      AllOutfits = await Outfit.find({ user: userId });
     } catch (exception) {
       LOG.error(exception.message);
     }
@@ -65,7 +64,7 @@ const generateOutfit = async req => {
   const getTodayFormalOutfits = async () => {
     const today = new Date().toISOString().substr(0, 10);
 
-    todayFormalOutfits = allOutfits.filter(
+    TodayFormalOutfits = AllOutfits.filter(
       outfit =>
         outfit.created.toISOString().substr(0, 10) === today &&
         outfit.occasions.includes('formal')
@@ -91,7 +90,7 @@ const generateOutfit = async req => {
       const keyword = e.summary.toLowerCase().split(' ');
       for (const word of keyword) {
         if (FORMAL_KEYWORDS.includes(word)) {
-          todayFormalEvents.push(e.summary);
+          TodayFormalEvents.push(e.summary);
           break;
         }
       }
@@ -113,7 +112,7 @@ const generateOutfit = async req => {
     const { today } = response;
     const { temp, weather } = today;
 
-    todayWhether = { temperature: temp, weather: weather[0].description };
+    TodayWhether = { temperature: temp, weather: weather[0].description };
   };
 
   // Save the outfit into database
@@ -212,44 +211,20 @@ const generateOutfit = async req => {
   const createFormalOutfit = async () => {
     await getAllClothes();
 
-    const formalOuterwear = [];
-    const formalShirt = [];
-    const formalTrousers = [];
-    const formalShoes = [];
+    const allFormal = AllClothes.filter(c => c.occasions.includes('formal'));
 
-    allClothes.forEach(c => {
-      switch (c.category) {
-        case 'outerwear':
-          if (c.occasions.includes('formal')) {
-            formalOuterwear.push(c);
-          }
-          break;
-        case 'shirt':
-          if (c.occasions.includes('formal')) {
-            formalShirt.push(c);
-          }
-          break;
-        case 'trousers':
-          if (c.occasions.includes('formal')) {
-            formalTrousers.push(c);
-          }
-          break;
-        case 'shoes':
-          if (c.occasions.includes('formal')) {
-            formalShoes.push(c);
-          }
-          break;
-        default:
-          break;
-      }
-    });
+    const formalOuterwear = allFormal.filter(c => c.category === 'outerwear');
+    const formalShirt = allFormal.filter(c => c.category === 'shirt');
+    const formalTrousers = allFormal.filter(c => c.category === 'trousers');
+    const formalShoes = allFormal.filter(c => c.category === 'shoes');
 
-    /* Requirements to return a formal outfit
-      1. have formal outerwear and formal shirt
-      2. have formal trousers
-      3. have formal shoes
-      if no formal outwear and no formal shirt
-   */
+    /**
+     * Requirements to return a formal outfit
+     * 1. have formal outerwear and formal shirt
+     * 2. have formal trousers
+     * 3. have formal shoes
+     * if no formal outwear and no formal shirt
+     */
     if (
       (!formalOuterwear.length && !formalShirt.length) ||
       !formalTrousers.length ||
@@ -257,9 +232,9 @@ const generateOutfit = async req => {
     ) {
       let warning =
         'We notice you have these events today, but you do not have any formal clothes!\n';
-      for (const event of todayFormalEvents) {
+      TodayFormalEvents.forEach(event => {
         warning += `${event}\n`;
-      }
+      });
 
       // Generate a normal outfit instead
       const result = await createNormalOutfit();
@@ -270,30 +245,31 @@ const generateOutfit = async req => {
     }
 
     let chosenUpperClothes, chosenTrousers, chosenShoes;
+
     if (!formalOuterwear.length) {
+      // if we do not have any formal outerwear
       chosenUpperClothes = formalShirt[randomInt(formalShirt.length)];
     } else if (!formalShirt.length) {
+      // if we do not have any formal shirts
       chosenUpperClothes = formalOuterwear[randomInt(formalOuterwear.length)];
     } else {
       // If we have both formal outerwear and formal shirt, choose one of them randomly
-      const r = randomInt(2);
-      if (r === 0) {
-        chosenUpperClothes = formalShirt[randomInt(formalShirt.length)];
-      } else {
-        chosenUpperClothes = formalOuterwear[randomInt(formalOuterwear.length)];
-      }
+      chosenUpperClothes = randomInt(2)
+        ? formalShirt[randomInt(formalShirt.length)]
+        : formalOuterwear[randomInt(formalOuterwear.length)];
     }
 
     chosenTrousers = formalTrousers[randomInt(formalTrousers.length)];
     chosenShoes = formalShoes[randomInt(formalShoes.length)];
 
-    /*  success: indication whether we can generate an outfit or not
-      chosenUpperClothes: upper clothes (outerwear or shirt) to include
-      chosenTrousers: trousers to include
-      chosenShoes: shoes to include
-      occasions: formal outfit,
-      seasons: all seasons,
-   */
+    /**
+     * success: indication whether we can generate an outfit or not
+     * chosenUpperClothes: upper clothes (outerwear or shirt) to include
+     * chosenTrousers: trousers to include
+     * chosenShoes: shoes to include
+     * occasions: formal outfit,
+     * seasons: all seasons,
+     */
     return {
       success: true,
       chosenUpperClothes,
@@ -313,7 +289,7 @@ const generateOutfit = async req => {
     let normalTrousers = [];
     let normalShoes = [];
 
-    allClothes.forEach(c => {
+    AllClothes.forEach(c => {
       switch (c.category) {
         case 'outerwear':
           if (!c.occasions.includes('formal')) {
@@ -423,34 +399,40 @@ const generateOutfit = async req => {
     };
   };
 
-  // Return all clothes in database
-  const getAllClothes = async () => {
-    try {
-      allClothes = await Clothes.find({ user: userId });
-    } catch (exception) {
-      LOG.error(exception.message);
-    }
-  };
+  /**
+   * Preparation and setup
+   * Initialize the following things
+   * 1. all outfits in database
+   * 2. formal outfits generated today
+   * 3. today's formal events
+   */
+  try {
+    await getAllOutfits();
+    await getTodayFormalOutfits();
+    await getTodayFormalEvents();
+  } catch (exception) {
+    LOG.error(exception.message);
+    return {
+      success: false,
+      message: 'Failed to initalize',
+      warning: exception.message,
+    };
+  }
 
   let result;
-  if (!todayFormalOutfits.length) {
-    if (todayFormalEvents.length) {
-      // Case 1: no formal outfits and have formal events => create a formal outfit
-      result = await createFormalOutfit();
-    } else {
-      // Case 2: no formal outfits but no formal events => create a normal outfit
-      result = await createNormalOutfit();
-    }
+  if (!TodayFormalOutfits.length && TodayFormalEvents.length) {
+    // Case 1: no formal outfits and have formal events => create a formal outfit
+    result = await createFormalOutfit();
+  } else if (!TodayFormalOutfits.length && !TodayFormalEvents.length) {
+    // Case 2: no formal outfits and/but no formal events => create a normal outfit
+    result = await createNormalOutfit();
   } else {
-    // Case 3: have formal outfit => create a normal outfit
+    // Case 3: have formal outfit but no formal event => create a normal outfit
     result = await createNormalOutfit();
   }
 
   const outfit = await saveOutfit(result);
   return outfit;
-
-  // Dummy response - return the first outfit in database
-  // return allOutfits[0];
 };
 
 /**
