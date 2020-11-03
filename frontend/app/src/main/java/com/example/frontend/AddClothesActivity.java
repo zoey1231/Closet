@@ -393,7 +393,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 Toast.makeText(AddClothesActivity.this, "Something went wrong", Toast.LENGTH_LONG);
             }
         } else {
-            Toast.makeText(AddClothesActivity.this, "You haven't picked image", Toast.LENGTH_LONG);
+            Toast.makeText(AddClothesActivity.this, "You haven't picked an image", Toast.LENGTH_LONG);
         }
     }
 

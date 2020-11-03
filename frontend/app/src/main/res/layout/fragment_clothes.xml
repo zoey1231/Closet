@@ -161,8 +161,9 @@
     </HorizontalScrollView>
 
     <ScrollView
-        android:layout_width="412dp"
-        android:layout_height="553dp"
+        android:id="@+id/scrollView2"
+        android:layout_width="431dp"
+        android:layout_height="595dp"
         android:layout_marginEnd="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -190,8 +191,19 @@
                 android:layout_height="100dp"
                 android:layout_marginLeft="30dp" />
 
-        </GridLayout>
-    </ScrollView>
+            <Spinner
+                android:id="@+id/sp_clothes1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_marginLeft="70dp"
+                android:background="@drawable/dots" />
 
+
+        </GridLayout>
+
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 
-public class UpdateClothesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class EditClothesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private ImageView image;
     private ImageButton buttonImage;
     private Button buttonSave;
@@ -54,35 +54,35 @@ public class UpdateClothesActivity extends AppCompatActivity implements AdapterV
 
         //supply the spinners with the String array defined in resource using instances of ArrayAdapter
         activity = new AddClothesActivity();
-        activity.setAdapter(R.array.category_array,spinner_category);
-        activity.setAdapter(R.array.color_array,spinner_color);
-        activity.setAdapter(R.array.occasion_array,spinner_occasion);
+//        activity.setAdapter(R.array.category_array,spinner_category);
+//        activity.setAdapter(R.array.color_array,spinner_color);
+//        activity.setAdapter(R.array.occasion_array,spinner_occasion);
 
-        spinner_category.setOnItemSelectedListener(this);
-        spinner_color.setOnItemSelectedListener(this);
-        spinner_occasion.setOnItemSelectedListener(this);
+//        spinner_category.setOnItemSelectedListener(this);
+//        spinner_color.setOnItemSelectedListener(this);
+//        spinner_occasion.setOnItemSelectedListener(this);
 
         //show cloth's existing attributes as default values
         //TODO: get cloth's info, now cloth is NULL
-        String[] stringArray = getResources().getStringArray(R.array.category_array);
-        int index = Arrays.asList(stringArray).indexOf(clothes.getCategory());
-        spinner_category.setSelection(index);
-
-        stringArray = getResources().getStringArray(R.array.color_array);
-        index = Arrays.asList(stringArray).indexOf(clothes.getColor());
-        spinner_category.setSelection(index);
-
-        stringArray = getResources().getStringArray(R.array.occasion_array);
-        index = Arrays.asList(stringArray).indexOf(clothes.getOccasions().get(0));
-        spinner_category.setSelection(index);
-
-        et_clothName.setText(clothes.getName());
-
-        checkBox_spring.setChecked(clothes.getSeasons().contains("Spring")?true:false);
-        checkBox_summer.setChecked(clothes.getSeasons().contains("Summer")?true:false);
-        checkBox_fall.setChecked(clothes.getSeasons().contains("Fall")?true:false);
-        checkBox_winter.setChecked(clothes.getSeasons().contains("Winter")?true:false);
-        checkBox_all.setChecked(clothes.getSeasons().contains("All")?true:false);
+//        String[] stringArray = getResources().getStringArray(R.array.category_array);
+//        int index = Arrays.asList(stringArray).indexOf(clothes.getCategory());
+//        spinner_category.setSelection(index);
+//
+//        stringArray = getResources().getStringArray(R.array.color_array);
+//        index = Arrays.asList(stringArray).indexOf(clothes.getColor());
+//        spinner_category.setSelection(index);
+//
+//        stringArray = getResources().getStringArray(R.array.occasion_array);
+//        index = Arrays.asList(stringArray).indexOf(clothes.getOccasions().get(0));
+//        spinner_category.setSelection(index);
+//
+//        et_clothName.setText(clothes.getName());
+//
+//        checkBox_spring.setChecked(clothes.getSeasons().contains("Spring")?true:false);
+//        checkBox_summer.setChecked(clothes.getSeasons().contains("Summer")?true:false);
+//        checkBox_fall.setChecked(clothes.getSeasons().contains("Fall")?true:false);
+//        checkBox_winter.setChecked(clothes.getSeasons().contains("Winter")?true:false);
+//        checkBox_all.setChecked(clothes.getSeasons().contains("All")?true:false);
 
     }
 
