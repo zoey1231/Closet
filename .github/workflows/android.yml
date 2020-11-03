@@ -26,7 +26,6 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
-
     - uses: actions/checkout@v2
     - name: set up JDK 1.8
       uses: actions/setup-java@v1
@@ -39,4 +38,4 @@ jobs:
     
     - name: Build with Gradle
       working-directory: ${{ env.working-directory }}
-      run: ./gradlew test
+      run: ./gradlew build

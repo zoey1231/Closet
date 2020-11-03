@@ -40,7 +40,7 @@ const getWeatherInfo = async place => {
       }
     );
   } catch (err) {
-    LOG.error(err);
+    LOG.error(err.message);
     return {
       success: false,
       message: 'Could not get weather information, please try again later',
@@ -56,10 +56,12 @@ const getWeatherInfo = async place => {
 
   const { current, daily } = response.data;
 
-  // Convert the timestamp to a more readable format
-  const current_time = timestampToDate(current.dt);
-  const today_time = timestampToDate(daily[0].dt);
-  const tomorrow_time = timestampToDate(daily[1].dt);
+  /* Convert the timestamp to a more readable format,
+     The timestamp from OpenWeather APi is in seconds, so we need to convert it into milliseconds
+  */
+  const current_time = timestampToDate(current.dt * 1000);
+  const today_time = timestampToDate(daily[0].dt * 1000);
+  const tomorrow_time = timestampToDate(daily[1].dt * 1000);
 
   return {
     success: true,
@@ -99,7 +101,7 @@ const getGeoCode = async place => {
       },
     });
   } catch (err) {
-    LOG.error(err);
+    LOG.error(err.message);
 
     return {
       success: false,

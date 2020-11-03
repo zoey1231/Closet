@@ -12,6 +12,8 @@ const HttpError = require('../model/http-error');
 const Clothes = require('../model/clothes');
 const User = require('../model/user');
 
+const ALLOWED_EXTENSIONS = ['.jpg', '.png', '.jpeg', '.jpe'];
+
 /**
  * Post image
  * - userId
@@ -38,7 +40,7 @@ const postImage = async (req, res, next) => {
 
   // limiting to one file extension for now
   // TODO: allow other image file extension
-  if (imageFileExtension !== '.jpg') {
+  if (!ALLOWED_EXTENSIONS.includes(imageFileExtension)) {
     fs.unlink(tempPath, err => {
       if (err) return next(new HttpError('Failed to upload image', 500));
     });
@@ -70,6 +72,7 @@ const postImage = async (req, res, next) => {
       return next(new HttpError('Error moving image', 500));
     }
   } catch (exception) {
+    LOG.error(req._id, exception.message);
     return next(new HttpError('Failed uploading image', 500));
   }
 
@@ -84,18 +87,27 @@ const deleteImage = async (req, res, next) => {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
-  const imageFileExtension = '.jpg';
-  const targetPath = path.join(
-    `./${process.env.IMAGE_FOLDER_NAME}/${userId}/${clothingId}${imageFileExtension}`
-  );
-
   try {
-    if (!fs.existsSync(targetPath)) {
+    let fileExists;
+    let deletePath;
+    ALLOWED_EXTENSIONS.every(extension => {
+      const targetPath = path.join(
+        `./${process.env.IMAGE_FOLDER_NAME}/${userId}/${clothingId}${extension}`
+      );
+
+      if (fs.existsSync(targetPath)) {
+        fileExists = true;
+        deletePath = targetPath;
+      }
+    });
+
+    if (!fileExists || !deletePath) {
       return next(new HttpError('Image does not exist', 500));
     }
 
-    fs.unlinkSync(targetPath);
+    fs.unlinkSync(deletePath);
   } catch (exception) {
+    LOG.error(req._id, exception.message);
     return next(new HttpError('Failed to get image', 500));
   }
 

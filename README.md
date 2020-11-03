@@ -1,6 +1,9 @@
 ![Backend CD](https://github.com/JohnLi1999/closet/workflows/Backend%20CD/badge.svg)
 ![Node.js CI](https://github.com/JohnLi1999/closet/workflows/Node.js%20CI/badge.svg)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+<br>
 ![Android CI](https://github.com/JohnLi1999/closet/workflows/Android%20CI/badge.svg)
+
 
 # Azure Server
 - VM Name: `closet`

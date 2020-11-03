@@ -16,7 +16,7 @@ const sendNotification = async (req, res, next) => {
   try {
     await admin.messaging().sendToDevice(registrationToken, message, option);
   } catch (err) {
-    LOG.error(err);
+    LOG.error(req._id, err.message);
 
     const error = new HttpError(
       'Could not send notification user, please try again',

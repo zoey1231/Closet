@@ -1,7 +1,10 @@
 require('dotenv').config();
 
 const multer = require('multer');
-let upload = multer({ dest: `${process.env.TEMP_IMAGE_FOLDER_NAME}` });
+let upload = multer({
+  dest: `${process.env.TEMP_IMAGE_FOLDER_NAME}`,
+  limits: { fileSize: process.env.MAX_IMAGE_SIZE },
+});
 
 const checkAuth = require('../middleware/check-auth');
 

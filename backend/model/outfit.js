@@ -13,9 +13,28 @@ const outfitSchema = new Schema(
         ref: 'Clothes',
       },
     ],
-    created: {
-      type: Date,
-      default: Date.now,
+    created: { type: Date, default: Date.now },
+    occasions: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    seasons: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    opinion: {
+      type: String,
+      required: true,
+      default: 'unknown',
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
     },
   },
   { versionKey: false }

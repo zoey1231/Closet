@@ -18,13 +18,25 @@ const getClothes = async (req, res, next) => {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
+  let savedClothes;
   try {
-    const savedClothes = await Clothes.find({ user: userId });
-    res.status(200).json(savedClothes);
+    savedClothes = req.query.category
+      ? await Clothes.find({ user: userId, category: req.query.category })
+      : await Clothes.find({ user: userId });
+
+    if (
+      !savedClothes ||
+      savedClothes.length === 0 ||
+      !Array.isArray(savedClothes)
+    ) {
+      return res.status(404).json({ message: 'Not found' });
+    }
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(req._id, exception.message);
     next(new HttpError('Failed getting clothes', 500));
   }
+
+  res.status(200).json({ clothes: savedClothes });
 };
 
 /**
@@ -47,7 +59,7 @@ const getClothing = async (req, res, next) => {
       return res.status(404).json({ message: 'Not found' });
     }
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(req._id, exception.message);
     next(new HttpError('Failed getting clothing', 500));
   }
 
@@ -101,12 +113,12 @@ const postClothing = async (req, res, next) => {
       user: userId, // TODO: perhaps use the validated id
     });
 
-    const savedClothes = await clothes.save();
-    await user.clothes.push(savedClothes.id);
+    const savedClothing = await clothes.save();
+    await user.clothes.push(savedClothing.id);
     await user.save();
-    res.status(201).json(savedClothes);
+    res.status(201).json(savedClothing);
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(req._id, exception.message);
     next(new HttpError('Failed adding clothing', 500));
   }
 };
@@ -138,7 +150,7 @@ const deleteClothing = async (req, res, next) => {
     await user.clothes.remove(clothingId);
     await user.save();
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(req._id, exception.message);
     next(new HttpError('Failed deleting clothing', 500));
   }
 
@@ -190,7 +202,7 @@ const updateClothing = async (req, res, next) => {
       name: body.name || '',
     };
 
-    const savedClothes = await Clothes.findOneAndUpdate(
+    const savedClothing = await Clothes.findOneAndUpdate(
       {
         _id: clothingId,
         user: userId,
@@ -201,23 +213,23 @@ const updateClothing = async (req, res, next) => {
       }
     );
 
-    assert(updateClothing.category === savedClothes.category);
-    assert(updateClothing.color === savedClothes.color);
+    assert(updateClothing.category === savedClothing.category);
+    assert(updateClothing.color === savedClothing.color);
     assert(
-      updateClothing.seasons.length == savedClothes.seasons.length &&
-        updateClothing.seasons.every((u, i) => u === savedClothes.seasons[i])
+      updateClothing.seasons.length == savedClothing.seasons.length &&
+        updateClothing.seasons.every((u, i) => u === savedClothing.seasons[i])
     );
     assert(
-      updateClothing.occasions.length == savedClothes.occasions.length &&
+      updateClothing.occasions.length == savedClothing.occasions.length &&
         updateClothing.occasions.every(
-          (u, i) => u === savedClothes.occasions[i]
+          (u, i) => u === savedClothing.occasions[i]
         )
     );
-    assert(updateClothing.name === savedClothes.name);
+    assert(updateClothing.name === savedClothing.name);
 
-    res.status(200).json(savedClothes);
+    res.status(200).json(savedClothing);
   } catch (exception) {
-    LOG.error(exception);
+    LOG.error(req._id, exception.message);
     if (exception.name === 'AssertionError') {
       next(new HttpError('Error updating clothes', 500));
     }
