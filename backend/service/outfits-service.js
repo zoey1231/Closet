@@ -284,37 +284,12 @@ const generateOutfit = async req => {
   const createNormalOutfit = async () => {
     await getAllClothes();
 
-    let normalOuterwear = [];
-    let normalShirt = [];
-    let normalTrousers = [];
-    let normalShoes = [];
+    const allNormal = AllClothes.filter(c => !c.occasions.includes('formal'));
 
-    AllClothes.forEach(c => {
-      switch (c.category) {
-        case 'outerwear':
-          if (!c.occasions.includes('formal')) {
-            normalOuterwear.push(c);
-          }
-          break;
-        case 'shirt':
-          if (!c.occasions.includes('formal')) {
-            normalShirt.push(c);
-          }
-          break;
-        case 'trousers':
-          if (!c.occasions.includes('formal')) {
-            normalTrousers.push(c);
-          }
-          break;
-        case 'shoes':
-          if (!c.occasions.includes('formal')) {
-            normalShoes.push(c);
-          }
-          break;
-        default:
-          break;
-      }
-    });
+    const normalOuterwear = allNormal.filter(c => c.category === 'outerwear');
+    const normalShirt = allNormal.filter(c => c.category === 'shirt');
+    const normalTrousers = allNormal.filter(c => c.category === 'trousers');
+    const normalShoes = allNormal.filter(c => c.category === 'shoes');
 
     // Must have the follow three
     // 1. outerwear OR shirt
