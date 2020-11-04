@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 node_js:
-  - 14
+  - node
 install:
   - cd backend && npm install && cd ..
 script:
