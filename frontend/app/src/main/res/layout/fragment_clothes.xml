@@ -15,13 +15,13 @@
         android:gravity="center"
         android:text="Your Closet"
         android:textSize="28sp"
-        app:layout_constraintEnd_toEndOf="@+id/button_add"
+        app:layout_constraintEnd_toEndOf="@+id/btn_clothes_add"
         app:layout_constraintHorizontal_bias="0.004"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="0dp" />
 
     <ImageButton
-        android:id="@+id/button_add"
+        android:id="@+id/btn_clothes_add"
         android:layout_width="65dp"
         android:layout_height="67dp"
         android:src="@android:drawable/ic_menu_add"
@@ -161,8 +161,9 @@
     </HorizontalScrollView>
 
     <ScrollView
-        android:layout_width="412dp"
-        android:layout_height="553dp"
+        android:id="@+id/scrollView2"
+        android:layout_width="431dp"
+        android:layout_height="595dp"
         android:layout_marginEnd="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -172,7 +173,7 @@
         app:layout_constraintVertical_bias="0.0">
 
         <GridLayout
-            android:id="@+id/grid"
+            android:id="@+id/gridLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:columnCount="3"
@@ -190,8 +191,19 @@
                 android:layout_height="100dp"
                 android:layout_marginLeft="30dp" />
 
-        </GridLayout>
-    </ScrollView>
+            <Spinner
+                android:id="@+id/sp_clothes1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_marginLeft="70dp"
+                android:background="@drawable/dots" />
 
+
+        </GridLayout>
+
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

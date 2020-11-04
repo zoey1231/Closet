@@ -12,9 +12,9 @@ import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.idling.CountingIdlingResource;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -57,7 +57,7 @@ public class LoginTest {
         onView(withId(R.id.linkToRegister)).check(matches(withText("New here? Create an Account here")));
 
         //Try to login with invalid email
-        ViewInteraction appCompatEditText4 = onView(
+        ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.etEmail_login),
                         childAtPosition(
                                 childAtPosition(
@@ -66,10 +66,10 @@ public class LoginTest {
                                 2),
                         isDisplayed()));
 
-        appCompatEditText4.perform(replaceText("hi@test.com"), closeSoftKeyboard());
+        appCompatEditText.perform(replaceText("hi@test.com"), closeSoftKeyboard());
 
 
-        ViewInteraction appCompatEditText5 = onView(
+        ViewInteraction appCompatEditText2 = onView(
                 allOf(withId(R.id.etPassword_login),
                         childAtPosition(
                                 childAtPosition(
@@ -77,9 +77,9 @@ public class LoginTest {
                                         0),
                                 1),
                         isDisplayed()));
-        appCompatEditText5.perform(replaceText("123wrong"), closeSoftKeyboard());
+        appCompatEditText2.perform(replaceText("123wrong"), closeSoftKeyboard());
 
-        ViewInteraction appCompatButton2 = onView(
+        ViewInteraction appCompatButton = onView(
                 allOf(withId(R.id.btn_login), withText("Login"),
                         childAtPosition(
                                 childAtPosition(
@@ -87,7 +87,7 @@ public class LoginTest {
                                         0),
                                 0),
                         isDisplayed()));
-        appCompatButton2.perform(click());
+        appCompatButton.perform(click());
 
         //we should not able to be logged in
         //check if all components on the Login UI are there
