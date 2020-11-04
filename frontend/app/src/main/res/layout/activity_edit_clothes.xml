@@ -7,10 +7,10 @@
     tools:context=".EditClothesActivity">
 
     <TextView
-        android:id="@+id/title_update"
+        android:id="@+id/tv_title_edit"
         android:layout_width="wrap_content"
         android:layout_height="47dp"
-        android:text="Update Clothes"
+        android:text="Edit Clothes"
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,44 +20,44 @@
         app:layout_constraintVertical_bias="0.023" />
 
     <ImageView
-        android:id="@+id/image_update"
+        android:id="@+id/iv_edit"
         android:layout_width="match_parent"
         android:layout_height="225dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_update"
+        app:layout_constraintTop_toBottomOf="@id/tv_edit"
         app:layout_constraintVertical_bias="0.017" />
 
     <TextView
-        android:id="@+id/text_update"
+        android:id="@+id/tv_edit"
         android:layout_width="165dp"
         android:layout_height="18dp"
         android:layout_marginBottom="236dp"
-        android:text="Click here to update clothes' image"
+        android:text="Click here to select image"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.211"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_update"
-        app:layout_constraintVertical_bias="0.03" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_title_edit"
+        app:layout_constraintVertical_bias="0.045" />
 
     <ImageButton
-        android:id="@+id/button_image_update"
+        android:id="@+id/btn_image_edit"
         android:layout_width="139dp"
         android:layout_height="127dp"
         android:layout_marginBottom="40dp"
-        app:layout_constraintBottom_toBottomOf="@+id/image_update"
-        app:layout_constraintEnd_toEndOf="@+id/image_update"
-        app:layout_constraintStart_toStartOf="@+id/image_update"
-        app:layout_constraintTop_toBottomOf="@+id/title_update"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_edit"
+        app:layout_constraintEnd_toEndOf="@+id/iv_edit"
+        app:layout_constraintStart_toStartOf="@+id/iv_edit"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title_edit"
         app:layout_constraintVertical_bias="0.863"
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <Button
-        android:id="@+id/button_save_update"
+        android:id="@+id/btn_save_edit"
         android:layout_width="128dp"
         android:layout_height="43dp"
         android:layout_marginBottom="24dp"
@@ -78,7 +78,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_update"
+        app:layout_constraintTop_toBottomOf="@+id/iv_edit"
         app:layout_constraintVertical_bias="0.0">
 
         <TableRow
@@ -102,7 +102,7 @@
                     android:text="Category" />
 
                 <Spinner
-                    android:id="@+id/spinner_category"
+                    android:id="@+id/sp_category_edit"
                     android:layout_width="match_parent"
                     android:layout_height="40dp" />
 
@@ -124,7 +124,7 @@
                     android:text="Color" />
 
                 <Spinner
-                    android:id="@+id/spinner_color"
+                    android:id="@+id/sp_color_edit"
                     android:layout_width="match_parent"
                     android:layout_height="40dp" />
 
@@ -158,13 +158,13 @@
                     android:orientation="horizontal">
 
                     <CheckBox
-                        android:id="@+id/checkBox_spring"
+                        android:id="@+id/cb_spring_edit"
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
                         android:text="Spring" />
 
                     <CheckBox
-                        android:id="@+id/checkBox_summer"
+                        android:id="@+id/cb_summer_edit"
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
                         android:text="Summer" />
@@ -177,14 +177,14 @@
                     android:orientation="horizontal">
 
                     <CheckBox
-                        android:id="@+id/checkBox_fall"
+                        android:id="@+id/cb_fall_edit"
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
                         android:layout_weight="1"
                         android:text="Fall" />
 
                     <CheckBox
-                        android:id="@+id/checkBox_winter"
+                        android:id="@+id/cb_winter_edit"
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
                         android:layout_weight="1"
@@ -197,7 +197,7 @@
                     android:orientation="horizontal">
 
                     <CheckBox
-                        android:id="@+id/checkBox_all"
+                        android:id="@+id/cb_all_edit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -224,7 +224,7 @@
                     android:text="Occasion" />
 
                 <Spinner
-                    android:id="@+id/spinner_occasion"
+                    android:id="@+id/sp_occasion_edit"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginLeft="10dp" />
@@ -253,7 +253,7 @@
                     android:text="Name(optional)" />
 
                 <EditText
-                    android:id="@+id/et_clothName"
+                    android:id="@+id/et_name_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"

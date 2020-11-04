@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.example.frontend.Clothes;
 import com.example.frontend.MainActivity;
@@ -73,6 +74,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private ArrayList<JSONObject> clothesData = new ArrayList<>();
     private ArrayList<Clothes> clothes = new ArrayList<>();
 
+    static CountingIdlingResource idlingResource_getOutfit = new CountingIdlingResource("send_get_outfit_data");
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -95,7 +98,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         iv_outfit1_cloth2 = root.findViewById(R.id.iv_outfit1_cloth2);
         ll_outfit = root.findViewById(R.id.ll_outfit);
         ll_outfit.setVisibility(View.GONE);
-        outfitIdea_btn = root.findViewById(R.id.outfitIdea_btn);
+        outfitIdea_btn = root.findViewById(R.id.btn_outfit);
         outfitIdea_btn.setOnClickListener(this);
 
         //get User's data from MainActivity and display them on fragment
@@ -109,7 +112,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.outfitIdea_btn:
+            case R.id.btn_outfit:
+                idlingResource_getOutfit.increment();
                 getOutfitData(userToken);
                 ll_outfit.setVisibility(View.VISIBLE);
                 for (int i = 0; i < clothes.size(); i++) {
@@ -214,6 +218,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/one",userToken, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                idlingResource_getOutfit.decrement();
                 e.printStackTrace();
                 Log.d(TAG,"Fail to send request to server");
                 Log.d(TAG, String.valueOf(e));
@@ -304,6 +309,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         return null;
 
+    }
+
+    public static CountingIdlingResource getRegisterIdlingResourceInTest() {
+        return idlingResource_getOutfit;
     }
 
 }

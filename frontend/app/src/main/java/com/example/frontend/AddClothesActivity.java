@@ -28,6 +28,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.example.frontend.ui.clothes.ClothesFragment;
 
@@ -75,7 +76,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private static final int IMAGE = 1;
     private JSONObject clothAttribute = new JSONObject();
     private Spinner spinner_category, spinner_color, spinner_occasion;
-    private EditText et_clothName;
+    private CheckBox checkBox_spring, checkBox_summer, checkBox_fall, checkBox_winter, checkBox_all;
+    private EditText clothName;
 
     private String message = EMPTY_STRING;
     private String cloth_id = EMPTY_STRING;
@@ -89,6 +91,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
     private java.util.HashMap<String, Clothes> clothHashMap =new HashMap<String, Clothes>();
 
+    static CountingIdlingResource idlingResource_addClothes = new CountingIdlingResource("send_add_clothes_data");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,21 +105,21 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         Log.d(TAG,user.getuserId());
         Log.d(TAG,user.getUserToken());
 
-        image = findViewById(R.id.image_add);
-        buttonImage = findViewById(R.id.button_image_add);
-        buttonSave = findViewById(R.id.button_save_add);
-        textAdd = findViewById(R.id.text_add);
+        image = findViewById(R.id.iv_add);
+        buttonImage = findViewById(R.id.btn_image_add);
+        buttonSave = findViewById(R.id.btn_save_add);
+        textAdd = findViewById(R.id.tv_add);
 
         buttonImage.setOnClickListener(this);
         buttonSave.setOnClickListener(this);
 
         //spinners
-        spinner_category = findViewById(R.id.spinner_category);
-        spinner_color = findViewById(R.id.spinner_color);
-        spinner_occasion = findViewById(R.id.spinner_occasion);
+        spinner_category = findViewById(R.id.sp_category_add);
+        spinner_color = findViewById(R.id.sp_color_add);
+        spinner_occasion = findViewById(R.id.sp_occasion_add);
 
         //optional editable tex box for ClothName input
-        et_clothName = findViewById(R.id.et_clothName);
+        clothName = findViewById(R.id.et_name_add);
 
         //supply the spinners with the String array defined in resource using instances of ArrayAdapter
         setAdapter(R.array.category_array,spinner_category);
@@ -136,7 +139,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private void constructClothAttribute(AdapterView<?> parent, View view, int pos) {
         Log.d(TAG,"VIEW: "+ view.getId());
         switch (parent.getId()) {
-            case R.id.spinner_category:
+            case R.id.sp_category_add:
                 try {
                     String selection = parent.getItemAtPosition(pos).toString();
                     clothAttribute.put("category", selection);
@@ -145,7 +148,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                     e.printStackTrace();
                 }
                 break;
-            case R.id.spinner_color:
+            case R.id.sp_color_add:
                 try {
                     String selection = parent.getItemAtPosition(pos).toString();
                     clothAttribute.put("color", selection);
@@ -154,7 +157,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                     e.printStackTrace();
                 }
                 break;
-            case R.id.spinner_occasion:
+            case R.id.sp_occasion_add:
 
                 JSONArray occasions = new JSONArray();
                 try {
@@ -189,7 +192,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.button_image_add:
+            case R.id.btn_image_add:
                 if (ContextCompat.checkSelfPermission(AddClothesActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(AddClothesActivity.this, new String[]
@@ -204,7 +207,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
                 break;
 
-            case R.id.button_save_add:
+            case R.id.btn_save_add:
                 constructClothAttributeFromCheckBoxes();
                 constructClothAttribute_clothName();
                 //send the cloth data to server
@@ -223,11 +226,11 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void constructClothAttribute_clothName() {
-        String clothName = et_clothName.getText().toString().trim();
+        String name = clothName.getText().toString().trim();
 
         try {
-            clothAttribute.put("name", clothName);
-            Log.d(TAG, "name: "+clothName);
+            clothAttribute.put("name", name);
+            Log.d(TAG, "name: "+name);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -235,11 +238,11 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void constructClothAttributeFromCheckBoxes() {
-        CheckBox checkBox_spring = findViewById(R.id.checkBox_spring);
-        CheckBox checkBox_summer = findViewById(R.id.checkBox_summer);
-        CheckBox checkBox_fall = findViewById(R.id.checkBox_fall);
-        CheckBox checkBox_winter = findViewById(R.id.checkBox_winter);
-        CheckBox checkBox_all = findViewById(R.id.checkBox_all);
+        checkBox_spring = findViewById(R.id.cb_spring_add);
+        checkBox_summer = findViewById(R.id.cb_summer_add);
+        checkBox_fall = findViewById(R.id.cb_fall_add);
+        checkBox_winter = findViewById(R.id.cb_winter_add);
+        checkBox_all = findViewById(R.id.cb_all_add);
 
         //List<String> seasons = new ArrayList<String>();
         JSONArray seasons = new JSONArray();
@@ -435,6 +438,10 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         });
 
         Log.d(TAG,"finished sendImageToServer");
+    }
+
+    public static CountingIdlingResource getRegisterIdlingResourceInTest() {
+        return idlingResource_addClothes;
     }
 
 }

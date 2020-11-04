@@ -43,7 +43,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 ViewModelProviders.of(this).get(ClothesViewModel.class);
         View root = inflater.inflate(R.layout.fragment_clothes, container, false);
 
-        buttonAdd = root.findViewById(R.id.button_add);
+        buttonAdd = root.findViewById(R.id.btn_clothes_add);
         buttonAdd.setOnClickListener(this);
         clothes1 = root.findViewById(R.id.iv_clothes1);
         spinner1 = root.findViewById(R.id.sp_clothes1);
@@ -57,7 +57,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.button_add:
+            case R.id.btn_clothes_add:
                 user = MainActivity.getUser();
                 Intent addClothesIntent = new Intent(ClothesFragment.this.getContext(), AddClothesActivity.class);
                 addClothesIntent.putExtra("user", user);

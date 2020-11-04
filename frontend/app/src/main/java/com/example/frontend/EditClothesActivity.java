@@ -13,8 +13,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.Arrays;
-
 public class EditClothesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private ImageView image;
     private ImageButton buttonImage;
@@ -22,7 +20,8 @@ public class EditClothesActivity extends AppCompatActivity implements AdapterVie
     private TextView textUpdate;
 
     private Spinner spinner_category, spinner_color, spinner_occasion;
-    private EditText et_clothName;
+    private CheckBox checkBox_spring, checkBox_summer, checkBox_fall, checkBox_winter, checkBox_all;
+    private EditText clothName;
 
     private Clothes clothes;
     private AddClothesActivity activity;
@@ -30,27 +29,27 @@ public class EditClothesActivity extends AppCompatActivity implements AdapterVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update_clothes);
+        setContentView(R.layout.activity_edit_clothes);
 
-        image = findViewById(R.id.image_update);
-        buttonImage = findViewById(R.id.button_image_update);
-        buttonSave = findViewById(R.id.button_save_update);
-        textUpdate = findViewById(R.id.text_update);
+        image = findViewById(R.id.iv_edit);
+        buttonImage = findViewById(R.id.btn_image_edit);
+        buttonSave = findViewById(R.id.btn_save_edit);
+        textUpdate = findViewById(R.id.tv_edit);
 
         //spinners
-        spinner_category = findViewById(R.id.spinner_category);
-        spinner_color = findViewById(R.id.spinner_color);
-        spinner_occasion = findViewById(R.id.spinner_occasion);
-
-        //optional editable tex box for ClothName input
-        et_clothName = findViewById(R.id.et_clothName);
+        spinner_category = findViewById(R.id.sp_category_edit);
+        spinner_color = findViewById(R.id.sp_color_edit);
+        spinner_occasion = findViewById(R.id.sp_occasion_edit);
 
         //seasons checkBoxes
-        CheckBox checkBox_spring = findViewById(R.id.checkBox_spring);
-        CheckBox checkBox_summer = findViewById(R.id.checkBox_summer);
-        CheckBox checkBox_fall = findViewById(R.id.checkBox_fall);
-        CheckBox checkBox_winter = findViewById(R.id.checkBox_winter);
-        CheckBox checkBox_all = findViewById(R.id.checkBox_all);
+        checkBox_spring = findViewById(R.id.cb_spring_edit);
+        checkBox_summer = findViewById(R.id.cb_summer_edit);
+        checkBox_fall = findViewById(R.id.cb_fall_edit);
+        checkBox_winter = findViewById(R.id.cb_winter_edit);
+        checkBox_all = findViewById(R.id.cb_all_edit);
+
+        //optional editable tex box for ClothName input
+        clothName = findViewById(R.id.et_name_edit);
 
         //supply the spinners with the String array defined in resource using instances of ArrayAdapter
         activity = new AddClothesActivity();

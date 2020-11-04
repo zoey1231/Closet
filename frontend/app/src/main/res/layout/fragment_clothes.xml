@@ -15,13 +15,13 @@
         android:gravity="center"
         android:text="Your Closet"
         android:textSize="28sp"
-        app:layout_constraintEnd_toEndOf="@+id/button_add"
+        app:layout_constraintEnd_toEndOf="@+id/btn_clothes_add"
         app:layout_constraintHorizontal_bias="0.004"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="0dp" />
 
     <ImageButton
-        android:id="@+id/button_add"
+        android:id="@+id/btn_clothes_add"
         android:layout_width="65dp"
         android:layout_height="67dp"
         android:src="@android:drawable/ic_menu_add"
@@ -173,7 +173,7 @@
         app:layout_constraintVertical_bias="0.0">
 
         <GridLayout
-            android:id="@+id/grid"
+            android:id="@+id/gridLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:columnCount="3"
