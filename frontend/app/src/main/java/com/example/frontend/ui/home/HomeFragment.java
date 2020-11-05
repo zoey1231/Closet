@@ -74,7 +74,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private ArrayList<JSONObject> clothesData = new ArrayList<>();
     private ArrayList<Clothes> clothes = new ArrayList<>();
 
-    static CountingIdlingResource idlingResource_getOutfit = new CountingIdlingResource("send_get_outfit_data");
+    static CountingIdlingResource idlingResource = new CountingIdlingResource("send_get_outfit_request");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -113,7 +113,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_outfit:
-                idlingResource_getOutfit.increment();
+                idlingResource.increment();
+
                 getOutfitData(userToken);
                 ll_outfit.setVisibility(View.VISIBLE);
                 for (int i = 0; i < clothes.size(); i++) {
@@ -218,10 +219,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/one",userToken, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                idlingResource_getOutfit.decrement();
                 e.printStackTrace();
                 Log.d(TAG,"Fail to send request to server");
                 Log.d(TAG, String.valueOf(e));
+                idlingResource.decrement();
             }
 
             @Override
@@ -243,10 +244,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    idlingResource.decrement();
 
                 } else {
                     // Request not successful
                     Log.d(TAG,"Outfit request is unsuccessful: "+responseStr);
+                    idlingResource.decrement();
                 }
             }
         });
@@ -312,7 +315,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     public static CountingIdlingResource getRegisterIdlingResourceInTest() {
-        return idlingResource_getOutfit;
+        return idlingResource;
     }
 
 }

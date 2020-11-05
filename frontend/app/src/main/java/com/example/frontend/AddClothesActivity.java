@@ -91,7 +91,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
     private java.util.HashMap<String, Clothes> clothHashMap =new HashMap<String, Clothes>();
 
-    static CountingIdlingResource idlingResource_addClothes = new CountingIdlingResource("send_add_clothes_data");
+    static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_data");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +106,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         Log.d(TAG,user.getUserToken());
 
         image = findViewById(R.id.iv_add);
+        image.setVisibility(View.INVISIBLE);
         buttonImage = findViewById(R.id.btn_image_add);
         buttonSave = findViewById(R.id.btn_save_add);
         textAdd = findViewById(R.id.tv_add);
@@ -193,6 +194,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_image_add:
+                idlingResource.increment();
+
                 if (ContextCompat.checkSelfPermission(AddClothesActivity.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(AddClothesActivity.this, new String[]
@@ -203,8 +206,9 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 textAdd.setVisibility(View.GONE);
                 Intent intentAdd = new Intent(Intent.ACTION_PICK);
                 intentAdd.setType("image/*");
-                startActivityForResult(intentAdd, 1);
 
+                startActivityForResult(intentAdd, 1);
+                idlingResource.decrement();
                 break;
 
             case R.id.btn_save_add:
@@ -388,6 +392,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 stream = getContentResolver().openInputStream(uri);
                 bitmap = BitmapFactory.decodeStream(stream);
                 image.setImageBitmap(bitmap);
+                image.setVisibility(View.VISIBLE);
                 path = getPath(uri);
                 file = new File(path);
 
@@ -441,7 +446,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     }
 
     public static CountingIdlingResource getRegisterIdlingResourceInTest() {
-        return idlingResource_addClothes;
+        return idlingResource;
     }
 
 }

@@ -19,6 +19,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.example.frontend.AddClothesActivity;
 import com.example.frontend.Clothes;
@@ -36,6 +37,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private ImageButton buttonAdd;
     private ImageView clothes1;
     private Spinner spinner1;
+
+    static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_request");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -58,6 +61,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_clothes_add:
+                idlingResource.increment();
+
                 user = MainActivity.getUser();
                 Intent addClothesIntent = new Intent(ClothesFragment.this.getContext(), AddClothesActivity.class);
                 addClothesIntent.putExtra("user", user);
@@ -65,7 +70,9 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 Log.d(TAG,user.getEmail());
                 Log.d(TAG,user.getuserId());
                 Log.d(TAG,user.getUserToken());
+
                 startActivityForResult(addClothesIntent, 1);
+                idlingResource.decrement();
                 break;
         }
     }
@@ -108,5 +115,9 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+    }
+
+    public static CountingIdlingResource getRegisterIdlingResourceInTest() {
+        return idlingResource;
     }
 }
