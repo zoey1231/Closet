@@ -1,17 +1,9 @@
-sudo: false
 language: node_js
-node_js:
-  - '14'
+node_js: 14
 services: mongodb
-branches:
-  only:
-  - master
 cache:
-  directories:
-  - node_modules
-before_install:
-- cd backend
-install:
-- npm ci
-script:
-- npm test
+  directories: backend/node_modules
+before_install: cd backend
+install: npm install
+before_script: sleep 15
+script: npm test
