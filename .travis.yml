@@ -1,8 +1,17 @@
-language: node_js
 sudo: false
+language: node_js
 node_js:
-  - node
+  - '14'
+services: mongodb
+branches:
+  only:
+  - master
+cache:
+  directories:
+  - node_modules
+before_install:
+- cd backend
 install:
-  - cd backend && npm install && cd ..
+- npm ci
 script:
-  - cd backend && npm test
+- npm test
