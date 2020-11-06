@@ -162,12 +162,12 @@
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="431dp"
-        android:layout_height="595dp"
+        android:layout_width="409dp"
+        android:layout_height="557dp"
         android:layout_marginEnd="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView"
         app:layout_constraintVertical_bias="0.0">
@@ -183,13 +183,9 @@
             <ImageView
                 android:id="@+id/iv_clothes1"
                 android:layout_width="100dp"
-                android:layout_height="100dp" />
-
-            <ImageView
-                android:id="@+id/iv_clothes2"
-                android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginLeft="30dp" />
+                android:layout_row="0"
+                android:layout_column="0"/>
 
             <Spinner
                 android:id="@+id/sp_clothes1"
@@ -200,6 +196,39 @@
                 android:layout_marginLeft="70dp"
                 android:background="@drawable/dots" />
 
+            <ImageView
+                android:id="@+id/iv_clothes2"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:layout_marginLeft="30dp"/>
+
+            <Spinner
+                android:id="@+id/sp_clothes2"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:layout_marginLeft="100dp"
+                android:background="@drawable/dots" />
+
+            <ImageView
+                android:id="@+id/iv_clothes3"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_row="0"
+                android:layout_column="2"
+                android:layout_marginLeft="30dp"/>
+
+            <Spinner
+                android:id="@+id/sp_clothes3"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_row="0"
+                android:layout_column="2"
+                android:layout_marginLeft="100dp"
+                android:background="@drawable/dots" />
 
         </GridLayout>
 

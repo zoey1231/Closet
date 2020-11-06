@@ -35,8 +35,9 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private User user;
     private ClothesViewModel clothesViewModel;
     private ImageButton buttonAdd;
-    private ImageView clothes1;
-    private Spinner spinner1;
+    private ImageView clothes1, clothes2, clothes3;
+    private Spinner spinner1, spinner2, spinner3;
+    private int clickCount = 0; //for test
 
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_request");
 
@@ -49,10 +50,20 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         buttonAdd = root.findViewById(R.id.btn_clothes_add);
         buttonAdd.setOnClickListener(this);
         clothes1 = root.findViewById(R.id.iv_clothes1);
+        clothes2 = root.findViewById(R.id.iv_clothes2);
+        clothes3 = root.findViewById(R.id.iv_clothes3);
         spinner1 = root.findViewById(R.id.sp_clothes1);
         setAdapter(R.array.edit_delete_array, spinner1);
         spinner1.setOnItemSelectedListener(this);
         spinner1.setVisibility(View.GONE);
+        spinner2 = root.findViewById(R.id.sp_clothes2);
+        setAdapter(R.array.edit_delete_array, spinner2);
+        spinner2.setOnItemSelectedListener(this);
+        spinner2.setVisibility(View.GONE);
+        spinner3 = root.findViewById(R.id.sp_clothes3);
+        setAdapter(R.array.edit_delete_array, spinner3);
+        spinner3.setOnItemSelectedListener(this);
+        spinner3.setVisibility(View.GONE);
 
         return root;
     }
@@ -72,6 +83,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 Log.d(TAG,user.getUserToken());
 
                 startActivityForResult(addClothesIntent, 1);
+                clickCount++;
+                Log.d(TAG, "testing: add clothes button is clicked " + clickCount + " times");
                 idlingResource.decrement();
                 break;
         }
@@ -84,9 +97,23 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             // here you can retrieve your bundle data.
             String path = data.getStringExtra("path");
             Bitmap bitmap = BitmapFactory.decodeFile(path);
-            clothes1.setImageBitmap(bitmap);
-
-            spinner1.setVisibility(View.VISIBLE);
+            //for test
+            Log.d(TAG, "testing: come back from add clothes activity");
+            if (clickCount == 1) {
+                Log.d(TAG, "testing: trying to display the first clothes");
+                clothes1.setImageBitmap(bitmap);
+                spinner1.setVisibility(View.VISIBLE);
+            }
+            else if (clickCount == 2) {
+                Log.d(TAG, "testing: trying to display the second clothes");
+                clothes2.setImageBitmap(bitmap);
+                spinner2.setVisibility(View.VISIBLE);
+            }
+            else {
+                Log.d(TAG, "testing: trying to display the third clothes");
+                clothes3.setImageBitmap(bitmap);
+                spinner3.setVisibility(View.VISIBLE);
+            }
         }
     }
 

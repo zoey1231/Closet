@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -26,11 +25,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.test.espresso.idling.CountingIdlingResource;
-
-import com.example.frontend.ui.clothes.ClothesFragment;
 
 import org.jetbrains.annotations.NotNull;
 import java.io.File;
@@ -39,7 +34,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -66,9 +60,9 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private User user;
 
     private ImageView image;
-    private ImageButton buttonImage;
-    private Button buttonSave;
-    private TextView textAdd;
+    private ImageButton imageButton;
+    private Button saveButton;
+    private TextView text;
 
     private String path;
     private File file;
@@ -107,12 +101,12 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
         image = findViewById(R.id.iv_add);
         image.setVisibility(View.INVISIBLE);
-        buttonImage = findViewById(R.id.btn_image_add);
-        buttonSave = findViewById(R.id.btn_save_add);
-        textAdd = findViewById(R.id.tv_add);
+        imageButton = findViewById(R.id.btn_image_add);
+        saveButton = findViewById(R.id.btn_save_add);
+        text = findViewById(R.id.tv_add);
 
-        buttonImage.setOnClickListener(this);
-        buttonSave.setOnClickListener(this);
+        imageButton.setOnClickListener(this);
+        saveButton.setOnClickListener(this);
 
         //spinners
         spinner_category = findViewById(R.id.sp_category_add);
@@ -202,8 +196,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                             {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
                 }
 
-                buttonImage.setVisibility(View.GONE);
-                textAdd.setVisibility(View.GONE);
+                imageButton.setVisibility(View.GONE);
+                text.setVisibility(View.GONE);
                 Intent intentAdd = new Intent(Intent.ACTION_PICK);
                 intentAdd.setType("image/*");
 

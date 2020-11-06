@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,26 +28,19 @@ import com.example.frontend.R;
 import com.example.frontend.ServerCommunicationAsync;
 import com.squareup.picasso.Picasso;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
@@ -61,18 +53,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String monthDesc_today,dayDesc_today,date_today;
     private String monthDesc_tmr,dayDesc_tmr,date_tmr;
     private String temp_min_today,temp_max_today,temp_min_tmr,temp_max_tmr;
-
     TextView tv_date_today,tv_date_tmr,tv_temp_today,tv_temp_tmr;
     ImageView iv_icon_today,iv_icon_tmr;
-    TextView tv_outfit1;
-    ImageView iv_outfit1_cloth1,iv_outfit1_cloth2;
-    Button outfitIdea_btn;
-    LinearLayout ll_outfit;
 
-    private String message = EMPTY_STRING;
-    private String outfitId = EMPTY_STRING;
-    private ArrayList<JSONObject> clothesData = new ArrayList<>();
-    private ArrayList<Clothes> clothes = new ArrayList<>();
+    Button outfitButton;
+    LinearLayout outfit;
+    ImageView cloth1, cloth2, cloth3;
+
+    private String upperClothesId = EMPTY_STRING;
+    private String trousersId = EMPTY_STRING;
+    private String shoesId = EMPTY_STRING;
 
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_get_outfit_request");
 
@@ -93,13 +83,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         iv_icon_today = root.findViewById(R.id.iv_icon_today);
         iv_icon_tmr = root.findViewById(R.id.iv_icon_tmr);
 
-        tv_outfit1 = root.findViewById(R.id.tv_outfit1);
-        iv_outfit1_cloth1 = root.findViewById(R.id.iv_outfit1_cloth1);
-        iv_outfit1_cloth2 = root.findViewById(R.id.iv_outfit1_cloth2);
-        ll_outfit = root.findViewById(R.id.ll_outfit);
-        ll_outfit.setVisibility(View.GONE);
-        outfitIdea_btn = root.findViewById(R.id.btn_outfit);
-        outfitIdea_btn.setOnClickListener(this);
+        outfitButton = root.findViewById(R.id.btn_outfit);
+        outfitButton.setOnClickListener(this);
+        outfit = root.findViewById(R.id.ll_outfit);
+        outfit.setVisibility(View.GONE);
+        cloth1 = root.findViewById(R.id.iv_clothes1_outfit1);
+        cloth2 = root.findViewById(R.id.iv_clothes2_outfit1);
+        cloth3 = root.findViewById(R.id.iv_clothes3_outfit1);
 
         //get User's data from MainActivity and display them on fragment
         userToken = MainActivity.getUser().getUserToken();
@@ -116,14 +106,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 idlingResource.increment();
 
                 getOutfitData(userToken);
-                ll_outfit.setVisibility(View.VISIBLE);
-                for (int i = 0; i < clothes.size(); i++) {
-                    String clothId = clothes.get(i).getId();
-                    //for test
-                    if (i == 0)
-                        iv_outfit1_cloth1.setBackground(getClothesImage(userId, clothId));
-                    else iv_outfit1_cloth2.setBackground(getClothesImage(userId, clothId));
-                }
+                outfit.setVisibility(View.VISIBLE);
+                cloth1.setBackground(getClothesImage(userId, upperClothesId));
+                cloth2.setBackground(getClothesImage(userId, trousersId));
+                cloth3.setBackground(getClothesImage(userId, shoesId));
 
                 break;
         }
@@ -237,9 +223,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         //retrieve outfit data from server's response
                         responseJson = new JSONObject(responseStr);
                         extractResponseOutfitData(responseJson);
-                        for (int i = 0; i < clothesData.size(); i++) {
-                            clothes.add(extractClothesData(clothesData.get(i)));
-                        }
                         
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -256,37 +239,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void extractResponseOutfitData(JSONObject responseJson) {
-        JSONArray clothes_jsonArray;
         try {
-            if (responseJson.has("id"))
-                outfitId = responseJson.getString("id");
-            if(responseJson.has("clothes")){
-                clothes_jsonArray = responseJson.getJSONArray("clothes");
-                for (int i=0;i<clothes_jsonArray.length();i++){
-                    clothesData.add(clothes_jsonArray.getJSONObject(i));
-                }
+            if(responseJson.has("chosenUpperClothes")){
+                upperClothesId = responseJson.getString("chosenUpperClothes");
+            }
+            if(responseJson.has("chosenTrousers")){
+                upperClothesId = responseJson.getString("chosenTrousers");
+            }
+            if(responseJson.has("chosenShoes")){
+                upperClothesId = responseJson.getString("chosenShoes");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    private Clothes extractClothesData(JSONObject clothesData) {
-        Clothes cloth = new Clothes();
-
-        try {
-            if(clothesData.has("name"))
-                cloth.setName(clothesData.getString("name"));
-            if(clothesData.has("id"))
-                cloth.setId(clothesData.getString("id"));
-
-            return cloth;
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
     private Drawable getClothesImage(String userId, String clothId) {

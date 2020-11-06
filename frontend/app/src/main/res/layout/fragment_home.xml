@@ -179,9 +179,11 @@
             android:orientation="vertical"
             android:visibility="invisible">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
+                android:id="@+id/ll_outfit1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tv_outfit1"
@@ -199,9 +201,9 @@
                     app:layout_constraintVertical_bias="0.056" />
 
                 <LinearLayout
-                    android:id="@+id/ll_outfit1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/ll_clothes_outfit1"
+                    android:layout_width="411dp"
+                    android:layout_height="147dp"
                     android:orientation="horizontal"
                     android:padding="25dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -209,16 +211,23 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_outfit1"
-                    app:layout_constraintVertical_bias="0.00">
+                    app:layout_constraintVertical_bias="1.0">
 
                     <ImageView
-                        android:id="@+id/iv_outfit1_cloth1"
+                        android:id="@+id/iv_clothes1_outfit1"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_weight="1" />
 
                     <ImageView
-                        android:id="@+id/iv_outfit1_cloth2"
+                        android:id="@+id/iv_clothes2_outfit1"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginLeft="30dp"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:id="@+id/iv_clothes3_outfit1"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginLeft="30dp"
@@ -227,17 +236,17 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_btns_outfit1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_height="34dp"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ll_outfit1">
+                    app:layout_constraintTop_toBottomOf="@id/ll_clothes_outfit1">
 
                     <Button
-                        android:id="@+id/btn_like"
+                        android:id="@+id/btn_like_outfit1"
                         android:layout_width="0dip"
                         android:layout_height="35dp"
                         android:layout_marginLeft="40dp"
@@ -246,7 +255,7 @@
                         android:text="LIke it!" />
 
                     <Button
-                        android:id="@+id/btn_dislike"
+                        android:id="@+id/btn_dislike_outfit1"
                         android:layout_width="0dip"
                         android:layout_height="35dp"
                         android:layout_marginLeft="40dp"
@@ -255,7 +264,7 @@
                         android:text="Dislike" />
                 </LinearLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
