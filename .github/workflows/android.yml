@@ -38,4 +38,4 @@ jobs:
     
     - name: Build with Gradle
       working-directory: ${{ env.working-directory }}
-      run: ./gradlew build
+      run: ./gradlew test
