@@ -3,7 +3,9 @@ node_js: 14
 services: mongodb
 cache:
   directories: backend/node_modules
-before_install: cd backend
+before_install: 
+  - cd backend
+  - cp .env.sample .env
 install: npm install
 before_script: sleep 15
 script: npm test
