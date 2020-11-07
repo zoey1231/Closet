@@ -43,7 +43,7 @@ public class LoginTest {
             = new ActivityScenarioRule<>(LoginActivity.class);
 
     @Test
-    public void LoginTest() {
+    public void loginTest() {
         //we register and unregister idling resources with Espresso to validate asynchronous operations
         // such as send login data to server and wait for response before proceeding to next part of UI test
         CountingIdlingResource componentIdlingResource = LoginActivity.getRegisterIdlingResourceInTest();

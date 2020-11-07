@@ -50,7 +50,6 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        CalendarViewModel calendarViewModel = ViewModelProviders.of(this).get(CalendarViewModel.class);
         View root = inflater.inflate(R.layout.fragment_calendar, container, false);
 
         listView = root.findViewById(R.id.listView);

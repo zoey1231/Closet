@@ -36,21 +36,22 @@ public class CalendarAdapter extends ArrayAdapter<Event> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        View returnView = convertView;
         ViewHolder viewHolder;
 
-        if (convertView == null) {
+        if (returnView == null) {
 
-            convertView = mInflater.inflate(R.layout.activity_calendar_event, parent, false);
+            returnView = mInflater.inflate(R.layout.activity_calendar_event, parent, false);
             viewHolder = new ViewHolder();
-            viewHolder.text = (TextView) convertView.findViewById(R.id.label);
+            viewHolder.text = (TextView) returnView.findViewById(R.id.label);
 
-            convertView.setTag(viewHolder);
+            returnView.setTag(viewHolder);
         } else {
-            viewHolder = (ViewHolder) convertView.getTag();
+            viewHolder = (ViewHolder) returnView.getTag();
         }
 
         viewHolder.text.setText(list.get(position).getEvents());
 
-        return convertView;
+        return returnView;
     }
 }

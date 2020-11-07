@@ -38,7 +38,7 @@ public class AddClothesTest {
             = new ActivityScenarioRule<>(LoginActivity.class);
 
     @Test
-    public void AddClothesTest() {
+    public void addClothesTest() {
         CountingIdlingResource idlingResource_fragment = ClothesFragment.getRegisterIdlingResourceInTest();
         IdlingRegistry idlingRegistry_fragment = IdlingRegistry.getInstance();
         idlingRegistry_fragment.register(idlingResource_fragment);

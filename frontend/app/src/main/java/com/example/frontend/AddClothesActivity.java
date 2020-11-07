@@ -80,7 +80,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<String> seasons = new ArrayList<>();
     private ArrayList<String> occasions = new ArrayList<>();
 
-    private java.util.HashMap<String, Clothes> clothHashMap =new HashMap<String, Clothes>();
+    private HashMap<String, Clothes> clothHashMap =new HashMap<String, Clothes>();
 
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_data");
 
@@ -204,13 +204,13 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
             case R.id.btn_save_add:
                 constructClothAttributeFromCheckBoxes();
-                constructClothAttribute_clothName();
+                constructClothAttributeClothName();
                 //send the cloth data to server
                 sendClothDataToServer(clothAttribute);
 
                 while (cloth_id.equals(EMPTY_STRING)) {
                     // wait for clothing id
-                    Log.d(TAG, "testing: waiting for clothing id");
+//                    Log.d(TAG, "testing: waiting for clothing id");
                 };
                 sendImageToServer(file);
 
@@ -223,7 +223,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void constructClothAttribute_clothName() {
+    private void constructClothAttributeClothName() {
         String name = clothName.getText().toString().trim();
 
         try {
@@ -342,28 +342,30 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         try {
             if(responseJson.has("message"))
                 message = responseJson.getString("message");
-            if(responseJson.has("seasons")){
-                seasons_jsonArray = responseJson.getJSONArray("seasons");
-                for (int i=0;i<seasons_jsonArray.length();i++){
-                    seasons.add(seasons_jsonArray.getString(i));
-                }
-            }
-            if(responseJson.has("occasions")){
-                occasions_jsonArray = responseJson.getJSONArray("occasions");
-                for (int i=0;i<occasions_jsonArray.length();i++){
-                    occasions.add(occasions_jsonArray.getString(i));
-                }
-            }
-            if(responseJson.has("category"))
-                category = responseJson.getString("category");
-            if(responseJson.has("color"))
-                color = responseJson.getString("color");
-            if(responseJson.has("name"))
-                name = responseJson.getString("name");
-            if(responseJson.has("user"))
-                cloth_user = responseJson.getString("user");
-            if(responseJson.has("updated"))
-                updated = responseJson.getString("updated");
+            // commented for codacy issue
+
+//            if(responseJson.has("seasons")){
+//                seasons_jsonArray = responseJson.getJSONArray("seasons");
+//                for (int i=0;i<seasons_jsonArray.length();i++){
+//                    seasons.add(seasons_jsonArray.getString(i));
+//                }
+//            }
+//            if(responseJson.has("occasions")){
+//                occasions_jsonArray = responseJson.getJSONArray("occasions");
+//                for (int i=0;i<occasions_jsonArray.length();i++){
+//                    occasions.add(occasions_jsonArray.getString(i));
+//                }
+//            }
+//            if(responseJson.has("category"))
+//                category = responseJson.getString("category");
+//            if(responseJson.has("color"))
+//                color = responseJson.getString("color");
+//            if(responseJson.has("name"))
+//                name = responseJson.getString("name");
+//            if(responseJson.has("user"))
+//                cloth_user = responseJson.getString("user");
+//            if(responseJson.has("updated"))
+//                updated = responseJson.getString("updated");
             if(responseJson.has("id"))
                 cloth_id = responseJson.getString("id");
 
@@ -392,10 +394,12 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                Toast.makeText(AddClothesActivity.this, "Something went wrong", Toast.LENGTH_LONG);
+                final Toast toast = makeText(AddClothesActivity.this, "Something went wrong", Toast.LENGTH_LONG);
+                toast.show();
             }
         } else {
-            Toast.makeText(AddClothesActivity.this, "You haven't picked an image", Toast.LENGTH_LONG);
+            final Toast toast = makeText(AddClothesActivity.this, "You haven't picked an image", Toast.LENGTH_LONG);
+            toast.show();
         }
     }
 

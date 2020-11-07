@@ -27,7 +27,7 @@ public class GetOutfitTest {
             FragmentTestRule.create(HomeFragment.class);
 
     @Test
-    public void GetOutfitTest() {
+    public void getOutfitTest() {
         CountingIdlingResource idlingResource = HomeFragment.getRegisterIdlingResourceInTest();
         IdlingRegistry idlingRegistry = IdlingRegistry.getInstance();
         idlingRegistry.register(idlingResource);

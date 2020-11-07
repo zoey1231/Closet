@@ -130,6 +130,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                     Intent editClothesIntent = new Intent(ClothesFragment.this.getContext(), EditClothesActivity.class);
                     startActivity(editClothesIntent);
                 }
+                break;
             default:
         }
     }
