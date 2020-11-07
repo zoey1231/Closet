@@ -71,6 +71,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             case R.id.linkToLogin:
                 startActivity(new Intent(getApplicationContext(),LoginActivity.class));
                 break;
+
+            default:
         }
     }
 

@@ -33,6 +33,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.fail;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -116,6 +117,9 @@ public class LoginTest {
 
         //unregister idling resources with Espresso
         idlingRegistry.unregister(componentIdlingResource);
+
+        // added for codacy issue
+        fail();
     }
 
     private static Matcher<View> childAtPosition(

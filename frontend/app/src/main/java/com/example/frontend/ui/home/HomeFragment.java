@@ -154,6 +154,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 //send response to server
 
                 break;
+
+            default:
         }
     }
     

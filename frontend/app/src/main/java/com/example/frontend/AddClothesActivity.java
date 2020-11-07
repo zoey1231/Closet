@@ -161,6 +161,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                     e.printStackTrace();
                 }
                 break;
+
+            default:
         }
     }
 
@@ -210,7 +212,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
                 while (cloth_id.equals(EMPTY_STRING)) {
                     // wait for clothing id
-//                    Log.d(TAG, "testing: waiting for clothing id");
+                    Log.d(TAG, "testing: waiting for clothing id");
                 };
                 sendImageToServer(file);
 
@@ -220,6 +222,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 finish();
 
                 break;
+
+            default:
         }
     }
 
@@ -338,7 +342,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void extractResponseClothesData(JSONObject responseJson) {
-        JSONArray seasons_jsonArray,occasions_jsonArray;
+//        JSONArray seasons_jsonArray,occasions_jsonArray;
         try {
             if(responseJson.has("message"))
                 message = responseJson.getString("message");

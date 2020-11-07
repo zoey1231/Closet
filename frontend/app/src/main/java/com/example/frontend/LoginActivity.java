@@ -65,6 +65,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.linkToRegister:
                 startActivity(new Intent(getApplicationContext(),RegisterActivity.class));
                 break;
+
+            default:
         }
     }
 

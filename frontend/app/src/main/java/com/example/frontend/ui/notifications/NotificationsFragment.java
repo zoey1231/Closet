@@ -61,6 +61,8 @@ public class NotificationsFragment extends Fragment implements View.OnClickListe
                 Intent intent = new Intent(NotificationsFragment.this.getActivity(), RegisterActivity.class);
                 startActivity(intent);
                 break;
+                
+            default:
         }
     }
 }

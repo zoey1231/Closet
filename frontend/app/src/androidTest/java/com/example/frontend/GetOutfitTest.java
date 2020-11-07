@@ -17,6 +17,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static org.junit.Assert.fail;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -45,6 +46,9 @@ public class GetOutfitTest {
         //todo
 
         idlingRegistry.unregister(idlingResource);
+
+        // added for codacy issue
+        fail();
     }
 
 }
