@@ -11,18 +11,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
-import com.example.frontend.Clothes;
+import com.example.frontend.LoginActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommunicationAsync;
@@ -36,11 +38,12 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static android.widget.Toast.makeText;
 
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
@@ -56,10 +59,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     TextView tv_date_today,tv_date_tmr,tv_temp_today,tv_temp_tmr;
     ImageView iv_icon_today,iv_icon_tmr;
 
-    Button outfitButton;
-    LinearLayout outfit;
+    Button outfitButton,likeButton,dislikeButton;
+    RelativeLayout rl_outfit;
     ImageView cloth1, cloth2, cloth3;
-
+    ConstraintLayout view_dislike;
+    TextView tv_undo;
+    ImageButton undoButton;
     private String upperClothesId = EMPTY_STRING;
     private String trousersId = EMPTY_STRING;
     private String shoesId = EMPTY_STRING;
@@ -84,12 +89,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         iv_icon_tmr = root.findViewById(R.id.iv_icon_tmr);
 
         outfitButton = root.findViewById(R.id.btn_outfit);
+        likeButton = root.findViewById(R.id.btn_like_outfit1);
+        dislikeButton = root.findViewById(R.id.btn_dislike_outfit1);
         outfitButton.setOnClickListener(this);
-        outfit = root.findViewById(R.id.ll_outfit);
-        outfit.setVisibility(View.GONE);
+        likeButton.setOnClickListener(this);
+        dislikeButton.setOnClickListener(this);
+
+        view_dislike = root.findViewById(R.id.view_dislike);
+        view_dislike.setVisibility(View.GONE);
+        tv_undo =  root.findViewById(R.id.tv_undo);
+        undoButton =  root.findViewById(R.id.btn_undo);
+        tv_undo.setOnClickListener(this);
+        undoButton.setOnClickListener(this);
+
+        rl_outfit = root.findViewById(R.id.rl_outfit);
+        rl_outfit.setVisibility(View.GONE);
         cloth1 = root.findViewById(R.id.iv_clothes1_outfit1);
         cloth2 = root.findViewById(R.id.iv_clothes2_outfit1);
         cloth3 = root.findViewById(R.id.iv_clothes3_outfit1);
+
 
         //get User's data from MainActivity and display them on fragment
         userToken = MainActivity.getUser().getUserToken();
@@ -106,10 +124,36 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 idlingResource.increment();
 
                 getOutfitData(userToken);
-                outfit.setVisibility(View.VISIBLE);
+                rl_outfit.setVisibility(View.VISIBLE);
                 cloth1.setBackground(getClothesImage(userId, upperClothesId));
                 cloth2.setBackground(getClothesImage(userId, trousersId));
                 cloth3.setBackground(getClothesImage(userId, shoesId));
+                break;
+            case R.id.btn_like_outfit1:
+                makeText(getContext(), "Your preference has been recorded", Toast.LENGTH_SHORT).show();
+                likeButton.setEnabled(false);
+                dislikeButton.setEnabled(false);
+                //send response to server
+                break;
+            case R.id.btn_dislike_outfit1:
+                view_dislike.setVisibility(View.VISIBLE);
+                likeButton.setEnabled(false);
+                dislikeButton.setEnabled(false);
+
+                //send response to server
+
+                undoButton.setEnabled(true);
+                tv_undo.setEnabled(true);
+
+                break;
+
+            case R.id.btn_undo:
+            case R.id.tv_undo:
+                view_dislike.setVisibility(View.GONE);
+                likeButton.setEnabled(false);
+                dislikeButton.setEnabled(false);
+
+                //send response to server
 
                 break;
         }
