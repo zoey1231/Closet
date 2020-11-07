@@ -15,12 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.frontend.AddClothesActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.RegisterActivity;
 import com.example.frontend.User;
-import com.example.frontend.ui.clothes.ClothesFragment;
 
 public class NotificationsFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "NotificationFrag";

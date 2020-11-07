@@ -51,7 +51,6 @@ import okhttp3.RequestBody;
 
 
 import static android.widget.Toast.makeText;
-import static com.google.common.io.Files.copy;
 
 
 public class AddClothesActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {

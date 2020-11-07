@@ -14,7 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -22,7 +21,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.example.frontend.AddClothesActivity;
-import com.example.frontend.Clothes;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.EditClothesActivity;

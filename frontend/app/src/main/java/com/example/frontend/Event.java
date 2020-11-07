@@ -1,9 +1,8 @@
 package com.example.frontend;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+
 import org.threeten.bp.LocalDate;
-import java.util.Locale;
+
 
 import android.graphics.Bitmap;
 
