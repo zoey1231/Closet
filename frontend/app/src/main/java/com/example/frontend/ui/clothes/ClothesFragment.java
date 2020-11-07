@@ -82,7 +82,6 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
                 startActivityForResult(addClothesIntent, 1);
                 clickCount++;
-                Log.d(TAG, "testing: add clothes button is clicked " + clickCount + " times");
                 idlingResource.decrement();
                 break;
         }
@@ -96,19 +95,15 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             String path = data.getStringExtra("path");
             Bitmap bitmap = BitmapFactory.decodeFile(path);
             //for test
-            Log.d(TAG, "testing: come back from add clothes activity");
             if (clickCount == 1) {
-                Log.d(TAG, "testing: trying to display the first clothes");
                 clothes1.setImageBitmap(bitmap);
                 spinner1.setVisibility(View.VISIBLE);
             }
             else if (clickCount == 2) {
-                Log.d(TAG, "testing: trying to display the second clothes");
                 clothes2.setImageBitmap(bitmap);
                 spinner2.setVisibility(View.VISIBLE);
             }
             else {
-                Log.d(TAG, "testing: trying to display the third clothes");
                 clothes3.setImageBitmap(bitmap);
                 spinner3.setVisibility(View.VISIBLE);
             }
@@ -135,6 +130,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                     Intent editClothesIntent = new Intent(ClothesFragment.this.getContext(), EditClothesActivity.class);
                     startActivity(editClothesIntent);
                 }
+            default:
         }
     }
 

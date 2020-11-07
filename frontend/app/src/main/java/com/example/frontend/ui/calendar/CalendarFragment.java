@@ -35,12 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import static android.content.ContentValues.TAG;
-
-
 public class CalendarFragment extends Fragment implements OnDateSelectedListener {
 
-    private CalendarViewModel calendarViewModel;
     private MaterialCalendarView calendarView;
     private HashMap<CalendarDay, List<Event>> map = new HashMap<>();
     private ListView listView;
@@ -54,8 +50,7 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        calendarViewModel =
-                ViewModelProviders.of(this).get(CalendarViewModel.class);
+        CalendarViewModel calendarViewModel = ViewModelProviders.of(this).get(CalendarViewModel.class);
         View root = inflater.inflate(R.layout.fragment_calendar, container, false);
 
         listView = root.findViewById(R.id.listView);

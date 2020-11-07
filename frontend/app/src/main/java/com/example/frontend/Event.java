@@ -3,9 +3,6 @@ package com.example.frontend;
 
 import org.threeten.bp.LocalDate;
 
-
-import android.graphics.Bitmap;
-
 public class Event {
 
     private LocalDate date;

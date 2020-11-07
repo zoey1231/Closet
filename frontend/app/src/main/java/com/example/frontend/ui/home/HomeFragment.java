@@ -286,10 +286,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 upperClothesId = responseJson.getString("chosenUpperClothes");
             }
             if(responseJson.has("chosenTrousers")){
-                upperClothesId = responseJson.getString("chosenTrousers");
+                trousersId = responseJson.getString("chosenTrousers");
             }
             if(responseJson.has("chosenShoes")){
-                upperClothesId = responseJson.getString("chosenShoes");
+                shoesId = responseJson.getString("chosenShoes");
             }
         } catch (JSONException e) {
             e.printStackTrace();

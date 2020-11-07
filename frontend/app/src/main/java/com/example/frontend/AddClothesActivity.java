@@ -60,13 +60,11 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
     private ImageView image;
     private ImageButton imageButton;
-    private Button saveButton;
     private TextView text;
 
     private String path;
     private File file;
 
-    private static final int IMAGE = 1;
     private JSONObject clothAttribute = new JSONObject();
     private Spinner spinner_category, spinner_color, spinner_occasion;
     private CheckBox checkBox_spring, checkBox_summer, checkBox_fall, checkBox_winter, checkBox_all;
@@ -101,7 +99,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         image = findViewById(R.id.iv_add);
         image.setVisibility(View.INVISIBLE);
         imageButton = findViewById(R.id.btn_image_add);
-        saveButton = findViewById(R.id.btn_save_add);
+        Button saveButton = findViewById(R.id.btn_save_add);
         text = findViewById(R.id.tv_add);
 
         imageButton.setOnClickListener(this);
@@ -210,7 +208,10 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 //send the cloth data to server
                 sendClothDataToServer(clothAttribute);
 
-                while (cloth_id.equals(EMPTY_STRING));
+                while (cloth_id.equals(EMPTY_STRING)) {
+                    // wait for clothing id
+                    Log.d(TAG, "testing: waiting for clothing id");
+                };
                 sendImageToServer(file);
 
                 Intent intent = new Intent();
