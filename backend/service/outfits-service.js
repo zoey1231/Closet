@@ -37,12 +37,9 @@ const COLOURS = [
  */
 const generateOutfit = async req => {
   const userId = req.userData.userId;
-<<<<<<< HEAD
 
   /* All necessary variables */
   // Need to initialize during preparation
-=======
->>>>>>> parent of 6ec799c... debug #1
   let AllOutfits = [];
   let AllClothes = [];
   let TodayFormalEvents = [];
@@ -370,6 +367,48 @@ const generateOutfit = async req => {
 
   // Create a normal outfit
   const createNormalOutfit = async () => {
+    /* Decide to choose from user liked normal outfits or try to generate a new one */
+    const type = randomInt(2);
+
+    /*
+          Definition of a normal outfit
+          1. does not have 'formal' occasion at all
+          2. has multiple occasions, may or may not include 'formal'
+         */
+    const normalOutfits = AllOutfits.filter(
+      outfit =>
+        !outfit.occasions.includes('formal') || outfit.occasions.length > 2
+    );
+
+    /* Get a user liked normal outfit */
+    if (type === 0) {
+      const likedNormalOutfits = normalOutfits.filter(
+        outfit => outfit.opinion === 'like'
+      );
+
+      if (likedNormalOutfits.length) {
+        const chosenOutfit =
+          LikedFormalOutfits[randomInt(likedNormalOutfits.length)];
+        return {
+          success: true,
+          existing: true,
+          outfit: chosenOutfit,
+        };
+      }
+    }
+
+    /*
+          Plan:
+          1. get user like normal outfits
+          2. get all normal combinations
+          3. exclude user disliked normal outfits
+          4. get weather info
+          5. check color restrictions
+          6. check for existence
+    
+          7. (M9) how to avoid duplicated outfits returned today
+         */
+
     const allNormal = AllClothes.filter(c => !c.occasions.includes('formal'));
 
     let normalOuterwear = allNormal.filter(c => c.category === 'outerwear');
