@@ -7,6 +7,7 @@ const LOG = require('../utils/logger');
 
 const Clothes = require('../model/clothes');
 const Outfit = require('../model/outfit');
+const { hash } = require('bcrypt');
 
 const FORMAL_KEYWORDS = [
   'conference',
@@ -36,13 +37,19 @@ const COLOURS = [
  */
 const generateOutfit = async req => {
   const userId = req.userData.userId;
+
+  /* All necessary variables */
+  // Need to initialize during preparation
   let AllOutfits = [];
+  let AllClothes = [];
+  let TodayFormalEvents = [];
   let TodayOutfits = [];
   let TodayFormalOutfits = [];
-  let TodayFormalEvents = [];
-  let AllClothes = []; // Array of Clothes object
+
+  // Need to initialized during creating a normal outfit
   let TodayWhether = {};
 
+  /* Initialization functions */
   // Return all outfits in the database
   const getAllOutfits = async () => {
     try {
@@ -52,22 +59,13 @@ const generateOutfit = async req => {
     }
   };
 
-  // Return outfits generated today
-  const getTodayOutfits = () => {
-    const today = new Date()
-      .toLocaleString('sv', { timeZoneName: 'short' })
-      .substr(0, 10);
-
-    TodayOutfits = AllOutfits.filter(
-      outfit => outfit.created.toISOString().substr(0, 10) === today
-    );
-  };
-
-  // Return only formal outfits generated today
-  const getTodayFormalOutfits = () => {
-    TodayFormalOutfits = TodayOutfits.filter(outfit =>
-      outfit.occasions.includes('formal')
-    );
+  // Return all clothes in database
+  const getAllClothes = async () => {
+    try {
+      AllClothes = await Clothes.find({ user: userId });
+    } catch (exception) {
+      LOG.error(exception.message);
+    }
   };
 
   // Return today's formal events
@@ -96,13 +94,22 @@ const generateOutfit = async req => {
     });
   };
 
-  // Return all clothes in database
-  const getAllClothes = async () => {
-    try {
-      AllClothes = await Clothes.find({ user: userId });
-    } catch (exception) {
-      LOG.error(exception.message);
-    }
+  // Return outfits generated today
+  const getTodayOutfits = () => {
+    const today = new Date()
+      .toLocaleString('sv', { timeZoneName: 'short' })
+      .substr(0, 10);
+
+    TodayOutfits = AllOutfits.filter(
+      outfit => outfit.created.toISOString().substr(0, 10) === today
+    );
+  };
+
+  // Return only formal outfits generated today
+  const getTodayFormalOutfits = () => {
+    TodayFormalOutfits = TodayOutfits.filter(outfit =>
+      outfit.occasions.includes('formal')
+    );
   };
 
   // Return today's weather information
@@ -123,64 +130,49 @@ const generateOutfit = async req => {
     TodayWhether = { temperature: temp, weather: weather[0].description };
   };
 
+  /* Core functions */
   // Save the outfit into database
   const saveOutfit = async result => {
-    if (!result.success) {
+    const { success, existing } = result;
+
+    // Failure if success is not true
+    if (!success) {
       return {
-        success: result.success,
+        success,
         message: 'Failed to generate an outfit',
       };
     }
 
-    const {
-      chosenUpperClothes,
-      chosenTrousers,
-      chosenShoes,
-      occasions,
-      seasons,
-      warning,
-    } = result;
+    // Input an existing outfit, no need to save it
+    if (existing) {
+      let chosenUpperClothes;
+      let chosenTrousers;
+      let chosenShoes;
 
-    const _id = hashCode(
-      chosenUpperClothes.id + chosenTrousers.id + chosenShoes.id
-    );
+      // Check if clothes information are include in the result
+      if (
+        !result.chosenUpperClothes ||
+        !result.chosenTrousers ||
+        !result.chosenShoes
+      ) {
+        // If not, we need to manually find them
+        chosenUpperClothes = AllClothes.find(c => outfit.clothes[0]);
+        chosenTrousers = AllClothes.find(c => outfit.clothes[1]);
+        chosenShoes = AllClothes.find(c => outfit.clothes[2]);
+      } else {
+        chosenUpperClothes = result.chosenUpperClothes;
+        chosenTrousers = result.chosenTrousers;
+        chosenShoes = result.chosenShoes;
+      }
 
-    let existingOutfits;
-    try {
-      existingOutfits = await Outfit.find({ _id: _id });
-    } catch (exception) {
-      LOG.error(exception.message);
-      return {
-        success: false,
-        message: 'Failed to search outfit',
-      };
-    }
-
-    // If the outfit has generated before, return it
-    if (existingOutfits.length) {
-      const existingOutfit = existingOutfits[0];
-
-      const {
-        id,
-        clothes,
-        created,
-        occasions,
-        seasons,
-        opinion,
-      } = existingOutfit;
+      const { warning, outfit } = result;
 
       return {
-        success: true,
+        success,
         message: 'New outfit generated successfully!',
         warning,
         outfit: {
-          id,
-          clothes,
-          created,
-          occasions,
-          seasons,
-          opinion,
-          user: userId,
+          ...outfit,
           chosenUpperClothes,
           chosenTrousers,
           chosenShoes,
@@ -189,6 +181,16 @@ const generateOutfit = async req => {
     }
 
     // Otherwise, create a new outfit and save it into the database
+    const {
+      _id,
+      occasions,
+      seasons,
+      chosenUpperClothes,
+      chosenTrousers,
+      chosenShoes,
+      warning,
+    } = result;
+
     const newOutfit = new Outfit({
       _id,
       clothes: [chosenUpperClothes.id, chosenTrousers.id, chosenShoes.id],
@@ -214,7 +216,7 @@ const generateOutfit = async req => {
     const { clothes, created, opinion } = newOutfit;
 
     return {
-      success: true,
+      success,
       message: 'New outfit generated successfully!',
       warning,
       outfit: {
@@ -234,18 +236,39 @@ const generateOutfit = async req => {
 
   // Create a formal outfit
   const createFormalOutfit = async () => {
-    const allFormal = AllClothes.filter(c => c.occasions.includes('formal'));
+    /* Decide to choose from user liked formal outfits or try to generate a new one */
+    const type = randomInt(2);
 
+    /* Get a user liked formal outfit */
+    if (type === 0) {
+      const likedFormalOutfits = AllOutfits.filter(
+        outfit =>
+          outfit.occasions.includes('formal') && outfit.opinion === 'like'
+      );
+
+      if (likedFormalOutfits.length) {
+        const chosenOutfit =
+          LikedFormalOutfits[randomInt(likedFormalOutfits.length)];
+        return {
+          success: true,
+          existing: true,
+          outfit: chosenOutfit,
+        };
+      }
+    }
+
+    /* Try to generated a new formal outfit */
+    const allFormal = AllClothes.filter(c => c.occasions.includes('formal'));
     const formalOuterwear = allFormal.filter(c => c.category === 'outerwear');
     const formalShirt = allFormal.filter(c => c.category === 'shirt');
     const formalTrousers = allFormal.filter(c => c.category === 'trousers');
     const formalShoes = allFormal.filter(c => c.category === 'shoes');
 
-    /**
-     * Requirements to return a formal outfit
-     * 1. have formal outerwear or formal shirt
-     * 2. have formal trousers
-     * 3. have formal shoes
+    /*
+      Requirements to return a formal outfit
+      1. have formal outerwear or formal shirt
+      2. have formal trousers
+      3. have formal shoes
      */
 
     /* Case 1: user does not have enough formal clothes => add warning and generate a normal outfit */
@@ -269,46 +292,83 @@ const generateOutfit = async req => {
     }
 
     /* Case 2: user have enough formal clothes => generate a formal outfit */
-    let chosenUpperClothes, chosenTrousers, chosenShoes;
 
-    if (!formalOuterwear.length) {
-      // if we do not have any formal outerwear, then choose a shirt
-      chosenUpperClothes = formalShirt[randomInt(formalShirt.length)];
-    } else if (!formalShirt.length) {
-      // if we do not have any formal shirts, then choose an outerwear
-      chosenUpperClothes = formalOuterwear[randomInt(formalOuterwear.length)];
-    } else {
-      // If we have both formal outerwear and formal shirt, then choose one of them randomly
-      chosenUpperClothes = randomInt(2)
-        ? formalShirt[randomInt(formalShirt.length)]
-        : formalOuterwear[randomInt(formalOuterwear.length)];
+    /* Generate all possible combinations */
+    const allCombinations = cartesian(
+      [...formalOuterwear, ...formalShirt],
+      formalTrousers,
+      formalShoes
+    );
+
+    /*  
+      Special check:
+        If we found the user has disliked all possible combinations, 
+        we will randomly return a disliked one with a warning message
+     */
+    const dislikedFormalOutfits = AllOutfits.filter(
+      outfit =>
+        outfit.occasions.includes('formal') && outfit.opinion === 'dislike'
+    );
+    if (allCombinations.length === dislikedFormalOutfits.length) {
+      const chosenOutfit =
+        dislikedFormalOutfits[randomInt(dislikedFormalOutfits.length)];
+      const warning =
+        'You have disliked all formal outfits. Maybe you change your opinion on this one!';
+      return {
+        success: true,
+        existing: true,
+        warning,
+        outfit: chosenOutfit,
+      };
     }
 
-    chosenTrousers = formalTrousers[randomInt(formalTrousers.length)];
-    chosenShoes = formalShoes[randomInt(formalShoes.length)];
+    /* Exclude the disliked ones */
+    const combinations = allCombinations.filter(combo => {
+      const hashId = hashCode(combo[0].id + combo[1].id + combo[2].id);
+      const index = dislikedFormalOutfits.findIndex(
+        outfit => outfit._id === hashId
+      );
+      return index === -1;
+    });
 
-    /**
-     * success: indication whether we can generate an outfit or not
-     * chosenUpperClothes: upper clothes (outerwear or shirt) to include
-     * chosenTrousers: trousers to include
-     * chosenShoes: shoes to include
-     * occasions: formal outfit,
-     * seasons: all seasons,
-     */
+    /* Randomly choose one combination */
+    const chosenCombination = combinations[randomInt(combinations.length)];
+    const chosenUpperClothes = chosenCombination[0];
+    const chosenTrousers = chosenCombination[1];
+    const chosenShoes = chosenCombination[2];
+
+    /* Check if the outfit has existed */
+    const hashId = hashCode(
+      chosenUpperClothes.id + chosenTrousers.id + chosenShoes.id
+    );
+    const existingOutfit = AllOutfits.find(outfit => outfit._id === hashId);
+
+    if (existingOutfit) {
+      // Existed
+      return {
+        success: true,
+        existing: true,
+        outfit: existingOutfit,
+        chosenUpperClothes,
+        chosenTrousers,
+        chosenShoes,
+      };
+    }
+
+    // Not existed
     return {
       success: true,
+      _id: hashId,
+      occasions: ['formal'],
+      seasons: ['All'],
       chosenUpperClothes,
       chosenTrousers,
       chosenShoes,
-      occasions: ['formal'],
-      seasons: ['All'],
     };
   };
 
   // Create a normal outfit
   const createNormalOutfit = async () => {
-    await getAllClothes();
-
     const allNormal = AllClothes.filter(c => !c.occasions.includes('formal'));
 
     let normalOuterwear = allNormal.filter(c => c.category === 'outerwear');
@@ -316,10 +376,12 @@ const generateOutfit = async req => {
     let normalTrousers = allNormal.filter(c => c.category === 'trousers');
     let normalShoes = allNormal.filter(c => c.category === 'shoes');
 
-    // Must have the follow three
-    // 1. outerwear OR shirt
-    // 2. trousers
-    // 3. shoe
+    /*
+      Requirements to return a normal outfit
+      1. have normal outerwear or normal shirt
+      2. have normal trousers
+      3. have normal shoes
+     */
 
     if (
       (!normalOuterwear.length && !normalShirt.length) ||
@@ -328,7 +390,7 @@ const generateOutfit = async req => {
     ) {
       return {
         success: false,
-        message: 'Add more clothes to get outfit!',
+        message: 'Add more clothes to get an outfit!',
       };
     }
 
@@ -412,16 +474,16 @@ const generateOutfit = async req => {
    * Initialize the following things
    * 1. all outfits in database
    * 2. all clothes in database
-   * 3. all outfits generated today
-   * 4. formal outfits generated today
-   * 5. today's formal events
+   * 3. today's formal events
+   * 4. all outfits generated today
+   * 5. formal outfits generated today
    */
   try {
     await getAllOutfits();
     await getAllClothes();
+    await getTodayFormalEvents();
     getTodayOutfits();
     getTodayFormalOutfits();
-    await getTodayFormalEvents();
   } catch (exception) {
     LOG.error(exception.message);
     return {
@@ -471,6 +533,12 @@ const getSeasonFromTemperature = temperature => {
 };
 
 /**
+ * Generate the cartesian product of the input arrays
+ *
+ * e.g.
+ * input: [10, 20], [100, 200]
+ * output: [[10, 100], [10, 200], [20, 100], [20, 200]]
+ *
  * https://stackoverflow.com/questions/12303989/cartesian-product-of-multiple-arrays-in-javascript
  * @param  {...any} a Array
  */
