@@ -17,7 +17,6 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.example.frontend.AddClothesActivity;
