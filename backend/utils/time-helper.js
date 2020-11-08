@@ -82,7 +82,7 @@ const getDaysInMonth = (month, year) => {
 
   y = parseInt(year);
   if (month === 'Feb') {
-    const isLeapYear = y % 400 == 0 || (y % 4 === 0 && y % 100 !== 0);
+    const isLeapYear = y % 400 === 0 || (y % 4 === 0 && y % 100 !== 0);
     if (isLeapYear) {
       return target.days.leap;
     } else {
