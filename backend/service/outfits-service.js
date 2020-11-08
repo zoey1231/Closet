@@ -45,7 +45,6 @@ const generateOutfit = async req => {
   let TodayFormalEvents = [];
   let TodayOutfits = [];
   let TodayFormalOutfits = [];
-
   // Need to initialized during creating a normal outfit
   let TodayWhether = {};
 
@@ -133,18 +132,16 @@ const generateOutfit = async req => {
   /* Core functions */
   // Save the outfit into database
   const saveOutfit = async result => {
-    const { success, existing } = result;
-
     // Failure if success is not true
-    if (!success) {
+    if (!result.success) {
       return {
-        success,
+        success: false,
         message: 'Failed to generate an outfit',
       };
     }
 
     // Input an existing outfit, no need to save it
-    if (existing) {
+    if (result.existing) {
       let chosenUpperClothes;
       let chosenTrousers;
       let chosenShoes;
@@ -165,7 +162,7 @@ const generateOutfit = async req => {
         chosenShoes = result.chosenShoes;
       }
 
-      const { warning, outfit } = result;
+      const { success, warning, outfit } = result;
 
       return {
         success,
@@ -182,13 +179,14 @@ const generateOutfit = async req => {
 
     // Otherwise, create a new outfit and save it into the database
     const {
+      success,
+      warning,
       _id,
       occasions,
       seasons,
       chosenUpperClothes,
       chosenTrousers,
       chosenShoes,
-      warning,
     } = result;
 
     const newOutfit = new Outfit({
