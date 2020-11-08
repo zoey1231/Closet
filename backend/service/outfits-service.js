@@ -37,8 +37,6 @@ const COLOURS = [
 const generateOutfit = async req => {
   const userId = req.userData.userId;
 
-  console.log('#40', userId);
-
   let AllOutfits = [];
   let TodayFormalOutfits = [];
   let TodayFormalEvents = [];
@@ -226,6 +224,12 @@ const generateOutfit = async req => {
     const formalTrousers = allFormal.filter(c => c.category === 'trousers');
     const formalShoes = allFormal.filter(c => c.category === 'shoes');
 
+    console.log('#227');
+    console.log('outerwear', formalOuterwear);
+    console.log('shirts', formalShirt);
+    console.log('trousers', formalTrousers);
+    console.log('shoes', formalShoes);
+
     /**
      * Requirements to return a formal outfit
      * 1. have formal outerwear and formal shirt
@@ -409,11 +413,6 @@ const generateOutfit = async req => {
       warning: exception.message,
     };
   }
-
-  console.log('#413');
-  console.log('all outfits', AllOutfits);
-  console.log('formal outfits', TodayFormalOutfits);
-  console.log('formal event', TodayFormalEvents);
 
   let result;
   if (!TodayFormalOutfits.length && TodayFormalEvents.length) {
