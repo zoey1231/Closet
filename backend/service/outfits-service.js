@@ -410,6 +410,11 @@ const generateOutfit = async req => {
     };
   }
 
+  console.log('#413');
+  console.log('all outfits', AllOutfits);
+  console.log('formal outfits', TodayFormalOutfits);
+  console.log('formal event', TodayFormalEvents);
+
   let result;
   if (!TodayFormalOutfits.length && TodayFormalEvents.length) {
     // Case 1: no formal outfits and have formal events => create a formal outfit
