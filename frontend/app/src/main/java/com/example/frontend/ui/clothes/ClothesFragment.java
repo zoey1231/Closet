@@ -31,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 public class ClothesFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static final String TAG ="ClothesFragment" ;
     private User user;
-    private ClothesViewModel clothesViewModel;
     private ImageButton buttonAdd;
     private ImageView clothes1, clothes2, clothes3;
     private Spinner spinner1, spinner2, spinner3;
@@ -41,8 +40,6 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        clothesViewModel =
-                ViewModelProviders.of(this).get(ClothesViewModel.class);
         View root = inflater.inflate(R.layout.fragment_clothes, container, false);
 
         buttonAdd = root.findViewById(R.id.btn_clothes_add);
@@ -84,6 +81,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 clickCount++;
                 idlingResource.decrement();
                 break;
+
+            default:
         }
     }
 
@@ -137,6 +136,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+        Log.d(TAG, "nothing is selected");
     }
 
     public static CountingIdlingResource getRegisterIdlingResourceInTest() {

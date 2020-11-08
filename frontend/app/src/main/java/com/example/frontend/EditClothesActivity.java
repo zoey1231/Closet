@@ -2,18 +2,21 @@ package com.example.frontend;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
+//import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
+//import android.widget.Button;
+//import android.widget.CheckBox;
+//import android.widget.EditText;
+//import android.widget.ImageButton;
+//import android.widget.ImageView;
+//import android.widget.Spinner;
+//import android.widget.TextView;
 
 public class EditClothesActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private static final String TAG = "EditClothesActivity";
+
     // commented for codacy issue
 
 //    private ImageView image;
@@ -89,11 +92,11 @@ public class EditClothesActivity extends AppCompatActivity implements AdapterVie
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
+        Log.d(TAG,"something is selected");
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
+        Log.d(TAG, "nothing is selected");
     }
 }

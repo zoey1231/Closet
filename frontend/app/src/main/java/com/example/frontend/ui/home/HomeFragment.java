@@ -46,7 +46,6 @@ import static android.widget.Toast.makeText;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private String userToken, userId;
-    private HomeViewModel homeViewModel;
     private String TAG = "HomeFragment";
     private static final String EMPTY_STRING = "";
 
@@ -74,9 +73,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-        homeViewModel =
-                ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         tv_date_today = root.findViewById(R.id.tv_date_today);

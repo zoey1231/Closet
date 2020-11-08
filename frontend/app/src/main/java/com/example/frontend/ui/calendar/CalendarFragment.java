@@ -12,7 +12,6 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.example.frontend.CalendarAdapter;
 import com.example.frontend.Event;
@@ -30,7 +29,6 @@ import java.io.InputStream;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -41,8 +39,6 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
     private HashMap<CalendarDay, List<Event>> map = new HashMap<>();
     private ListView listView;
     private CalendarAdapter adapter;
-
-    private Calendar cal;
     private List<Event> eventList = new ArrayList<>();
 
     @RequiresApi(api = Build.VERSION_CODES.O)
