@@ -216,15 +216,16 @@ const generateOutfit = async req => {
   // Create a formal outfit
   const createFormalOutfit = async () => {
     await getAllClothes();
+    console.log('clothes', AllClothes);
 
     const allFormal = AllClothes.filter(c => c.occasions.includes('formal'));
+    console.log('formal clothes', allFormal);
 
     const formalOuterwear = allFormal.filter(c => c.category === 'outerwear');
     const formalShirt = allFormal.filter(c => c.category === 'shirt');
     const formalTrousers = allFormal.filter(c => c.category === 'trousers');
     const formalShoes = allFormal.filter(c => c.category === 'shoes');
 
-    console.log('#227');
     console.log('outerwear', formalOuterwear);
     console.log('shirts', formalShirt);
     console.log('trousers', formalTrousers);
