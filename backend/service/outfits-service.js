@@ -157,18 +157,29 @@ const generateOutfit = async req => {
     }
 
     // If the outfit has generated before, return it
-    if (existingOutfits.length && existingOutfits[0] instanceof Outfit) {
+    if (existingOutfits.length) {
+      const existingOutfit = existingOutfits[0];
+
+      const {
+        id,
+        clothes,
+        created,
+        occasions,
+        seasons,
+        opinion,
+      } = existingOutfit;
+
       return {
         success: true,
         message: 'New outfit generated successfully!',
         warning,
         outfit: {
-          id: existingOutfits[0].id,
-          clothes: existingOutfits[0].clothes,
-          created: existingOutfits[0].created,
+          id,
+          clothes,
+          created,
           occasions,
           seasons,
-          opinion: existingOutfits[0].opinion,
+          opinion,
           user: userId,
           chosenUpperClothes,
           chosenTrousers,
@@ -177,6 +188,7 @@ const generateOutfit = async req => {
       };
     }
 
+    // Otherwise, create a new outfit and save it into the database
     const newOutfit = new Outfit({
       _id,
       clothes: [chosenUpperClothes.id, chosenTrousers.id, chosenShoes.id],
@@ -199,17 +211,19 @@ const generateOutfit = async req => {
       };
     }
 
+    const { clothes, created, opinion } = newOutfit;
+
     return {
       success: true,
       message: 'New outfit generated successfully!',
       warning,
       outfit: {
-        _id: newOutfit._id,
-        clothes: newOutfit.clothes,
-        created: newOutfit.created,
+        _id,
+        clothes,
+        created,
         occasions,
         seasons,
-        opinion: newOutfit.opinion,
+        opinion,
         user: userId,
         chosenUpperClothes,
         chosenTrousers,
