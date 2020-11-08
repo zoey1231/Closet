@@ -97,20 +97,20 @@ if (!fs.existsSync(imageFolder)) {
   fs.mkdirSync(imageFolder);
 }
 
-// // routes
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader(
-//     'Access-Control-Allow-Headers',
-//     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-//   );
-//   res.setHeader(
-//     'Access-Control-Allow-Methods',
-//     'GET, POST, PUT, DELETE, PATCH'
-//   );
+// routes
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, PATCH'
+  );
 
-//   next();
-// });
+  next();
+});
 
 app.use('/api/users', usersRoutes);
 app.use('/api/clothes', clothesRoutes);

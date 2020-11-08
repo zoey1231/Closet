@@ -219,21 +219,24 @@
                         android:id="@+id/iv_clothes1_outfit1"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:src="@drawable/trouser_sample2" />
 
                     <ImageView
                         android:id="@+id/iv_clothes2_outfit1"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginLeft="30dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:src="@drawable/shirt_sample2" />
 
                     <ImageView
                         android:id="@+id/iv_clothes3_outfit1"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginLeft="30dp"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1"
+                        android:src="@drawable/shoes_1" />
 
                 </LinearLayout>
 
