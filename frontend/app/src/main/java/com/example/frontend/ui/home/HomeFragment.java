@@ -123,6 +123,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 getOutfitData(userToken);
                 rl_outfit.setVisibility(View.VISIBLE);
+
+                while (upperClothesId.equals(EMPTY_STRING) || trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING)) {
+                    Log.d(TAG, "busy waiting for clothes ids");
+                };
                 cloth1.setBackground(getClothesImage(userId, upperClothesId));
                 cloth2.setBackground(getClothesImage(userId, trousersId));
                 cloth3.setBackground(getClothesImage(userId, shoesId));
@@ -158,7 +162,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             default:
         }
     }
-    
+
     private void getWeatherData(String userToken) {
         ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
         Log.d(TAG,"prepared to sendUserDataToServer");
@@ -244,9 +248,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void getOutfitData(String userToken) {
         ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
-        Log.d(TAG,"prepared to sendUserDataToServer");
+        Log.d(TAG,"prepared to getOutfitDataToServer");
 
-        serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/one",userToken, new Callback() {
+        serverCommunication.getWithAuthentication("http://128.189.215.178:8080/api/outfits/one",userToken, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -267,7 +271,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         //retrieve outfit data from server's response
                         responseJson = new JSONObject(responseStr);
                         extractResponseOutfitData(responseJson);
-                        
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -282,18 +286,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void extractResponseOutfitData(JSONObject responseJson) {
+    private void extractResponseOutfitData(JSONObject responseJson) throws JSONException {
+        JSONObject outfitJson = responseJson.getJSONObject("outfit");
+
         try {
-            if(responseJson.has("chosenUpperClothes")){
-                upperClothesId = responseJson.getString("chosenUpperClothes");
+            if(outfitJson.getJSONObject("chosenUpperClothes").has("id")){;
+                upperClothesId = outfitJson.getJSONObject("chosenUpperClothes").getString("id");
             }
-            if(responseJson.has("chosenTrousers")){
-                trousersId = responseJson.getString("chosenTrousers");
+            if(outfitJson.getJSONObject("chosenTrousers").has("id")){
+                trousersId = outfitJson.getJSONObject("chosenTrousers").getString("id");
             }
-            if(responseJson.has("chosenShoes")){
-                shoesId = responseJson.getString("chosenShoes");
+            if(outfitJson.getJSONObject("chosenShoes").has("id")){
+                shoesId = outfitJson.getJSONObject("chosenShoes").getString("id");
             }
         } catch (JSONException e) {
+
             e.printStackTrace();
         }
     }
@@ -304,7 +311,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         BufferedInputStream buffer;
 
         try {
-            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".jpg");
+//            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".jpg");
+            url = new URL("http://128.189.215.178:8080/UserClothingImages/" + userId + "/" + clothId + ".png");
             stream = url.openStream();
             buffer = new BufferedInputStream(stream);
             Bitmap bitmap = BitmapFactory.decodeStream(buffer);

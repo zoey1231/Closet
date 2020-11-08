@@ -18,16 +18,16 @@ const FORMAL_KEYWORDS = [
 ];
 
 const COLOURS = [
-  'Red',
-  'Orange',
-  'Yellow',
-  'Blue',
-  'Green',
-  'Purple',
-  'Pink',
-  'Grey',
-  'White',
-  'Black',
+  'red',
+  'orange',
+  'yellow',
+  'blue',
+  'green',
+  'purple',
+  'pink',
+  'grey',
+  'white',
+  'black',
 ];
 
 /**
@@ -38,8 +38,6 @@ const COLOURS = [
 const generateOutfit = async req => {
   const userId = req.userData.userId;
 
-  /* All necessary variables */
-  // Need to initialize during preparation
   let AllOutfits = [];
   let AllClothes = [];
   let TodayFormalEvents = [];
@@ -234,39 +232,29 @@ const generateOutfit = async req => {
 
   // Create a formal outfit
   const createFormalOutfit = async () => {
-    /* Decide to choose from user liked formal outfits or try to generate a new one */
-    const type = randomInt(2);
-
-    /* Get a user liked formal outfit */
-    if (type === 0) {
-      const likedFormalOutfits = AllOutfits.filter(
-        outfit =>
-          outfit.occasions.includes('formal') && outfit.opinion === 'like'
-      );
-
-      if (likedFormalOutfits.length) {
-        const chosenOutfit =
-          LikedFormalOutfits[randomInt(likedFormalOutfits.length)];
-        return {
-          success: true,
-          existing: true,
-          outfit: chosenOutfit,
-        };
-      }
-    }
+    await getAllClothes();
+    console.log('clothes', AllClothes);
 
     /* Try to generated a new formal outfit */
     const allFormal = AllClothes.filter(c => c.occasions.includes('formal'));
+    console.log('formal clothes', allFormal);
+
     const formalOuterwear = allFormal.filter(c => c.category === 'outerwear');
     const formalShirt = allFormal.filter(c => c.category === 'shirt');
     const formalTrousers = allFormal.filter(c => c.category === 'trousers');
     const formalShoes = allFormal.filter(c => c.category === 'shoes');
 
-    /*
-      Requirements to return a formal outfit
-      1. have formal outerwear or formal shirt
-      2. have formal trousers
-      3. have formal shoes
+    console.log('outerwear', formalOuterwear);
+    console.log('shirts', formalShirt);
+    console.log('trousers', formalTrousers);
+    console.log('shoes', formalShoes);
+
+    /**
+     * Requirements to return a formal outfit
+     * 1. have formal outerwear and formal shirt
+     * 2. have formal trousers
+     * 3. have formal shoes
+     * if no formal outwear and no formal shirt
      */
 
     /* Case 1: user does not have enough formal clothes => add warning and generate a normal outfit */
