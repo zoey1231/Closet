@@ -17,16 +17,16 @@ const FORMAL_KEYWORDS = [
 ];
 
 const COLOURS = [
-  'Red',
-  'Orange',
-  'Yellow',
-  'Blue',
-  'Green',
-  'Purple',
-  'Pink',
-  'Grey',
-  'White',
-  'Black',
+  'red',
+  'orange',
+  'yellow',
+  'blue',
+  'green',
+  'purple',
+  'pink',
+  'grey',
+  'white',
+  'black',
 ];
 
 /**
@@ -36,6 +36,9 @@ const COLOURS = [
  */
 const generateOutfit = async req => {
   const userId = req.userData.userId;
+
+  console.log('#40', userId);
+
   let AllOutfits = [];
   let TodayFormalOutfits = [];
   let TodayFormalEvents = [];
