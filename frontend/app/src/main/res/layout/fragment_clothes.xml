@@ -185,8 +185,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_row="0"
-                android:layout_column="0"
-                android:src="@drawable/trouser_sample2"/>
+                android:layout_column="0"/>
 
             <Spinner
                 android:id="@+id/sp_clothes1"
@@ -203,8 +202,7 @@
                 android:layout_height="100dp"
                 android:layout_row="0"
                 android:layout_column="1"
-                android:layout_marginLeft="30dp"
-                android:src="@drawable/shirt_sample2"/>
+                android:layout_marginLeft="30dp"/>
 
             <Spinner
                 android:id="@+id/sp_clothes2"
@@ -221,8 +219,7 @@
                 android:layout_height="100dp"
                 android:layout_row="0"
                 android:layout_column="2"
-                android:layout_marginLeft="30dp"
-                android:src="@drawable/shoes_1"/>
+                android:layout_marginLeft="30dp"/>
 
             <Spinner
                 android:id="@+id/sp_clothes3"
