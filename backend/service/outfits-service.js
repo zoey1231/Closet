@@ -37,9 +37,12 @@ const COLOURS = [
  */
 const generateOutfit = async req => {
   const userId = req.userData.userId;
+<<<<<<< HEAD
 
   /* All necessary variables */
   // Need to initialize during preparation
+=======
+>>>>>>> parent of 6ec799c... debug #1
   let AllOutfits = [];
   let AllClothes = [];
   let TodayFormalEvents = [];
