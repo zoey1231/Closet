@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -121,13 +122,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         switch (view.getId()){
             case R.id.btn_outfit:
                 idlingResource.increment();
-
+                outfitButton.setEnabled(false);
                 getOutfitData(userToken);
-                rl_outfit.setVisibility(View.VISIBLE);
+
 
                 while (outfitId.equals(EMPTY_STRING) || upperClothesId.equals(EMPTY_STRING) || trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING)) {
                     Log.d(TAG, "busy waiting for ids");
                 }
+                rl_outfit.setVisibility(View.VISIBLE);
+                likeButton.setEnabled(true);
+                dislikeButton.setEnabled(true);
+                outfitButton.setEnabled(true);
                 cloth1.setBackground(getClothesImage(userId, upperClothesId));
                 cloth2.setBackground(getClothesImage(userId, trousersId));
                 cloth3.setBackground(getClothesImage(userId, shoesId));
@@ -144,39 +149,33 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                //when finish sending opinion
-//                makeText(getContext(), "Your preference has been recorded", Toast.LENGTH_SHORT).show();
-//                likeButton.setEnabled(false);
-//                dislikeButton.setEnabled(false);
+
                 break;
             case R.id.btn_dislike_outfit1:
                 dislike = true;
                 //send response to server
                 try {
                     outfit_opinion.put("opinion", "dislike");
+                    sendOutfitOpinionToServer(outfit_opinion,userToken);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                //when finish sending opinion,go the undo screen
-//                view_dislike.setVisibility(View.VISIBLE);
-//                likeButton.setEnabled(false);
-//                dislikeButton.setEnabled(false);
-//                undoButton.setEnabled(true);
-//                tv_undo.setEnabled(true);
+
 
                 break;
 
             case R.id.btn_undo:
             case R.id.tv_undo:
+                Log.d(TAG,"clicked undo opinion");
                 undoDislike = true;
                 //send response to server
                 try {
                     outfit_opinion.put("opinion", "unknown");
+                    sendOutfitOpinionToServer(outfit_opinion,userToken);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                //when finish sending opinion,jump back to main screen and let user to select again
-                //view_dislike.setVisibility(View.GONE);
+
                 break;
 
             default:
@@ -189,7 +188,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         Log.d(TAG,"prepared to sendOutfitOpinionToServer");
         Log.d(TAG,"put request: "+outfit_opinion);
 
-        serverCommunication.putWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/", data,userToken, new Callback() {
+        serverCommunication.putWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/"+outfitId, data,userToken, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
@@ -203,25 +202,45 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 String responseStr = Objects.requireNonNull(response.body()).string();
                 Log.d(TAG, responseStr);
 
-                JSONObject responseJson = null;
-                try {
-                    responseJson = new JSONObject(responseStr);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
                 if (response.isSuccessful()) {
                     if(like){
+                        like = !like;
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getContext(), "Your preference has been recorded", Toast.LENGTH_SHORT).show();
+                                likeButton.setEnabled(false);
+                                dislikeButton.setEnabled(false);
+                            }
+                        });
+
 
                     } else if(dislike){
+                        dislike = !dislike;
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                view_dislike.setVisibility(View.VISIBLE);
+                                likeButton.setEnabled(false);
+                                dislikeButton.setEnabled(false);
+                                undoButton.setEnabled(true);
+                                tv_undo.setEnabled(true);
+                            }
+                        });
 
                     } else if (undoDislike){
+                        undoDislike = !undoDislike;
+                        Log.d(TAG,"undo dislike");
+                        //when finish undo dislike,jump back to main screen and let user to select again
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                view_dislike.setVisibility(View.GONE);
+                                likeButton.setEnabled(true);
+                                dislikeButton.setEnabled(true);
+                            }
+                        });
 
                     }else {
-
+                        Log.d(TAG," Error: invalid user's outfit opinion type");
                     }
-
-                } else {
 
                 }
             }
@@ -340,13 +359,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    idlingResource.decrement();
 
                 } else {
                     // Request not successful
                     Log.d(TAG,"Outfit request is unsuccessful: "+responseStr);
-                    idlingResource.decrement();
                 }
+                idlingResource.decrement();
             }
         });
     }
