@@ -13,7 +13,7 @@ public class ServerCommunicationAsync {
     OkHttpClient client = new OkHttpClient();
 
     public Call post(String url, String json, Callback callback) {
-        RequestBody body = RequestBody.create(JSON, json);
+        RequestBody body = RequestBody.create(json,JSON);
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
@@ -23,11 +23,22 @@ public class ServerCommunicationAsync {
         return call;
     }
     public Call postWithAuthentication(String url, String json,String userToken, Callback callback) {
-        RequestBody body = RequestBody.create(JSON, json);
+        RequestBody body = RequestBody.create(json,JSON);
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization","Bearer "+ userToken)
                 .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
+    public Call putWithAuthentication(String url, String json,String userToken, Callback callback) {
+        RequestBody body = RequestBody.create(json,JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization","Bearer "+ userToken)
+                .put(body)
                 .build();
         Call call = client.newCall(request);
         call.enqueue(callback);

@@ -13,7 +13,7 @@ LOG.info(`
  ########  ##########  ########   ########  ##########     ###     `);
 
 LOG.info(
-  `🚀server startup time: ${new Date().toLocaleString(undefined, {
+  `🚀server startup time: ${new Date().toLocaleString(new Date(), {
     timeZone: 'America/Vancouver',
   })}`
 );

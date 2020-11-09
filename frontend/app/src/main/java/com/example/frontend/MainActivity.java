@@ -22,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Bundle data = getIntent().getExtras();
-        user = (User) data.getParcelable("user");
-        Log.d(TAG,"email: "+user.getEmail()+" userId: "+ user.getuserId()+ " userToken: "+ user.getUserToken());
+        user = data.getParcelable("user");
+        Log.d(TAG,"email: "+user.getEmail()+" userId: "+ user.getUserId()+ " userToken: "+ user.getUserToken());
 
         //send firebase registration token to the server
         MyFirebaseMessagingService.getTokenNSendToServer(user.getUserToken());
