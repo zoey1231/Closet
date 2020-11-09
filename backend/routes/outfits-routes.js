@@ -1,4 +1,5 @@
 const express = require('express');
+const { check } = require('express-validator');
 
 const outfitsController = require('../controller/outfits-controller');
 const checkAuth = require('../middleware/check-auth');
@@ -16,6 +17,10 @@ outfitsRouter.get('/one', outfitsController.getOneOutfit);
 outfitsRouter.get('/multiple', outfitsController.getMultipleOutfits);
 
 // Update user opinion of one specific outfit
-outfitsRouter.put('/:outfitId', outfitsController.updateUserOpinion);
+outfitsRouter.put(
+  '/:outfitId',
+  [check('opinion').notEmpty()],
+  outfitsController.updateUserOpinion
+);
 
 module.exports = outfitsRouter;
