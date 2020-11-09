@@ -1,15 +1,16 @@
 require('dotenv').config();
 
 const HttpError = require('../model/http-error');
-const Clothes = require('../model/clothes');
 const Outfit = require('../model/outfit');
 const { generateOutfit } = require('../service/outfits-service');
 const LOG = require('../utils/logger');
 
 const getOneOutfit = async (req, res, next) => {
+  const userId = req.userData.userId;
+
   let response;
   try {
-    response = await generateOutfit(req);
+    response = await generateOutfit(userId);
   } catch (exception) {
     LOG.error(req._id, exception.message);
     next(new HttpError('Failed to generate an outfit', 500));
@@ -24,7 +25,30 @@ const getOneOutfit = async (req, res, next) => {
 };
 
 const getMultipleOutfits = async (req, res, next) => {
-  // Complex Logic + Notification go here
+  const MULTIPLE_OUTFITS_LIMIT = parseInt(
+    process.env.MULTIPLE_OUTFITS_LIMIT,
+    10
+  );
+
+  const userId = req.userData.userId;
+  const messages = [];
+  const warnings = [];
+  const outfits = [];
+
+  let count = 0;
+  do {
+    // TODO
+    let response;
+    try {
+      response = await generateOutfit(userId);
+    } catch (exception) {
+      LOG.error(req._id, exception.message);
+      next(new HttpError('Failed to generate an outfit', 500));
+    }
+    count++;
+  } while (count !== MULTIPLE_OUTFITS_LIMIT);
+
+  res.status(200).json({ messages, warnings, outfits });
 };
 
 module.exports = {

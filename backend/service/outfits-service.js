@@ -7,7 +7,6 @@ const LOG = require('../utils/logger');
 
 const Clothes = require('../model/clothes');
 const Outfit = require('../model/outfit');
-const { hash } = require('bcrypt');
 
 const FORMAL_KEYWORDS = [
   'conference',
@@ -22,10 +21,10 @@ const ALLOWED_COLORS = ['Grey', 'White', 'Black'];
 /**
  * Entry point for complex logic
  *
- * @param {String} userId
+ * @param {String} user_id
  */
-const generateOutfit = async req => {
-  const userId = req.userData.userId;
+const generateOutfit = async user_id => {
+  const userId = user_id;
 
   /* All necessary variables */
   // Need to initialize during preparation
