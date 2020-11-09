@@ -14,7 +14,7 @@ const User = require('../model/user');
  */
 const getClothes = async (req, res, next) => {
   const userId = req.params.userId;
-  if (!req.userData.userId || req.userData.userId != userId) {
+  if (!req.userData.userId || req.userData.userId !== userId) {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
@@ -47,7 +47,7 @@ const getClothes = async (req, res, next) => {
 const getClothing = async (req, res, next) => {
   const clothingId = req.params.clothingId;
   const userId = req.params.userId;
-  if (!req.userData.userId || req.userData.userId != userId || !clothingId) {
+  if (!req.userData.userId || req.userData.userId !== userId || !clothingId) {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
@@ -75,7 +75,7 @@ const postClothing = async (req, res, next) => {
   const userId = req.params.userId;
 
   // ===== validate token =====
-  if (req.userData.userId == null || req.userData.userId != userId) {
+  if (req.userData.userId === null || req.userData.userId !== userId) {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
@@ -132,7 +132,7 @@ const deleteClothing = async (req, res, next) => {
   const clothingId = req.params.clothingId;
   const userId = req.params.userId;
   // ===== validate token =====
-  if (!req.userData.userId || req.userData.userId != userId || !clothingId) {
+  if (!req.userData.userId || req.userData.userId !== userId || !clothingId) {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
@@ -167,7 +167,7 @@ const updateClothing = async (req, res, next) => {
   const userId = req.params.userId;
   const body = req.body;
   // ===== validate token =====
-  if (!req.userData.userId || req.userData.userId != userId || !clothingId) {
+  if (!req.userData.userId || req.userData.userId !== userId || !clothingId) {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
@@ -216,11 +216,11 @@ const updateClothing = async (req, res, next) => {
     assert(updateClothing.category === savedClothing.category);
     assert(updateClothing.color === savedClothing.color);
     assert(
-      updateClothing.seasons.length == savedClothing.seasons.length &&
+      updateClothing.seasons.length === savedClothing.seasons.length &&
         updateClothing.seasons.every((u, i) => u === savedClothing.seasons[i])
     );
     assert(
-      updateClothing.occasions.length == savedClothing.occasions.length &&
+      updateClothing.occasions.length === savedClothing.occasions.length &&
         updateClothing.occasions.every(
           (u, i) => u === savedClothing.occasions[i]
         )

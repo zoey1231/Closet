@@ -23,7 +23,7 @@ const postImage = async (req, res, next) => {
   const clothingId = req.params.clothingId;
   const userId = req.params.userId;
   // ===== validate token =====
-  if (!req.userData.userId || req.userData.userId != userId || !clothingId) {
+  if (!req.userData.userId || req.userData.userId !== userId || !clothingId) {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
