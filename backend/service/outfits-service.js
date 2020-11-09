@@ -135,6 +135,17 @@ const generateOutfit = async user_id => {
       let chosenTrousers;
       let chosenShoes;
 
+      const { success, warning, outfit } = result;
+      const {
+        _id,
+        clothes,
+        created,
+        occasions,
+        seasons,
+        opinion,
+        user,
+      } = outfit;
+
       // Check if clothes information are include in the result
       if (
         !result.chosenUpperClothes ||
@@ -150,17 +161,6 @@ const generateOutfit = async user_id => {
         chosenTrousers = result.chosenTrousers;
         chosenShoes = result.chosenShoes;
       }
-
-      const { success, warning, outfit } = result;
-      const {
-        _id,
-        clothes,
-        created,
-        occasions,
-        seasons,
-        opinion,
-        user,
-      } = outfit;
 
       return {
         success,

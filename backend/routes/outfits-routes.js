@@ -15,7 +15,7 @@ outfitsRouter.get('/one', outfitsController.getOneOutfit);
  */
 outfitsRouter.get('/multiple', outfitsController.getMultipleOutfits);
 
-// Update user opinion on one outfit
+// Update user opinion of one specific outfit
 outfitsRouter.patch('/:outfitId', outfitsController.updateUserOpinion);
 
 module.exports = outfitsRouter;

@@ -1,19 +1,22 @@
-require('dotenv').config();
+const assert = require('assert');
 
+require('dotenv').config();
 const HttpError = require('../model/http-error');
 const Outfit = require('../model/outfit');
 const { generateOutfit } = require('../service/outfits-service');
 const LOG = require('../utils/logger');
 
 const getOneOutfit = async (req, res, next) => {
-  const userId = req.userData.userId;
+  const { userId } = req.userData;
 
   let response;
   try {
     response = await generateOutfit(userId);
   } catch (exception) {
     LOG.error(req._id, exception.message);
-    next(new HttpError('Failed to generate an outfit', 500));
+    return next(
+      new HttpError('Failed to generate an outfit, please try again later', 500)
+    );
   }
 
   if (!response.success) {
@@ -30,7 +33,7 @@ const getMultipleOutfits = async (req, res, next) => {
     10
   );
 
-  const userId = req.userData.userId;
+  const { userId } = req.userData;
   const messages = [];
   const warnings = [];
   const outfits = [];
@@ -42,7 +45,12 @@ const getMultipleOutfits = async (req, res, next) => {
       response = await generateOutfit(userId);
     } catch (exception) {
       LOG.error(req._id, exception.message);
-      next(new HttpError('Failed to generate an outfit', 500));
+      return next(
+        new HttpError(
+          'Failed to generate an outfit, please try again later',
+          500
+        )
+      );
     }
 
     const { success, message, warning, outfit } = response;
@@ -69,7 +77,35 @@ const getMultipleOutfits = async (req, res, next) => {
   res.status(200).json({ messages, warnings, outfits });
 };
 
-const updateUserOpinion = async (req, res, next) => {};
+const updateUserOpinion = async (req, res, next) => {
+  const { userId } = req.userData;
+  const { outfitId } = req.params;
+  const { opinion } = req.body;
+
+  let updatedOutfit;
+  try {
+    updatedOutfit = await Outfit.findOneAndUpdate(
+      { _id: outfitId, user: userId },
+      { opinion },
+      { new: true }
+    );
+
+    assert(updatedOutfit.opinion === opinion);
+  } catch (exception) {
+    LOG.error(req._id, exception.message);
+    return next(
+      new HttpError(
+        'Failed to change user opinion of the outfit, please try again later',
+        500
+      )
+    );
+  }
+
+  res.status(200).json({
+    message: 'Updated user opinion successfully!',
+    updatedOutfit,
+  });
+};
 
 module.exports = {
   getOneOutfit,
