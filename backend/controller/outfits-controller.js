@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const HttpError = require('../model/http-error');
+const outfit = require('../model/outfit');
 const Outfit = require('../model/outfit');
 const { generateOutfit } = require('../service/outfits-service');
 const LOG = require('../utils/logger');
@@ -37,7 +38,6 @@ const getMultipleOutfits = async (req, res, next) => {
 
   let count = 0;
   do {
-    // TODO
     let response;
     try {
       response = await generateOutfit(userId);
@@ -45,6 +45,21 @@ const getMultipleOutfits = async (req, res, next) => {
       LOG.error(req._id, exception.message);
       next(new HttpError('Failed to generate an outfit', 500));
     }
+
+    const { success, message, warning, outfit } = response;
+
+    if (message && !messages.includes(message)) {
+      messages.push(message);
+    }
+
+    if (warning && !warnings.includes(warning)) {
+      warnings.push(warning);
+    }
+
+    if (success) {
+      outfits.push(outfit);
+    }
+
     count++;
   } while (count !== MULTIPLE_OUTFITS_LIMIT);
 
