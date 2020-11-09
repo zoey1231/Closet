@@ -500,7 +500,7 @@ const generateOutfit = async user_id => {
       const chosenOutfit =
         dislikedNormalOutfits[randomInt(dislikedNormalOutfits.length)];
       const warning =
-        'You have disliked all normal outfits. Maybe you change your opinion on this one!';
+        'You have disliked all normal outfits. Maybe you change your opinion on this one or add more clothes into your closet';
       return {
         success: true,
         existing: true,

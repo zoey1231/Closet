@@ -215,16 +215,19 @@ const updateClothing = async (req, res, next) => {
 
     assert(updateClothing.category === savedClothing.category);
     assert(updateClothing.color === savedClothing.color);
-    assert(
-      updateClothing.seasons.length === savedClothing.seasons.length &&
-        updateClothing.seasons.every((u, i) => u === savedClothing.seasons[i])
-    );
-    assert(
-      updateClothing.occasions.length === savedClothing.occasions.length &&
-        updateClothing.occasions.every(
-          (u, i) => u === savedClothing.occasions[i]
-        )
-    );
+    assert(updateClothing.seasons.length === savedClothing.seasons.length);
+    assert(updateClothing.occasions.length === savedClothing.occasions.length);
+    // assert(
+    //   updateClothing.seasons.length === savedClothing.seasons.length &&
+    //     updateClothing.seasons.every((u, i) => u === savedClothing.seasons[i])
+    // );
+    // assert(
+    //   updateClothing.occasions.length === savedClothing.occasions.length &&
+    //     updateClothing.occasions.every(
+    //       (u, i) => u === savedClothing.occasions[i]
+    //     )
+    // );
+
     assert(updateClothing.name === savedClothing.name);
 
     res.status(200).json(savedClothing);
