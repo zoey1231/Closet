@@ -17,18 +17,7 @@ const FORMAL_KEYWORDS = [
   'speech',
 ];
 
-const COLOURS = [
-  'Red',
-  'Orange',
-  'Yellow',
-  'Blue',
-  'Green',
-  'Purple',
-  'Pink',
-  'Grey',
-  'White',
-  'Black',
-];
+const ALLOWED_COLORS = ['Grey', 'White', 'Black'];
 
 /**
  * Entry point for complex logic
@@ -136,6 +125,7 @@ const generateOutfit = async req => {
     if (!result.success) {
       return {
         success: false,
+        warning: result.warning,
         message: 'Failed to generate an outfit',
       };
     }
@@ -163,13 +153,28 @@ const generateOutfit = async req => {
       }
 
       const { success, warning, outfit } = result;
+      const {
+        _id,
+        clothes,
+        created,
+        occasions,
+        seasons,
+        opinion,
+        user,
+      } = outfit;
 
       return {
         success,
         message: 'New outfit generated successfully!',
         warning,
         outfit: {
-          ...outfit,
+          _id,
+          clothes,
+          created,
+          occasions,
+          seasons,
+          opinion,
+          user,
           chosenUpperClothes,
           chosenTrousers,
           chosenShoes,
@@ -367,28 +372,45 @@ const generateOutfit = async req => {
 
   // Create a normal outfit
   const createNormalOutfit = async () => {
+    /** Preparation **/
+
+    /*
+      Definition of a normal outfit
+      1. does not have 'formal' occasion at all
+      2. has multiple occasions, may or may not include 'formal'
+    */
+    const normalOutfits = AllOutfits.filter(
+      outfit =>
+        !outfit.occasions.includes('formal') || outfit.occasions.length > 1
+    );
+
+    /* Obtain weather info */
+    await getTodayWeather();
+    const currSeason = getSeasonFromTemperature(TodayWhether.temperature.max);
+
+    /* Potential warning message*/
+    let warning;
+
+    /** Main logic starts **/
+
     /* Decide to choose from user liked normal outfits or try to generate a new one */
     const type = randomInt(2);
 
-    /*
-          Definition of a normal outfit
-          1. does not have 'formal' occasion at all
-          2. has multiple occasions, may or may not include 'formal'
-         */
-    const normalOutfits = AllOutfits.filter(
-      outfit =>
-        !outfit.occasions.includes('formal') || outfit.occasions.length > 2
-    );
-
     /* Get a user liked normal outfit */
     if (type === 0) {
-      const likedNormalOutfits = normalOutfits.filter(
-        outfit => outfit.opinion === 'like'
+      /* Find user-liked outfits that fit the weather (currSeason and All) */
+      const likedNormalOutfitsWithSeason = normalOutfits.filter(
+        outfit =>
+          outfit.opinion === 'like' &&
+          (outfit.seasons.includes(currSeason) ||
+            outfit.seasons.includes('All'))
       );
 
-      if (likedNormalOutfits.length) {
+      if (likedNormalOutfitsWithSeason.length) {
         const chosenOutfit =
-          LikedFormalOutfits[randomInt(likedNormalOutfits.length)];
+          likedNormalOutfitsWithSeason[
+            randomInt(likedNormalOutfitsWithSeason.length)
+          ];
         return {
           success: true,
           existing: true,
@@ -397,20 +419,10 @@ const generateOutfit = async req => {
       }
     }
 
-    /*
-          Plan:
-          1. get user like normal outfits
-          2. get all normal combinations
-          3. exclude user disliked normal outfits
-          4. get weather info
-          5. check color restrictions
-          6. check for existence
-    
-          7. (M9) how to avoid duplicated outfits returned today
-         */
-
-    const allNormal = AllClothes.filter(c => !c.occasions.includes('formal'));
-
+    /* Try to generated a new normal outfit */
+    const allNormal = AllClothes.filter(
+      c => !c.occasions.includes('formal') || c.occasions.length > 1
+    );
     let normalOuterwear = allNormal.filter(c => c.category === 'outerwear');
     let normalShirt = allNormal.filter(c => c.category === 'shirt');
     let normalTrousers = allNormal.filter(c => c.category === 'trousers');
@@ -423,6 +435,10 @@ const generateOutfit = async req => {
       3. have normal shoes
      */
 
+    /* 
+      Case 1: user does not have enough normal clothes 
+              => add a warning and return as a failure 
+     */
     if (
       (!normalOuterwear.length && !normalShirt.length) ||
       !normalTrousers.length ||
@@ -430,82 +446,153 @@ const generateOutfit = async req => {
     ) {
       return {
         success: false,
-        message: 'Add more clothes to get an outfit!',
+        warning: 'Add more clothes to get an outfit!',
       };
     }
 
-    // TODO: need better weather implementation!
-
-    // get weather & season tag
-    // await getTodayWeather();
-
-    // const { temperature, description } = todayWhether;
-    // let season = getSeasonFromTemperature(temperature);
-
-    let currSeason = getSeasonNorth();
-
-    // filter out other seasons
-    normalOuterwear = normalOuterwear.filter(
+    /* Fit normal clothes that fit that the current season */
+    const normalOuterwearWithSeason = normalOuterwear.filter(
       c => c.seasons.includes(currSeason) || c.seasons.includes('All')
     );
-    normalShirt = normalShirt.filter(
+    const normalShirtWithSeason = normalShirt.filter(
       c => c.seasons.includes(currSeason) || c.seasons.includes('All')
     );
-    normalShoes = normalShoes.filter(
+    const normalTrousersWithSeason = normalTrousers.filter(
       c => c.seasons.includes(currSeason) || c.seasons.includes('All')
     );
-    normalTrousers = normalTrousers.filter(
+    const normalShoesWithSeason = normalShoes.filter(
       c => c.seasons.includes(currSeason) || c.seasons.includes('All')
     );
 
-    // check if outfit exists
-    let allOutfitIds = await (await Outfit.find({ user: userId })).map(
-      outfit => outfit._id
-    );
+    /* 
+      Case 2: user does not have enough normal clothes that fit the current weather 
+              => add a warning and generate a normal outfit without considering the weather
+     */
+    if (
+      (!normalOuterwearWithSeason.length && !normalShirtWithSeason.length) ||
+      !normalTrousersWithSeason.length ||
+      !normalShoesWithSeason.length
+    ) {
+      warning =
+        "There are not enough clothes to fit today's weather in your closet";
+    } else {
+      normalOuterwear = normalOuterwearWithSeason;
+      normalShirt = normalShirtWithSeason;
+      normalTrousers = normalTrousersWithSeason;
+      normalShoes = normalShoesWithSeason;
+    }
 
-    // loop through all current clothing
-    // TODO: these loops looks bad bad bad --- look into cartesian product
-    // https://stackoverflow.com/questions/12303989/cartesian-product-of-multiple-arrays-in-javascript
-
-    const outfitWithShirt = cartesian(normalShirt, normalTrousers, normalShoes);
-    const outfitWithOutwear = cartesian(
-      normalOuterwear,
+    /* Generate all possible combinations */
+    const allCombinations = cartesian(
+      [...normalOuterwear, ...normalShirt],
       normalTrousers,
       normalShoes
     );
 
-    let chosenUpperClothes, chosenTrousers, chosenShoes;
-    for (const outerwear of normalOuterwear) {
-      for (const shirt of normalShirt) {
-        for (const trousers of normalTrousers) {
-          for (const shoes of normalShoes) {
-            let random = randomInt(2);
-
-            let outfitId = random
-              ? hashCode(shirt.id + trousers.id + shoes.id)
-              : hashCode(outerwear.id + trousers.id + shoes.id);
-
-            // if this outfit does not already exist
-            if (!allOutfitIds.includes(outfitId)) {
-              chosenUpperClothes = random ? shirt : outerwear;
-              chosenTrousers = trousers;
-              chosenShoes = shoes;
-              break;
-            }
-          }
-        }
-      }
+    /*  
+      Special check:
+        If we found the user has disliked all possible combinations, 
+        we will randomly return a disliked one with a warning message
+     */
+    const dislikedNormalOutfits = normalOutfits.filter(
+      outfit => outfit.opinion === 'dislike'
+    );
+    if (allCombinations.length === dislikedNormalOutfits.length) {
+      const chosenOutfit =
+        dislikedNormalOutfits[randomInt(dislikedNormalOutfits.length)];
+      const warning =
+        'You have disliked all normal outfits. Maybe you change your opinion on this one!';
+      return {
+        success: true,
+        existing: true,
+        warning,
+        outfit: chosenOutfit,
+      };
     }
 
-    // TODO (M8): return error if run out of clothes
+    /* Exclude the disliked ones */
+    const combinations = allCombinations.filter(combo => {
+      const hashId = hashCode(combo[0].id + combo[1].id + combo[2].id);
+      const index = dislikedNormalOutfits.findIndex(
+        outfit => outfit._id === hashId
+      );
+      return index === -1;
+    });
+
+    /* Randomly choose one combination (with color restrictions) */
+    let chosenCombination, chosenUpperClothes, chosenTrousers, chosenShoes;
+    let colors = [];
+    let numOfTries = 0;
+    do {
+      chosenCombination = combinations[randomInt(combinations.length)];
+      chosenUpperClothes = chosenCombination[0];
+      chosenTrousers = chosenCombination[1];
+      chosenShoes = chosenCombination[2];
+
+      colors = [
+        chosenUpperClothes.color,
+        chosenTrousers.color,
+        chosenShoes.color,
+      ];
+      const color = chosenUpperClothes.color;
+
+      /*
+        A simple color restriction (the following color combination is NOT allowed)
+        1. Except for Grey, White, Black, All three clothes have the same color
+        2. Green and Red
+      */
+      if (
+        (!ALLOWED_COLORS.includes(color) &&
+          chosenTrousers.color === color &&
+          chosenShoes.color === color) ||
+        (colors.includes('Green') && colors.includes('Red'))
+      ) {
+        numOfTries++;
+        colors = [];
+        continue;
+      } else {
+        break;
+      }
+    } while (numOfTries !== combinations.length);
+
+    /* End while loop with failure */
+    if (numOfTries === combinations.length) {
+      return {
+        success: false,
+        warning:
+          'Could find a good color combination, please add more clothes in your closet!',
+      };
+    }
+
+    /* End while loop with success */
+    /* Check if the outfit has existed */
+    const hashId = hashCode(
+      chosenUpperClothes.id + chosenTrousers.id + chosenShoes.id
+    );
+    const existingOutfit = AllOutfits.find(outfit => outfit._id === hashId);
+
+    if (existingOutfit) {
+      // Existed
+      return {
+        success: true,
+        existing: true,
+        outfit: existingOutfit,
+        chosenUpperClothes,
+        chosenTrousers,
+        chosenShoes,
+      };
+    }
+
+    // (M9) how to avoid duplicated outfits returned today
 
     return {
       success: true,
+      _id: hashId,
+      occasions: ['normal'],
+      seasons: [currSeason],
       chosenUpperClothes,
       chosenTrousers,
       chosenShoes,
-      occasions: ['normal'], // TODO: what about occasion?
-      seasons: [currSeason],
     };
   };
 
@@ -552,24 +639,16 @@ const generateOutfit = async req => {
 };
 
 /**
- * Get Northern hemisphere season
- * @returns one of ['Winter', 'Spring', 'Summer', 'Fall']
- */
-const getSeasonNorth = () =>
-  ['Winter', 'Spring', 'Summer', 'Fall'][
-    Math.floor((new Date().getMonth() / 12) * 4) % 4
-  ];
-
-/**
  * Get season from temperature
  * @param {int} temperature
  * @return {String} Season "Spring" "Summer" "Fall" "Winter"
  */
 const getSeasonFromTemperature = temperature => {
-  if (temperature > 20) return 'Summer';
-  if (temperature <= 20 && temperature >= 15) return 'Fall';
-  if (temperature < 15 && temperature >= 10) return 'Spring';
-  if (temperature > 10) return 'Winter';
+  const temp = parseInt(temperature, 10);
+  if (temp > 20) return 'Summer';
+  if (temp <= 20 && temp >= 15) return 'Fall';
+  if (temp < 15 && temp >= 10) return 'Spring';
+  if (temp < 10) return 'Winter';
 };
 
 /**
