@@ -250,7 +250,7 @@ const generateOutfit = async user_id => {
 
       if (likedFormalOutfits.length) {
         const chosenOutfit =
-          LikedFormalOutfits[randomInt(likedFormalOutfits.length)];
+          likedFormalOutfits[randomInt(likedFormalOutfits.length)];
         return {
           success: true,
           existing: true,
