@@ -90,12 +90,6 @@ const updateUserOpinion = async (req, res, next) => {
   const { outfitId } = req.params;
   const { opinion } = req.body;
 
-  if (!outfitId) {
-    return next(
-      new HttpError('Missing parameters, please check your request', 400)
-    );
-  }
-
   let updatedOutfit;
   try {
     updatedOutfit = await Outfit.findOneAndUpdate(

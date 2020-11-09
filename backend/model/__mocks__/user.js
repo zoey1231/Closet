@@ -10,7 +10,7 @@ class User {
   }
 
   save() {
-    const index = userDB.findIndex(user => user.email == this.email);
+    const index = userDB.findIndex(user => user.email === this.email);
     if (index !== -1) {
       return Promise.reject('Reject!');
     }
