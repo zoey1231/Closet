@@ -3,10 +3,10 @@ const express = require('express');
 const notificationsController = require('../controller/notifications-controller');
 const checkAuth = require('../middleware/check-auth');
 
-const router = express.Router();
+const notificationRouter = express.Router();
 
-router.use(checkAuth);
+notificationRouter.use(checkAuth);
 
-router.post('/', notificationsController.sendNotification);
+notificationRouter.post('/', notificationsController.sendNotification);
 
-module.exports = router;
+module.exports = notificationRouter;
