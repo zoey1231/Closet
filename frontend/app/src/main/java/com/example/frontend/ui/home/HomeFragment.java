@@ -59,12 +59,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     ConstraintLayout view_dislike;
     TextView tv_undo;
     ImageButton undoButton;
+
+    private String outfitId = EMPTY_STRING;
     private String upperClothesId = EMPTY_STRING;
     private String trousersId = EMPTY_STRING;
     private String shoesId = EMPTY_STRING;
 
     private JSONObject outfit_opinion = new JSONObject();
-
     private boolean like = false;
     private boolean dislike = false;
     private boolean undoDislike = false;
@@ -124,15 +125,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 getOutfitData(userToken);
                 rl_outfit.setVisibility(View.VISIBLE);
 
-                while (upperClothesId.equals(EMPTY_STRING) || trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING)) {
-                    Log.d(TAG, "busy waiting for clothes ids");
+                while (outfitId.equals(EMPTY_STRING) || upperClothesId.equals(EMPTY_STRING) || trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING)) {
+                    Log.d(TAG, "busy waiting for ids");
                 }
                 cloth1.setBackground(getClothesImage(userId, upperClothesId));
                 cloth2.setBackground(getClothesImage(userId, trousersId));
                 cloth3.setBackground(getClothesImage(userId, shoesId));
 
-
                 break;
+
             case R.id.btn_like_outfit1:
                 like = true;
                 //send response to server
@@ -352,15 +353,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void extractResponseOutfitData(JSONObject responseJson) throws JSONException{
         JSONObject outfitJson = responseJson.getJSONObject("outfit");
+        JSONObject upperClothesJSON = outfitJson.getJSONObject("chosenUpperClothes");
+        JSONObject trousersJSON = outfitJson.getJSONObject("chosenTrousers");
+        JSONObject shoesJSON = outfitJson.getJSONObject("chosenShoes");
+
         try {
-            if(outfitJson.getJSONObject("chosenUpperClothes").has("id")){
-                upperClothesId = outfitJson.getJSONObject("chosenUpperClothes").getString("id");
+            if (outfitJson.has("_id")) {
+                outfitId = outfitJson.getString("_id");
             }
-            if(outfitJson.getJSONObject("chosenTrousers").has("id")){
-                trousersId = outfitJson.getJSONObject("chosenTrousers").getString("id");
+            if (upperClothesJSON.has("id")){
+                upperClothesId = upperClothesJSON.getString("id");
             }
-            if(outfitJson.getJSONObject("chosenShoes").has("id")){
-                shoesId = outfitJson.getJSONObject("chosenShoes").getString("id");
+            if (trousersJSON.has("id")){
+                trousersId = trousersJSON.getString("id");
+            }
+            if (shoesJSON.has("id")){
+                shoesId = shoesJSON.getString("id");
             }
 
         } catch (JSONException e) {
