@@ -21,8 +21,8 @@ describe('outfit-services', () => {
     let password = 'TESTING';
     await api.post('/api/users/signup').send({
       name: 'TESTING',
-      email: email,
-      password: password,
+      email,
+      password,
     });
 
     const res = await api.post('/api/users/login').send({

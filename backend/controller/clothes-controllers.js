@@ -105,10 +105,10 @@ const postClothing = async (req, res, next) => {
     const user = await User.findById(userId);
 
     const clothes = new Clothes({
-      category: category,
-      color: color,
-      seasons: seasons,
-      occasions: occasions,
+      category,
+      color,
+      seasons,
+      occasions,
       name: body.name || '',
       user: userId, // TODO: perhaps use the validated id
     });
