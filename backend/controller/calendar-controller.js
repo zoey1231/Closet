@@ -6,6 +6,10 @@ const LOG = require('../utils/logger');
 const getEvents = async (req, res, next) => {
   const { date } = req.params;
   const { code } = req.body;
+  
+  if (!date || !code) {
+    return next(new HttpError('Missing parameters', 400));
+  }
 
   let response;
   try {

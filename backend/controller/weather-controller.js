@@ -5,6 +5,14 @@ const LOG = require('../utils/logger');
 
 const getWeather = async (req, res, next) => {
   const { place } = req.params;
+  if (!place) {
+    return next(
+      new HttpError(
+        'Missing parameter: place',
+        400
+      )
+    );
+  }
 
   let response;
   try {
