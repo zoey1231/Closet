@@ -2,6 +2,7 @@ const fs = require('fs');
 const { google } = require('googleapis');
 
 require('dotenv').config();
+const LOG = require('../utils/logger');
 const { getDaysInMonth } = require('../utils/time-helper');
 
 let dateMin;
@@ -47,7 +48,7 @@ const getCalendarEvents = async (calendar_date, code) => {
   try {
     content = fs.readFileSync('credentials.json');
   } catch (err) {
-    console.log('Error loading client secret file:', err);
+    LOG.error('Error loading client secret file:', err);
     return {
       success: false,
       reason: process.env.CALENDAR_FILE_ERROR,
@@ -86,7 +87,7 @@ const authorize = async credentials => {
   try {
     token = fs.readFileSync(TOKEN_PATH);
   } catch (err) {
-    console.log(err);
+    LOG.error(err);
     return getAccessToken(oAuth2Client);
   }
 
@@ -105,7 +106,7 @@ const getAccessToken = async oAuth2Client => {
   try {
     response = await oAuth2Client.getToken(givenCode);
   } catch (err) {
-    console.error('Error retrieving access token', err);
+    LOG.error('Error retrieving access token', err);
     return {
       success: false,
       reason: process.env.CALENDAR_CODE_ERROR,
@@ -119,7 +120,7 @@ const getAccessToken = async oAuth2Client => {
   try {
     fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
   } catch (err) {
-    console.log(err);
+    LOG.error(err);
     return {
       success: false,
       reason: process.env.CALENDAR_FILE_ERROR,
