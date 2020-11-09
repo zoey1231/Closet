@@ -195,10 +195,10 @@ const updateClothing = async (req, res, next) => {
 
   try {
     const updateClothing = {
-      category: category,
-      color: color,
-      seasons: seasons,
-      occasions: occasions,
+      category,
+      color,
+      seasons,
+      occasions,
       name: body.name || '',
     };
 

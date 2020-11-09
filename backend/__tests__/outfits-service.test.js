@@ -26,8 +26,8 @@ describe('outfit-services', () => {
     });
 
     const res = await api.post('/api/users/login').send({
-      email: email,
-      password: password,
+      email,
+      password,
     });
 
     expect(res.statusCode).toEqual(200);
