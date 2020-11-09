@@ -3,16 +3,19 @@ const express = require('express');
 const outfitsController = require('../controller/outfits-controller');
 const checkAuth = require('../middleware/check-auth');
 
-const router = express.Router();
+const outfitsRouter = express.Router();
 
-router.use(checkAuth);
+outfitsRouter.use(checkAuth);
 
 // Requests for one outfit
-router.get('/one', outfitsController.getOneOutfit);
+outfitsRouter.get('/one', outfitsController.getOneOutfit);
 
 /*  Get multiple outfits
     CAUTION: might change later to combine with notifications !!!
  */
-router.get('/multiple', outfitsController.getMultipleOutfits);
+outfitsRouter.get('/multiple', outfitsController.getMultipleOutfits);
 
-module.exports = router;
+// Update user opinion on one outfit
+outfitsRouter.patch('/:outfitId', outfitsController.updateUserOpinion);
+
+module.exports = outfitsRouter;

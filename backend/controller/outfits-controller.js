@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const HttpError = require('../model/http-error');
-const outfit = require('../model/outfit');
 const Outfit = require('../model/outfit');
 const { generateOutfit } = require('../service/outfits-service');
 const LOG = require('../utils/logger');
@@ -57,7 +56,11 @@ const getMultipleOutfits = async (req, res, next) => {
     }
 
     if (success) {
-      outfits.push(outfit);
+      // Avoid duplicate outfits
+      const index = outfits.findIndex(o => o._id === outfit._id);
+      if (index === -1) {
+        outfits.push(outfit);
+      }
     }
 
     count++;
@@ -66,7 +69,10 @@ const getMultipleOutfits = async (req, res, next) => {
   res.status(200).json({ messages, warnings, outfits });
 };
 
+const updateUserOpinion = async (req, res, next) => {};
+
 module.exports = {
   getOneOutfit,
   getMultipleOutfits,
+  updateUserOpinion,
 };
