@@ -1,9 +1,13 @@
 ![Backend CD](https://github.com/JohnLi1999/closet/workflows/Backend%20CD/badge.svg)
+<br>
 ![Node.js CI](https://github.com/JohnLi1999/closet/workflows/Node.js%20CI/badge.svg)
+[![Build Status](https://travis-ci.com/CPEN321Closet/closet.svg?token=cJME4kmVD54FVSExqYaY&branch=master)](https://travis-ci.com/CPEN321Closet/closet)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 <br>
 ![Android CI](https://github.com/JohnLi1999/closet/workflows/Android%20CI/badge.svg)
-
+<br>
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9d397e8a128e4ae7aeddd36a93d2fc83)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CPEN321Closet/closet&amp;utm_campaign=Badge_Grade)
+[![codecov](https://codecov.io/gh/CPEN321Closet/closet/branch/master/graph/badge.svg?token=SHTOLLX2SH)](https://codecov.io/gh/CPEN321Closet/closet)
 
 # Azure Server
 - VM Name: `closet`

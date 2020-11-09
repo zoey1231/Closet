@@ -54,3 +54,11 @@ jobs:
           test-command: "npm run testCoverage"
           changes-only: true
           working-directory: ${{ env.working-directory }}
+
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./backend/coverage/clover.xml # optional
+          name: backend-deploy
+          fail_ci_if_error: false # optional
+          verbose: true # optional (default = false)
