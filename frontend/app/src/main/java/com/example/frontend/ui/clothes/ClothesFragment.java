@@ -73,7 +73,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 addClothesIntent.putExtra("user", user);
                 Log.d(TAG,"send user to addClothActivity: ");
                 Log.d(TAG,user.getEmail());
-                Log.d(TAG,user.getuserId());
+                Log.d(TAG,user.getUserId());
                 Log.d(TAG,user.getUserToken());
 
                 startActivityForResult(addClothesIntent, 1);

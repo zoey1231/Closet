@@ -31,7 +31,7 @@ public class User implements Parcelable {
 
     }
 
-    public String getuserId() {
+    public String getUserId() {
         return userId;
     }
 

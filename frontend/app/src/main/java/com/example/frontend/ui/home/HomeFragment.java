@@ -22,11 +22,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
+import com.example.frontend.AddClothesActivity;
+import com.example.frontend.Clothes;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommunicationAsync;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +38,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -64,6 +68,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String upperClothesId = EMPTY_STRING;
     private String trousersId = EMPTY_STRING;
     private String shoesId = EMPTY_STRING;
+
+    private JSONObject outfit_opinion = new JSONObject();
+
+    private boolean like = false;
+    private boolean dislike = false;
+    private boolean undoDislike = false;
 
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_get_outfit_request");
 
@@ -101,11 +111,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         cloth2 = root.findViewById(R.id.iv_clothes2_outfit1);
         cloth3 = root.findViewById(R.id.iv_clothes3_outfit1);
 
-
         //get User's data from MainActivity and display them on fragment
         userToken = MainActivity.getUser().getUserToken();
-        userId = MainActivity.getUser().getuserId();
+        userId = MainActivity.getUser().getUserId();
         getWeatherData(userToken);
+
+
 
         return root;
     }
@@ -118,60 +129,128 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 getOutfitData(userToken);
                 rl_outfit.setVisibility(View.VISIBLE);
+
+                while (upperClothesId.equals(EMPTY_STRING) || trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING)) {
+                    Log.d(TAG, "busy waiting for clothes ids");
+                }
                 cloth1.setBackground(getClothesImage(userId, upperClothesId));
                 cloth2.setBackground(getClothesImage(userId, trousersId));
                 cloth3.setBackground(getClothesImage(userId, shoesId));
+
+
                 break;
             case R.id.btn_like_outfit1:
-                makeText(getContext(), "Your preference has been recorded", Toast.LENGTH_SHORT).show();
-                likeButton.setEnabled(false);
-                dislikeButton.setEnabled(false);
+                like = true;
                 //send response to server
+
+                try {
+                    outfit_opinion.put("opinion", "like");
+                    sendOutfitOpinionToServer(outfit_opinion,userToken);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //when finish sending opinion
+//                makeText(getContext(), "Your preference has been recorded", Toast.LENGTH_SHORT).show();
+//                likeButton.setEnabled(false);
+//                dislikeButton.setEnabled(false);
                 break;
             case R.id.btn_dislike_outfit1:
-                view_dislike.setVisibility(View.VISIBLE);
-                likeButton.setEnabled(false);
-                dislikeButton.setEnabled(false);
-
+                dislike = true;
                 //send response to server
-
-                undoButton.setEnabled(true);
-                tv_undo.setEnabled(true);
+                try {
+                    outfit_opinion.put("opinion", "dislike");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //when finish sending opinion,go the undo screen
+//                view_dislike.setVisibility(View.VISIBLE);
+//                likeButton.setEnabled(false);
+//                dislikeButton.setEnabled(false);
+//                undoButton.setEnabled(true);
+//                tv_undo.setEnabled(true);
 
                 break;
 
             case R.id.btn_undo:
             case R.id.tv_undo:
-                view_dislike.setVisibility(View.GONE);
-                likeButton.setEnabled(false);
-                dislikeButton.setEnabled(false);
-
+                undoDislike = true;
                 //send response to server
-
+                try {
+                    outfit_opinion.put("opinion", "unknown");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                //when finish sending opinion,jump back to main screen and let user to select again
+                //view_dislike.setVisibility(View.GONE);
                 break;
 
             default:
         }
     }
-    
+
+    private void sendOutfitOpinionToServer(JSONObject outfit_opinion,String userToken) {
+        ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
+        final String data = outfit_opinion.toString();
+        Log.d(TAG,"prepared to sendOutfitOpinionToServer");
+        Log.d(TAG,"put request: "+outfit_opinion);
+
+        serverCommunication.putWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/", data,userToken, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Fail to send outfit opinion to server");
+                Log.d(TAG, String.valueOf(e));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+                String responseStr = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG, responseStr);
+
+                JSONObject responseJson = null;
+                try {
+                    responseJson = new JSONObject(responseStr);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (response.isSuccessful()) {
+                    if(like){
+
+                    } else if(dislike){
+
+                    } else if (undoDislike){
+
+                    }else {
+
+                    }
+
+                } else {
+
+                }
+            }
+        });
+    }
+
     private void getWeatherData(String userToken) {
         ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
         Log.d(TAG,"prepared to sendUserDataToServer");
 
         serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/weather/vancouver",userToken, new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
                 Log.d(TAG,"Fail to send weather request to server");
                 Log.d(TAG, String.valueOf(e));
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseStr = response.body().string();
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseStr = Objects.requireNonNull(response.body()).string();
                 if (response.isSuccessful()) {
                     Log.d(TAG,"weather request is successful"+responseStr);
-                    JSONObject responseJson = null;
+                    JSONObject responseJson;
                     try {
                         //retrieve weather data from OpenWeather's response and display on UI
                         responseJson = new JSONObject(responseStr);
@@ -189,7 +268,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateWeatherOnUI() {
-        getActivity().runOnUiThread(new Runnable() {
+        requireActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 //update weather and time data on the UI
@@ -243,7 +322,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/one",userToken, new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
                 Log.d(TAG,"Fail to send request to server");
                 Log.d(TAG, String.valueOf(e));
@@ -251,18 +330,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
 
-                String responseStr = response.body().string();
+                String responseStr = Objects.requireNonNull(response.body()).string();
                 if (response.isSuccessful()) {
 
                     Log.d(TAG,"Outfit request is successful"+responseStr);
-                    JSONObject responseJson = null;
+                    JSONObject responseJson;
                     try {
                         //retrieve outfit data from server's response
                         responseJson = new JSONObject(responseStr);
                         extractResponseOutfitData(responseJson);
-                        
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -277,17 +356,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void extractResponseOutfitData(JSONObject responseJson) {
+    private void extractResponseOutfitData(JSONObject responseJson) throws JSONException{
+        JSONObject outfitJson = responseJson.getJSONObject("outfit");
         try {
-            if(responseJson.has("chosenUpperClothes")){
-                upperClothesId = responseJson.getString("chosenUpperClothes");
+            if(outfitJson.getJSONObject("chosenUpperClothes").has("id")){
+                upperClothesId = outfitJson.getJSONObject("chosenUpperClothes").getString("id");
             }
-            if(responseJson.has("chosenTrousers")){
-                trousersId = responseJson.getString("chosenTrousers");
+            if(outfitJson.getJSONObject("chosenTrousers").has("id")){
+                trousersId = outfitJson.getJSONObject("chosenTrousers").getString("id");
             }
-            if(responseJson.has("chosenShoes")){
-                shoesId = responseJson.getString("chosenShoes");
+            if(outfitJson.getJSONObject("chosenShoes").has("id")){
+                shoesId = outfitJson.getJSONObject("chosenShoes").getString("id");
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -299,7 +380,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         BufferedInputStream buffer;
 
         try {
-            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".jpg");
+            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".png");
             stream = url.openStream();
             buffer = new BufferedInputStream(stream);
             Bitmap bitmap = BitmapFactory.decodeStream(buffer);

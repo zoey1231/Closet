@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -80,7 +81,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<String> seasons = new ArrayList<>();
     private ArrayList<String> occasions = new ArrayList<>();
 
-    private HashMap<String, Clothes> clothHashMap =new HashMap<String, Clothes>();
+    private HashMap<String, Clothes> clothHashMap =new HashMap<>();
 
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_data");
 
@@ -90,10 +91,10 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_add_clothes);
 
         Bundle data = getIntent().getExtras();
-        user = (User) data.getParcelable("user");
+        user = data.getParcelable("user");
         Log.d(TAG,"get user at addClothActivity: ");
         Log.d(TAG,user.getEmail());
-        Log.d(TAG,user.getuserId());
+        Log.d(TAG,user.getUserId());
         Log.d(TAG,user.getUserToken());
 
         image = findViewById(R.id.iv_add);
@@ -213,7 +214,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 while (cloth_id.equals(EMPTY_STRING)) {
                     // wait for clothing id
                     Log.d(TAG, "testing: waiting for clothing id");
-                };
+                }
                 sendImageToServer(file);
 
                 Intent intent = new Intent();
@@ -278,18 +279,18 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         Log.d(TAG,"prepared to sendClothDataToServer");
         Log.d(TAG,"data: "+data);
 
-        serverCommunication.postWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes/"+user.getuserId(), data,user.getUserToken(), new Callback() {
+        serverCommunication.postWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes/"+user.getUserId(), data,user.getUserToken(), new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
                 Log.d(TAG,"Fail to send request to server");
                 Log.d(TAG, String.valueOf(e));
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
 
-                String responseStr = response.body().string();
+                String responseStr = Objects.requireNonNull(response.body()).string();
                 Log.d(TAG,responseStr);
 
                 JSONObject responseJson = null;
@@ -301,7 +302,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 }
                 if (response.isSuccessful()) {
                     //make a toast to let the server's message display to the user
-                    if(responseJson.has("message") ){
+
+                    if(Objects.requireNonNull(responseJson).has("message") ){
                         runOnUiThread(new Runnable() {
                             public void run() {
                                 final Toast toast = makeText(AddClothesActivity.this,message,Toast.LENGTH_LONG);
@@ -327,7 +329,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
                 } else {
                     // Request not successful
-                    if(responseJson.has("message") ){
+                    if(Objects.requireNonNull(responseJson).has("message") ){
                         runOnUiThread(new Runnable() {
                             public void run() {
                                 final Toast toast = makeText(AddClothesActivity.this,message,Toast.LENGTH_LONG);
@@ -420,10 +422,10 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("ClothingImage", file.getName(), RequestBody.create(MediaType.parse("image/*"), file))
+                .addFormDataPart("ClothingImage", file.getName(), RequestBody.create(file,MediaType.parse("image/*")))
                 .build();
         Request request = new Request.Builder()
-                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getuserId() + "/" + cloth_id)
+                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + cloth_id)
                 .addHeader("Authorization","Bearer "+ user.getUserToken())
                 .post(body)
                 .build();
@@ -438,7 +440,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseStr = response.body().string();
+                String responseStr = Objects.requireNonNull(response.body()).string();
                 Log.d(TAG, "Successfully upload image to server:"+responseStr);
 
             }
