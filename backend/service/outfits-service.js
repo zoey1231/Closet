@@ -538,7 +538,7 @@ const generateOutfit = async user_id => {
       /*
         A simple color restriction (the following color combination is NOT allowed)
         1. Except for Grey, White, Black, All three clothes have the same color
-        2. Green and Red
+        2. Green and Red 
       */
       if (
         (!ALLOWED_COLORS.includes(color) &&
