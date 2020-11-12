@@ -57,12 +57,12 @@ import static android.widget.Toast.makeText;
 public class AddClothesActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static final String TAG = "AddClothesActivity";
     private static final String EMPTY_STRING = "";
-    private User user;
 
+    private User user;
     private ImageView image;
     private ImageButton imageButton;
+    private Button saveButton;
     private TextView text;
-
     private String path;
     private File file;
 
@@ -72,12 +72,12 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private EditText clothName;
 
     private String message = EMPTY_STRING;
-    private String cloth_id = EMPTY_STRING;
+    private String clothId = EMPTY_STRING;
     private String category= EMPTY_STRING;
     private String color= EMPTY_STRING;
     private String name= EMPTY_STRING;
     private String updated= EMPTY_STRING;
-    private String cloth_user= EMPTY_STRING;
+    private String clothUser = EMPTY_STRING;
     private ArrayList<String> seasons = new ArrayList<>();
     private ArrayList<String> occasions = new ArrayList<>();
 
@@ -92,15 +92,11 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
         Bundle data = getIntent().getExtras();
         user = data.getParcelable("user");
-        Log.d(TAG,"get user at addClothActivity: ");
-        Log.d(TAG,user.getEmail());
-        Log.d(TAG,user.getUserId());
-        Log.d(TAG,user.getUserToken());
 
         image = findViewById(R.id.iv_add);
         image.setVisibility(View.INVISIBLE);
         imageButton = findViewById(R.id.btn_image_add);
-        Button saveButton = findViewById(R.id.btn_save_add);
+        saveButton = findViewById(R.id.btn_save_add);
         text = findViewById(R.id.tv_add);
 
         imageButton.setOnClickListener(this);
@@ -115,18 +111,13 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         clothName = findViewById(R.id.et_name_add);
 
         //supply the spinners with the String array defined in resource using instances of ArrayAdapter
-        setAdapter(R.array.category_array,spinner_category);
-        setAdapter(R.array.color_array,spinner_color);
-        setAdapter(R.array.occasion_array,spinner_occasion);
+        setAdapter(R.array.category_array, spinner_category);
+        setAdapter(R.array.color_array, spinner_color);
+        setAdapter(R.array.occasion_array, spinner_occasion);
 
         spinner_category.setOnItemSelectedListener(this);
         spinner_color.setOnItemSelectedListener(this);
         spinner_occasion.setOnItemSelectedListener(this);
-    }
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
-        //construct the clothAttribute JSONObject we want to send to server
-        constructClothAttribute(parent,view,pos);
     }
 
     private void constructClothAttribute(AdapterView<?> parent, View view, int pos) {
@@ -167,12 +158,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Another interface callback
-        //Toast.makeText(parent.getContext(),"You must select one of the options",Toast.LENGTH_SHORT).show();
-    }
-
     public void setAdapter(int textArrayResId, @NotNull Spinner spinner) {
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -211,21 +196,32 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 //send the cloth data to server
                 sendClothDataToServer(clothAttribute);
 
-                while (cloth_id.equals(EMPTY_STRING)) {
-                    // wait for clothing id
-                    Log.d(TAG, "testing: waiting for clothing id");
+                while (clothId.equals(EMPTY_STRING)) {
+                    // wait for clothing id; change this
+                    Log.d(TAG, "waiting for clothing id");
                 }
                 sendImageToServer(file);
 
-                Intent intent = new Intent();
-                intent.putExtra("path", path);
-                setResult(RESULT_OK, intent);
+                Intent intentImage = new Intent();
+                intentImage.putExtra("path", path);
+                setResult(RESULT_OK, intentImage);
                 finish();
-
                 break;
 
             default:
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
+        //construct the clothAttribute JSONObject we want to send to server
+        constructClothAttribute(parent,view,pos);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
+        //Toast.makeText(parent.getContext(),"You must select one of the options",Toast.LENGTH_SHORT).show();
     }
 
     private void constructClothAttributeClothName() {
@@ -321,8 +317,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                         });
 
                         //create a new cloth instance and add it the the clothes' collection
-                        Clothes clothes = new Clothes(cloth_id,category,color,name,updated,cloth_user,seasons,occasions);
-                        clothHashMap.put(cloth_id, clothes);
+                        Clothes clothes = new Clothes(clothId,category,color,name,updated, clothUser,seasons,occasions);
+                        clothHashMap.put(clothId, clothes);
 
                         //startActivity(new Intent(getApplicationContext(),MainActivity.class).putExtra("user",new User(userId,userToken,email)));
                     }
@@ -373,7 +369,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 //            if(responseJson.has("updated"))
 //                updated = responseJson.getString("updated");
             if(responseJson.has("id"))
-                cloth_id = responseJson.getString("id");
+                clothId = responseJson.getString("id");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -425,7 +421,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 .addFormDataPart("ClothingImage", file.getName(), RequestBody.create(file,MediaType.parse("image/*")))
                 .build();
         Request request = new Request.Builder()
-                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + cloth_id)
+                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + clothId)
                 .addHeader("Authorization","Bearer "+ user.getUserToken())
                 .post(body)
                 .build();

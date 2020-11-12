@@ -126,7 +126,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 rl_outfit.setVisibility(View.VISIBLE);
 
                 while (outfitId.equals(EMPTY_STRING) || upperClothesId.equals(EMPTY_STRING) || trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING)) {
-                    Log.d(TAG, "busy waiting for ids");
+                    Log.d(TAG, "waiting for ids");
                 }
                 cloth1.setBackground(getClothesImage(userId, upperClothesId));
                 cloth2.setBackground(getClothesImage(userId, trousersId));
@@ -165,7 +165,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //                tv_undo.setEnabled(true);
 
                 break;
-
+                
             case R.id.btn_undo:
             case R.id.tv_undo:
                 undoDislike = true;

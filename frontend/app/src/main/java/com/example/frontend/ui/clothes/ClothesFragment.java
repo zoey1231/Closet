@@ -30,9 +30,15 @@ import org.jetbrains.annotations.NotNull;
 public class ClothesFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static final String TAG ="ClothesFragment" ;
     private User user;
+    private String path;
+
     private ImageButton buttonAdd;
     private ImageView clothes1, clothes2, clothes3;
     private Spinner spinner1, spinner2, spinner3;
+
+    private final int ADD = 1;
+    private final int EDIT = 2;
+
     private int clickCount = 0; //for test
 
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_request");
@@ -62,21 +68,26 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         return root;
     }
 
+    public void setAdapter(int textArrayResId, @NotNull Spinner spinner) {
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ClothesFragment.this.getContext(),
+                textArrayResId, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_clothes_add:
                 idlingResource.increment();
-
                 user = MainActivity.getUser();
                 Intent addClothesIntent = new Intent(ClothesFragment.this.getContext(), AddClothesActivity.class);
                 addClothesIntent.putExtra("user", user);
-                Log.d(TAG,"send user to addClothActivity: ");
-                Log.d(TAG,user.getEmail());
-                Log.d(TAG,user.getUserId());
-                Log.d(TAG,user.getUserToken());
-
-                startActivityForResult(addClothesIntent, 1);
+                startActivityForResult(addClothesIntent, ADD);
                 clickCount++;
                 idlingResource.decrement();
                 break;
@@ -86,11 +97,27 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     }
 
     @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (parent.getId()) {
+            case R.id.sp_clothes1:
+                if (parent.getSelectedItem().toString().equals("Edit")) {
+                    Intent editClothesIntent = new Intent(ClothesFragment.this.getContext(), EditClothesActivity.class);
+                    editClothesIntent.putExtra("user", user);
+                    editClothesIntent.putExtra("path", path);
+                    startActivityForResult(editClothesIntent, EDIT);
+                }
+                break;
+            default:
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK && requestCode == 1) {
+
+        if (resultCode == Activity.RESULT_OK && requestCode == ADD) {
             // here you can retrieve your bundle data.
-            String path = data.getStringExtra("path");
+            path = data.getStringExtra("path");
             Bitmap bitmap = BitmapFactory.decodeFile(path);
             //for test
             if (clickCount == 1) {
@@ -106,30 +133,11 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 spinner3.setVisibility(View.VISIBLE);
             }
         }
-    }
 
-    public void setAdapter(int textArrayResId, @NotNull Spinner spinner) {
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ClothesFragment.this.getContext(),
-                textArrayResId, android.R.layout.simple_spinner_item);
-
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        switch (parent.getId()) {
-            case R.id.sp_clothes1:
-                if (parent.getSelectedItem().toString().equals("Edit")) {
-                    Log.d(TAG, "spinner is clicked");
-                    Intent editClothesIntent = new Intent(ClothesFragment.this.getContext(), EditClothesActivity.class);
-                    startActivity(editClothesIntent);
-                }
-                break;
-            default:
+        else if (resultCode == Activity.RESULT_OK && requestCode == EDIT) {
+            path = data.getStringExtra("path");
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            clothes1.setImageBitmap(bitmap);
         }
     }
 
