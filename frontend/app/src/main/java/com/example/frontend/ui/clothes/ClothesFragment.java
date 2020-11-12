@@ -29,8 +29,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class ClothesFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static final String TAG ="ClothesFragment" ;
+    private static final String EMPTY_STRING = "";
+
     private User user;
     private String path;
+    private String clothesId = EMPTY_STRING;
 
     private ImageButton buttonAdd;
     private ImageView clothes1, clothes2, clothes3;
@@ -101,9 +104,14 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         switch (parent.getId()) {
             case R.id.sp_clothes1:
                 if (parent.getSelectedItem().toString().equals("Edit")) {
+                    while (clothesId.equals(EMPTY_STRING)) {
+                        Log.d(TAG, "waiting for clothes id");
+                    }
+
                     Intent editClothesIntent = new Intent(ClothesFragment.this.getContext(), EditClothesActivity.class);
                     editClothesIntent.putExtra("user", user);
                     editClothesIntent.putExtra("path", path);
+                    editClothesIntent.putExtra("clothesId", clothesId);
                     startActivityForResult(editClothesIntent, EDIT);
                 }
                 break;
@@ -118,6 +126,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         if (resultCode == Activity.RESULT_OK && requestCode == ADD) {
             // here you can retrieve your bundle data.
             path = data.getStringExtra("path");
+            clothesId = data.getStringExtra("clothesId");
             Bitmap bitmap = BitmapFactory.decodeFile(path);
             //for test
             if (clickCount == 1) {
@@ -132,6 +141,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 clothes3.setImageBitmap(bitmap);
                 spinner3.setVisibility(View.VISIBLE);
             }
+
         }
 
         else if (resultCode == Activity.RESULT_OK && requestCode == EDIT) {

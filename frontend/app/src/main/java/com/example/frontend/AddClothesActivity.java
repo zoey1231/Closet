@@ -72,7 +72,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private EditText clothName;
 
     private String message = EMPTY_STRING;
-    private String clothId = EMPTY_STRING;
+    private String clothesId = EMPTY_STRING;
     private String category= EMPTY_STRING;
     private String color= EMPTY_STRING;
     private String name= EMPTY_STRING;
@@ -183,10 +183,10 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
                 imageButton.setVisibility(View.GONE);
                 text.setVisibility(View.GONE);
-                Intent intentAdd = new Intent(Intent.ACTION_PICK);
-                intentAdd.setType("image/*");
+                Intent selectImageIntent = new Intent(Intent.ACTION_PICK);
+                selectImageIntent.setType("image/*");
 
-                startActivityForResult(intentAdd, 1);
+                startActivityForResult(selectImageIntent, 1);
                 idlingResource.decrement();
                 break;
 
@@ -196,15 +196,17 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 //send the cloth data to server
                 sendClothDataToServer(clothAttribute);
 
-                while (clothId.equals(EMPTY_STRING)) {
+                while (clothesId.equals(EMPTY_STRING)) {
                     // wait for clothing id; change this
                     Log.d(TAG, "waiting for clothing id");
                 }
                 sendImageToServer(file);
 
-                Intent intentImage = new Intent();
-                intentImage.putExtra("path", path);
-                setResult(RESULT_OK, intentImage);
+                Intent setImageIntent = new Intent();
+                setImageIntent.putExtra("path", path);
+                setImageIntent.putExtra("clothesId", clothesId);
+                setResult(RESULT_OK, setImageIntent);
+
                 finish();
                 break;
 
@@ -317,8 +319,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                         });
 
                         //create a new cloth instance and add it the the clothes' collection
-                        Clothes clothes = new Clothes(clothId,category,color,name,updated, clothUser,seasons,occasions);
-                        clothHashMap.put(clothId, clothes);
+                        Clothes clothes = new Clothes(clothesId,category,color,name,updated, clothUser,seasons,occasions);
+                        clothHashMap.put(clothesId, clothes);
 
                         //startActivity(new Intent(getApplicationContext(),MainActivity.class).putExtra("user",new User(userId,userToken,email)));
                     }
@@ -369,7 +371,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 //            if(responseJson.has("updated"))
 //                updated = responseJson.getString("updated");
             if(responseJson.has("id"))
-                clothId = responseJson.getString("id");
+                clothesId = responseJson.getString("id");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -421,7 +423,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 .addFormDataPart("ClothingImage", file.getName(), RequestBody.create(file,MediaType.parse("image/*")))
                 .build();
         Request request = new Request.Builder()
-                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + clothId)
+                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + clothesId)
                 .addHeader("Authorization","Bearer "+ user.getUserToken())
                 .post(body)
                 .build();

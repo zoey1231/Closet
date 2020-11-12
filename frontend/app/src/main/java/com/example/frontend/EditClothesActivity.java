@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Objects;
 
 import okhttp3.Call;
@@ -51,13 +50,12 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
 
     private User user;
     private String oldPath, newPath;
+    private String clothesId = EMPTY_STRING;
     private File file;
     private ImageView image;
     private ImageButton imageButton;
     private Button saveButton;
     private TextView text;
-
-    private String clothId = EMPTY_STRING;
 
     private Spinner spinner_category, spinner_color, spinner_occasion;
     private CheckBox checkBox_spring, checkBox_summer, checkBox_fall, checkBox_winter, checkBox_all;
@@ -78,6 +76,8 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
         Bundle data = getIntent().getExtras();
         user = data.getParcelable("user");
         oldPath = data.getString("path");
+        clothesId = data.getString("clothesId");
+
         Bitmap bitmap = BitmapFactory.decodeFile(oldPath);
         image.setImageBitmap(bitmap);
 
@@ -145,22 +145,19 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
 
                 imageButton.setVisibility(View.GONE);
                 text.setVisibility(View.GONE);
-                Intent intentEdit = new Intent(Intent.ACTION_PICK);
-                intentEdit.setType("image/*");
+                Intent selectImageIntent = new Intent(Intent.ACTION_PICK);
+                selectImageIntent.setType("image/*");
 
-                startActivityForResult(intentEdit, 1);
+                startActivityForResult(selectImageIntent, 1);
                 break;
 
             case R.id.btn_save_edit:
-//                while (clothId.equals(EMPTY_STRING)) {
-//                    // change this
-//                    Log.d(TAG, "waiting for clothing id");
-//                }
-//                sendImageToServer(file);
+                sendImageToServer(file);
 
-                Intent intentImage = new Intent();
-                intentImage.putExtra("path", newPath);
-                setResult(RESULT_OK, intentImage);
+                Intent setImageIntent = new Intent();
+                setImageIntent.putExtra("path", newPath);
+                setResult(RESULT_OK, setImageIntent);
+
                 finish();
                 break;
 
@@ -222,7 +219,7 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
                 .addFormDataPart("ClothingImage", file.getName(), RequestBody.create(file, MediaType.parse("image/*")))
                 .build();
         Request request = new Request.Builder()
-                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + clothId)
+                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + clothesId)
                 .addHeader("Authorization","Bearer "+ user.getUserToken())
                 .post(body)
                 .build();
