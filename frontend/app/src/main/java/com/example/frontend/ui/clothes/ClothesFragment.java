@@ -11,11 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
@@ -27,6 +30,15 @@ import com.example.frontend.User;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.util.Objects;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class ClothesFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static final String TAG ="ClothesFragment" ;
     private static final String EMPTY_STRING = "";
@@ -36,13 +48,12 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private String clothesId = EMPTY_STRING;
 
     private ImageButton buttonAdd;
-    private ImageView clothes1, clothes2, clothes3;
-    private Spinner spinner1, spinner2, spinner3;
+    private GridLayout clothesLayout;
+    private ImageView clothes;
+    private Spinner spinner;
 
     private final int ADD = 1;
     private final int EDIT = 2;
-
-    private int clickCount = 0; //for test
 
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_request");
 
@@ -52,21 +63,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
         buttonAdd = root.findViewById(R.id.btn_clothes_add);
         buttonAdd.setOnClickListener(this);
-        clothes1 = root.findViewById(R.id.iv_clothes1);
-        clothes2 = root.findViewById(R.id.iv_clothes2);
-        clothes3 = root.findViewById(R.id.iv_clothes3);
-        spinner1 = root.findViewById(R.id.sp_clothes1);
-        setAdapter(R.array.edit_delete_array, spinner1);
-        spinner1.setOnItemSelectedListener(this);
-        spinner1.setVisibility(View.GONE);
-        spinner2 = root.findViewById(R.id.sp_clothes2);
-        setAdapter(R.array.edit_delete_array, spinner2);
-        spinner2.setOnItemSelectedListener(this);
-        spinner2.setVisibility(View.GONE);
-        spinner3 = root.findViewById(R.id.sp_clothes3);
-        setAdapter(R.array.edit_delete_array, spinner3);
-        spinner3.setOnItemSelectedListener(this);
-        spinner3.setVisibility(View.GONE);
+        clothesLayout = root.findViewById(R.id.gl_clothes);
 
         return root;
     }
@@ -91,7 +88,6 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 Intent addClothesIntent = new Intent(ClothesFragment.this.getContext(), AddClothesActivity.class);
                 addClothesIntent.putExtra("user", user);
                 startActivityForResult(addClothesIntent, ADD);
-                clickCount++;
                 idlingResource.decrement();
                 break;
 
@@ -101,21 +97,28 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        switch (parent.getId()) {
-            case R.id.sp_clothes1:
-                if (parent.getSelectedItem().toString().equals("Edit")) {
-                    while (clothesId.equals(EMPTY_STRING)) {
-                        Log.d(TAG, "waiting for clothes id");
-                    }
+        if (parent.getSelectedItem().toString().equals("Edit")) {
+            while (clothesId.equals(EMPTY_STRING)) {
+                Log.d(TAG, "waiting for clothes id");
+            }
+            Log.d(TAG, "edit is clicked");
 
-                    Intent editClothesIntent = new Intent(ClothesFragment.this.getContext(), EditClothesActivity.class);
-                    editClothesIntent.putExtra("user", user);
-                    editClothesIntent.putExtra("path", path);
-                    editClothesIntent.putExtra("clothesId", clothesId);
-                    startActivityForResult(editClothesIntent, EDIT);
-                }
-                break;
-            default:
+            Intent editClothesIntent = new Intent(ClothesFragment.this.getContext(), EditClothesActivity.class);
+            editClothesIntent.putExtra("user", user);
+            editClothesIntent.putExtra("path", path);
+            editClothesIntent.putExtra("clothesId", clothesId);
+            startActivityForResult(editClothesIntent, EDIT);
+        }
+
+        else if (parent.getSelectedItem().toString().equals("Delete")) {
+            while (clothesId.equals(EMPTY_STRING)) {
+                Log.d(TAG, "waiting for clothes id");
+            }
+            Log.d(TAG, "delete is clicked");
+
+            clothesLayout.removeView(clothes);
+            clothesLayout.removeView(spinner);
+            deleteImageFromServer();
         }
     }
 
@@ -128,27 +131,58 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             path = data.getStringExtra("path");
             clothesId = data.getStringExtra("clothesId");
             Bitmap bitmap = BitmapFactory.decodeFile(path);
-            //for test
-            if (clickCount == 1) {
-                clothes1.setImageBitmap(bitmap);
-                spinner1.setVisibility(View.VISIBLE);
-            }
-            else if (clickCount == 2) {
-                clothes2.setImageBitmap(bitmap);
-                spinner2.setVisibility(View.VISIBLE);
-            }
-            else {
-                clothes3.setImageBitmap(bitmap);
-                spinner3.setVisibility(View.VISIBLE);
-            }
 
+            clothes = new ImageView(getContext());
+            GridLayout.LayoutParams clothesParams = new GridLayout.LayoutParams();
+            clothesParams.width = 300;
+            clothesParams.height = 300;
+            clothesParams.rowSpec = GridLayout.spec(0);
+            clothesParams.columnSpec = GridLayout.spec(0);
+            clothes.setLayoutParams(clothesParams);
+            clothes.setImageBitmap(bitmap);
+            clothesLayout.addView(clothes);
+
+            spinner = new Spinner(getContext());
+            GridLayout.LayoutParams spinnerParams = new GridLayout.LayoutParams();
+            spinnerParams.width = 90;
+            spinnerParams.height = 90;
+            spinnerParams.rowSpec = GridLayout.spec(0);
+            spinnerParams.columnSpec = GridLayout.spec(0);
+            spinnerParams.leftMargin = 210;
+            spinner.setLayoutParams(spinnerParams);
+            spinner.setBackgroundResource(R.drawable.dots);
+            setAdapter(R.array.edit_delete_array, spinner);
+            spinner.setOnItemSelectedListener(this);
+            clothesLayout.addView(spinner);
         }
 
         else if (resultCode == Activity.RESULT_OK && requestCode == EDIT) {
             path = data.getStringExtra("path");
             Bitmap bitmap = BitmapFactory.decodeFile(path);
-            clothes1.setImageBitmap(bitmap);
+            clothes.setImageBitmap(bitmap);
         }
+    }
+
+    private void deleteImageFromServer() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + clothesId)
+                .addHeader("Authorization", "Bearer" + user.getUserToken())
+                .delete()
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseStr = Objects.requireNonNull(response.body().string());
+                Log.d(TAG, "Successfully delete image from server: " + responseStr);
+            }
+        });
     }
 
     @Override

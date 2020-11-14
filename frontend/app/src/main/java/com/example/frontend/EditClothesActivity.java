@@ -235,7 +235,7 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = Objects.requireNonNull(response.body()).string();
-                Log.d(TAG, "Successfully upload image to server:"+responseStr);
+                Log.d(TAG, "Successfully upload image to server:" + responseStr);
 
             }
         });
