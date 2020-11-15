@@ -130,4 +130,5 @@ const getGeoCode = async place => {
 
 module.exports = {
   getWeatherInfo,
+  getGeoCode,
 };

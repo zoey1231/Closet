@@ -8,6 +8,7 @@ const LOG = require('../utils/logger');
 
 const HttpError = require('../model/http-error');
 const User = require('../model/user');
+const { getGeoCode } = require('../service/weather-service');
 
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
@@ -16,6 +17,7 @@ const signup = async (req, res, next) => {
       new HttpError('Invalid inputs passed, please check your data.', 422)
     );
   }
+
   const { name, email, password } = req.body;
 
   let hashedPassword;
@@ -127,8 +129,6 @@ const login = async (req, res, next) => {
 const getUserProfile = async (req, res, next) => {
   const { userId } = req.userData;
 
-  console.log(userId);
-
   let user;
   try {
     user = await User.findById(userId, '-password');
@@ -142,11 +142,65 @@ const getUserProfile = async (req, res, next) => {
     );
   }
 
-  res.status(200).json({ user });
+  res.status(200).json(user);
+};
+
+const updateUserProfile = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    );
+  }
+
+  const { userId } = req.userData;
+  const { name, email, city } = req.body;
+
+  let geoResponse;
+  try {
+    geoResponse = await getGeoCode(city);
+  } catch (err) {
+    LOG.error(req._id, err.message);
+    return next(
+      new HttpError(
+        'We meet some problems when updating your profile, please try again later',
+        500
+      )
+    );
+  }
+
+  if (!geoResponse.success) {
+    return next(
+      new HttpError('We cannot find your city, please check and try again', 406)
+    );
+  }
+
+  const lat = geoResponse.lat;
+  const lng = geoResponse.lon;
+
+  let updatedUser;
+  try {
+    updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { name, email, city, lat, lng },
+      { new: true }
+    );
+  } catch (err) {
+    LOG.error(req._id, err.message);
+    return next(
+      new HttpError(
+        'The email has been registered, please change to another one',
+        422
+      )
+    );
+  }
+
+  res.status(200).json({ message: 'Update profile successfully', updatedUser });
 };
 
 module.exports = {
   signup,
   login,
   getUserProfile,
+  updateUserProfile,
 };
