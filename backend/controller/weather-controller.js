@@ -20,12 +20,8 @@ const getWeather = async (req, res, next) => {
   }
 
   if (!response.success) {
-    return next(
-      new HttpError(
-        'Could not get weather information, please try again later',
-        500
-      )
-    );
+    const { code, message } = response;
+    return next(new HttpError(message, code));
   }
 
   const { current, today, tomorrow } = response;

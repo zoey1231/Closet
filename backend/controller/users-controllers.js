@@ -170,9 +170,8 @@ const updateUserProfile = async (req, res, next) => {
   }
 
   if (!geoResponse.success) {
-    return next(
-      new HttpError('We cannot find your city, please check and try again', 406)
-    );
+    const { code, message } = geoResponse;
+    return next(new HttpError(message, code));
   }
 
   const lat = geoResponse.lat;

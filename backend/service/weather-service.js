@@ -17,7 +17,8 @@ const getWeatherInfo = async userId => {
   } catch (err) {
     return {
       success: false,
-      message: 'Could not get weather information, please try again later',
+      code: 500,
+      message: 'Could not get your information, please try again later',
     };
   }
 
@@ -45,14 +46,17 @@ const getWeatherInfo = async userId => {
     LOG.error(err.message);
     return {
       success: false,
-      message: 'Could not get weather information, please try again later',
+      code: 500,
+      message:
+        'Could not get weather information in your city, please try again later',
     };
   }
 
   if (response.status !== 200) {
     return {
       success: false,
-      message: 'Could not get weather information, please try again later',
+      message:
+        'Could not get weather information in your city, please try again later',
     };
   }
 
@@ -108,7 +112,7 @@ const getGeoCode = async place => {
     return {
       success: false,
       code: 500,
-      message: 'Internal Geo-location called failed',
+      message: 'Cannot find your city, please check and try again',
     };
   }
 
@@ -117,6 +121,8 @@ const getGeoCode = async place => {
   if (status.code !== 200) {
     return {
       success: false,
+      code: 406,
+      message: 'Cannot find your city, please check and try again',
       ...status,
     };
   } else {
