@@ -20,6 +20,16 @@ usersRouter.post('/login', usersController.login);
 
 usersRouter.use(checkAuth);
 
-usersRouter.get('/', usersController.getUsers);
+usersRouter.get('/me', usersController.getUserProfile);
+
+usersRouter.put(
+  '/me',
+  [
+    check('name').notEmpty(),
+    check('email').normalizeEmail().isEmail(),
+    check('city').notEmpty(),
+  ],
+  usersController.updateUserProfile
+);
 
 module.exports = usersRouter;

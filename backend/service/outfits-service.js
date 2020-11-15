@@ -105,7 +105,7 @@ const generateOutfit = async user_id => {
 
     let response;
     try {
-      response = await getWeatherInfo('vancouver');
+      response = await getWeatherInfo(userId);
     } catch (exception) {
       LOG.error(exception.message);
       return;
@@ -488,6 +488,7 @@ const generateOutfit = async user_id => {
       normalShoes
     );
 
+    /* TODO: update dislike-all logic in M10 */
     /*  
       Special check:
         If we found the user has disliked all possible combinations, 
@@ -581,8 +582,6 @@ const generateOutfit = async user_id => {
         chosenShoes,
       };
     }
-
-    // (M9) how to avoid duplicated outfits returned today
 
     return {
       success: true,
