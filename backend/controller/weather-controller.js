@@ -4,19 +4,11 @@ const { getWeatherInfo } = require('../service/weather-service');
 const LOG = require('../utils/logger');
 
 const getWeather = async (req, res, next) => {
-  const { place } = req.params;
-  if (!place) {
-    return next(
-      new HttpError(
-        'Missing parameter: place',
-        400
-      )
-    );
-  }
+  const { userId } = req.userData;
 
   let response;
   try {
-    response = await getWeatherInfo(place);
+    response = await getWeatherInfo(userId);
   } catch (err) {
     LOG.error(req._id, err.message);
     return next(

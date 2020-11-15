@@ -7,6 +7,6 @@ const weatherRouter = express.Router();
 
 weatherRouter.use(checkAuth);
 
-weatherRouter.get('/:place', weatherController.getWeather);
+weatherRouter.get('/', weatherController.getWeather);
 
 module.exports = weatherRouter;
