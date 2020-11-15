@@ -11,6 +11,9 @@ const userSchema = new Schema(
     clothes: [
       { type: mongoose.Types.ObjectId, required: true, ref: 'Clothes' },
     ],
+    city: { type: String, required: true },
+    lat: { type: String, required: true },
+    lng: { type: String, required: true },
   },
   { versionKey: false }
 );

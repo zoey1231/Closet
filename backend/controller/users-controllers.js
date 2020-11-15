@@ -26,11 +26,15 @@ const signup = async (req, res, next) => {
     return next(new HttpError('Could not create user, please try again', 500));
   }
 
+  // Every new user will have "Vancouver" as the default city
   const createdUser = new User({
     name,
     email,
     password: hashedPassword,
     clothes: [],
+    city: process.env.DEFAULT_USER_CITY,
+    lat: process.env.DEFAULT_USER_LATITUDE,
+    lng: process.env.DEFAULT_USER_LONGITUDE,
   });
 
   try {
@@ -120,21 +124,29 @@ const login = async (req, res, next) => {
   });
 };
 
-const getUsers = async (req, res, next) => {
-  let users;
+const getUserProfile = async (req, res, next) => {
+  const { userId } = req.userData;
+
+  console.log(userId);
+
+  let user;
   try {
-    users = await User.find({}, '-password');
+    user = await User.findById(userId, '-password');
   } catch (err) {
     LOG.error(req._id, err.message);
     return next(
-      new HttpError('Fetching users failed, please try again later', 500)
+      new HttpError(
+        'Failed to get the profile information, please try again later',
+        500
+      )
     );
   }
-  res.json({ users: users.map(user => user.toObject({ getters: true })) });
+
+  res.status(200).json({ user });
 };
 
 module.exports = {
-  getUsers,
   signup,
   login,
+  getUserProfile,
 };
