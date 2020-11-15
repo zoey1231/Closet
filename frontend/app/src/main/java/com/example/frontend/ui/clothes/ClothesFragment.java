@@ -14,11 +14,11 @@ import android.widget.ArrayAdapter;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
@@ -45,21 +45,25 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     private User user;
     private String path;
+    private Bitmap bitmap;
     private String clothesId = EMPTY_STRING;
 
     private ImageButton buttonAdd;
     private GridLayout clothesLayout;
-    private ImageView clothes;
+    private ImageView image;
     private Spinner spinner;
+    private ConstraintLayout clothes;
+    private int selectedId;
 
     private final int ADD = 1;
     private final int EDIT = 2;
 
+    static View root;
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_request");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_clothes, container, false);
+        root = inflater.inflate(R.layout.fragment_clothes, container, false);
 
         buttonAdd = root.findViewById(R.id.btn_clothes_add);
         buttonAdd.setOnClickListener(this);
@@ -97,11 +101,13 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        selectedId = parent.getId();
+
         if (parent.getSelectedItem().toString().equals("Edit")) {
+
             while (clothesId.equals(EMPTY_STRING)) {
                 Log.d(TAG, "waiting for clothes id");
             }
-            Log.d(TAG, "edit is clicked");
 
             Intent editClothesIntent = new Intent(ClothesFragment.this.getContext(), EditClothesActivity.class);
             editClothesIntent.putExtra("user", user);
@@ -111,14 +117,13 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         }
 
         else if (parent.getSelectedItem().toString().equals("Delete")) {
+
             while (clothesId.equals(EMPTY_STRING)) {
                 Log.d(TAG, "waiting for clothes id");
             }
-            Log.d(TAG, "delete is clicked");
 
-            clothesLayout.removeView(clothes);
-            clothesLayout.removeView(spinner);
-            deleteImageFromServer();
+            deleteClothesFromCloset(selectedId);
+//            deleteImageFromServer();
         }
     }
 
@@ -130,37 +135,60 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             // here you can retrieve your bundle data.
             path = data.getStringExtra("path");
             clothesId = data.getStringExtra("clothesId");
-            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            bitmap = BitmapFactory.decodeFile(path);
 
-            clothes = new ImageView(getContext());
-            GridLayout.LayoutParams clothesParams = new GridLayout.LayoutParams();
-            clothesParams.width = 300;
-            clothesParams.height = 300;
-            clothesParams.rowSpec = GridLayout.spec(0);
-            clothesParams.columnSpec = GridLayout.spec(0);
-            clothes.setLayoutParams(clothesParams);
-            clothes.setImageBitmap(bitmap);
-            clothesLayout.addView(clothes);
-
-            spinner = new Spinner(getContext());
-            GridLayout.LayoutParams spinnerParams = new GridLayout.LayoutParams();
-            spinnerParams.width = 90;
-            spinnerParams.height = 90;
-            spinnerParams.rowSpec = GridLayout.spec(0);
-            spinnerParams.columnSpec = GridLayout.spec(0);
-            spinnerParams.leftMargin = 210;
-            spinner.setLayoutParams(spinnerParams);
-            spinner.setBackgroundResource(R.drawable.dots);
-            setAdapter(R.array.edit_delete_array, spinner);
-            spinner.setOnItemSelectedListener(this);
-            clothesLayout.addView(spinner);
+            addClothesToCloset();
         }
 
         else if (resultCode == Activity.RESULT_OK && requestCode == EDIT) {
             path = data.getStringExtra("path");
-            Bitmap bitmap = BitmapFactory.decodeFile(path);
-            clothes.setImageBitmap(bitmap);
+            bitmap = BitmapFactory.decodeFile(path);
+            editClothesInCloset(selectedId);
         }
+    }
+
+    private void addClothesToCloset() {
+        image = new ImageView(getContext());
+        image.setId(View.generateViewId());
+        ConstraintLayout.LayoutParams imageParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        imageParams.width = 300;
+        imageParams.height = 300;
+        image.setLayoutParams(imageParams);
+        image.setImageBitmap(bitmap);
+
+        spinner = new Spinner(getContext());
+        spinner.setId(View.generateViewId());
+        ConstraintLayout.LayoutParams spinnerParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        spinnerParams.width = 90;
+        spinnerParams.height = 90;
+        spinner.setLayoutParams(spinnerParams);
+        spinner.setBackgroundResource(R.drawable.dots);
+        setAdapter(R.array.edit_delete_array, spinner);
+        spinner.setOnItemSelectedListener(this);
+
+        clothes = new ConstraintLayout(getContext());
+        clothes.setId(View.generateViewId());
+        clothes.addView(image);
+        clothes.addView(spinner);
+        ConstraintSet constraint = new ConstraintSet();
+        constraint.clone(clothes);
+        constraint.connect(spinner.getId(), ConstraintSet.RIGHT, image.getId(), ConstraintSet.RIGHT);
+        constraint.applyTo(clothes);
+
+        clothesLayout.addView(clothes);
+    }
+
+    private void editClothesInCloset(int selectedId) {
+        image = root.findViewById(selectedId - 1);
+        while (bitmap == null) {
+            Log.d(TAG, "waiting for bitmap");
+        }
+        image.setImageBitmap(bitmap);
+    }
+
+    private void deleteClothesFromCloset(int selectedId) {
+        clothes = root.findViewById(selectedId + 1);
+        clothesLayout.removeView(clothes);
     }
 
     private void deleteImageFromServer() {
