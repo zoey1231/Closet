@@ -90,8 +90,10 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_clothes);
 
-        Bundle data = getIntent().getExtras();
-        user = data.getParcelable("user");
+        user = MainActivity.getUser();
+//        Bundle data = getIntent().getExtras();
+//        user = data.getParcelable("user");
+//        Log.d(TAG, "testing: user id: " + user.getUserId());
 
         image = findViewById(R.id.iv_add);
         image.setVisibility(View.INVISIBLE);
@@ -200,7 +202,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                     // wait for clothing id; change this
                     Log.d(TAG, "waiting for clothing id");
                 }
-                sendImageToServer(file);
+//                sendImageToServer(file);
 
                 Intent setImageIntent = new Intent();
                 setImageIntent.putExtra("path", path);
@@ -313,7 +315,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                     else{
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                final Toast toast = makeText(AddClothesActivity.this,"Successfully add a cloth!",Toast.LENGTH_SHORT);
+                                final Toast toast = makeText(AddClothesActivity.this,"Successfully added clothes!",Toast.LENGTH_SHORT);
                                 toast.show();
                             }
                         });
@@ -393,8 +395,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 bitmap = BitmapFactory.decodeStream(stream);
                 image.setImageBitmap(bitmap);
                 image.setVisibility(View.VISIBLE);
-                path = getPath(uri);
-                file = new File(path);
+//                path = getPath(uri);
+//                file = new File(path);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
