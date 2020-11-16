@@ -72,6 +72,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private boolean undoDislike = false;
 
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_get_outfit_request");
+    private String message = EMPTY_STRING;
+    private String warning = EMPTY_STRING;
+    private String success = EMPTY_STRING;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -112,8 +115,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         userId = MainActivity.getUser().getUserId();
         getWeatherData(userToken);
 
-
-
         return root;
     }
 
@@ -126,32 +127,41 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 getOutfitData(userToken);
 
 
-                while (outfitId.equals(EMPTY_STRING) || upperClothesId.equals(EMPTY_STRING) || trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING)) {
+                while ((outfitId.equals(EMPTY_STRING) || upperClothesId.equals(EMPTY_STRING) ||
+                        trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING))
+                        && message.equals(EMPTY_STRING)) {
                     Log.d(TAG, "busy waiting for ids");
                 }
-                rl_outfit.setVisibility(View.VISIBLE);
-                likeButton.setEnabled(true);
-                dislikeButton.setEnabled(true);
+                //fail to generate an outfit
+                if(!message.equals(EMPTY_STRING)&&!warning.equals(EMPTY_STRING)&&success.equals((EMPTY_STRING))){
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), warning, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    rl_outfit.setVisibility(View.VISIBLE);
+                    likeButton.setEnabled(true);
+                    dislikeButton.setEnabled(true);
+                    cloth1.setBackground(getClothesImage(userId, upperClothesId));
+                    cloth2.setBackground(getClothesImage(userId, trousersId));
+                    cloth3.setBackground(getClothesImage(userId, shoesId));
+                }
                 outfitButton.setEnabled(true);
-                cloth1.setBackground(getClothesImage(userId, upperClothesId));
-                cloth2.setBackground(getClothesImage(userId, trousersId));
-                cloth3.setBackground(getClothesImage(userId, shoesId));
 
                 break;
 
             case R.id.btn_like_outfit1:
+                idlingResource.increment();
                 like = true;
                 //send response to server
-
                 try {
                     outfit_opinion.put("opinion", "like");
                     sendOutfitOpinionToServer(outfit_opinion,userToken);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 break;
             case R.id.btn_dislike_outfit1:
+                idlingResource.increment();
                 dislike = true;
                 //send response to server
                 try {
@@ -160,12 +170,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
                 break;
 
             case R.id.btn_undo:
             case R.id.tv_undo:
+                idlingResource.increment();
                 Log.d(TAG,"clicked undo opinion");
                 undoDislike = true;
                 //send response to server
@@ -175,7 +184,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 break;
 
             default:
@@ -194,6 +202,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
                 Log.d(TAG, "Fail to send outfit opinion to server");
                 Log.d(TAG, String.valueOf(e));
+                idlingResource.decrement();
             }
 
             @Override
@@ -241,7 +250,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     }else {
                         Log.d(TAG," Error: invalid user's outfit opinion type");
                     }
-
+                    idlingResource.decrement();
                 }
             }
         });
@@ -251,7 +260,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
         Log.d(TAG,"prepared to sendUserDataToServer");
 
-        serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/weather/vancouver",userToken, new Callback() {
+        serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/weather/",userToken, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
@@ -361,8 +370,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     }
 
                 } else {
-                    // Request not successful
-                    Log.d(TAG,"Outfit request is unsuccessful: "+responseStr);
+                    JSONObject responseJson;
+                    try {
+                        //retrieve outfit data from server's response
+                        responseJson = new JSONObject(responseStr);
+                        // Request not successful
+                        if(responseJson.has("message")){
+                            message = responseJson.getString("message");
+                        }
+                        if(responseJson.has("warning")){
+                            warning = responseJson.getString("warning");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d(TAG,"Outfit request is unsuccessful: "+message+warning);
+
                 }
                 idlingResource.decrement();
             }
@@ -388,7 +411,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             if (shoesJSON.has("id")){
                 shoesId = shoesJSON.getString("id");
             }
-
+            if(responseJson.has("message")){
+                message = responseJson.getString("message");
+            }
+            if(responseJson.has("success")){
+                success = responseJson.getString("success");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
