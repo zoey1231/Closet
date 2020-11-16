@@ -72,6 +72,7 @@ jobs:
             git fetch --all
             git reset --hard origin/master
             npm ci
+            cp .env.sample .env
             echo "🚀--- Deployment time: $(TZ='America/Vancouver' date) ---🚀"
             sudo systemctl restart closet-backend
             sleep 1
