@@ -24,6 +24,7 @@ import androidx.test.espresso.idling.CountingIdlingResource;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommunicationAsync;
+import com.google.android.material.navigation.NavigationView;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;

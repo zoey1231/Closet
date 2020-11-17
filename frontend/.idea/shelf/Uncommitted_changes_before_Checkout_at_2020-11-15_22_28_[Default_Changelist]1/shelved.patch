@@ -1,0 +1,224 @@
+Index: app/src/main/java/com/example/frontend/AddClothesActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.frontend;\r\n\r\nimport android.Manifest;\r\nimport android.content.Intent;\r\nimport android.content.pm.PackageManager;\r\nimport android.database.Cursor;\r\nimport android.graphics.Bitmap;\r\nimport android.graphics.BitmapFactory;\r\nimport android.net.Uri;\r\nimport android.os.Bundle;\r\nimport android.provider.MediaStore;\r\nimport android.util.Log;\r\nimport android.view.View;\r\nimport android.widget.AdapterView;\r\nimport android.widget.ArrayAdapter;\r\nimport android.widget.Button;\r\nimport android.widget.CheckBox;\r\nimport android.widget.EditText;\r\nimport android.widget.ImageButton;\r\nimport android.widget.ImageView;\r\nimport android.widget.Spinner;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.app.ActivityCompat;\r\nimport androidx.core.content.ContextCompat;\r\nimport androidx.test.espresso.idling.CountingIdlingResource;\r\n\r\nimport org.jetbrains.annotations.NotNull;\r\nimport java.io.File;\r\nimport org.json.JSONArray;\r\nimport org.json.JSONException;\r\nimport org.json.JSONObject;\r\n\r\nimport java.io.FileNotFoundException;\r\nimport java.io.IOException;\r\nimport java.io.InputStream;\r\nimport java.util.ArrayList;\r\nimport java.util.HashMap;\r\nimport java.util.Objects;\r\n\r\nimport okhttp3.Call;\r\nimport okhttp3.Callback;\r\nimport okhttp3.Response;\r\n\r\nimport okhttp3.MediaType;\r\nimport okhttp3.MultipartBody;\r\nimport okhttp3.OkHttpClient;\r\nimport okhttp3.Request;\r\nimport okhttp3.RequestBody;\r\n\r\n\r\nimport static android.widget.Toast.makeText;\r\n\r\n\r\npublic class AddClothesActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {\r\n    private static final String TAG = \"AddClothesActivity\";\r\n    private static final String EMPTY_STRING = \"\";\r\n\r\n    private User user;\r\n    private ImageView image;\r\n    private ImageButton imageButton;\r\n    private Button saveButton;\r\n    private TextView text;\r\n    private String path;\r\n    private File file;\r\n\r\n    private JSONObject clothAttribute = new JSONObject();\r\n    private Spinner spinner_category, spinner_color, spinner_occasion;\r\n    private CheckBox checkBox_spring, checkBox_summer, checkBox_fall, checkBox_winter, checkBox_all;\r\n    private EditText clothName;\r\n\r\n    private String message = EMPTY_STRING;\r\n    private String clothesId = EMPTY_STRING;\r\n    private String category= EMPTY_STRING;\r\n    private String color= EMPTY_STRING;\r\n    private String name= EMPTY_STRING;\r\n    private String updated= EMPTY_STRING;\r\n    private String clothUser = EMPTY_STRING;\r\n    private ArrayList<String> seasons = new ArrayList<>();\r\n    private ArrayList<String> occasions = new ArrayList<>();\r\n\r\n    private HashMap<String, Clothes> clothHashMap =new HashMap<>();\r\n\r\n    static CountingIdlingResource idlingResource = new CountingIdlingResource(\"send_add_clothes_data\");\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_add_clothes);\r\n\r\n        Bundle data = getIntent().getExtras();\r\n        user = data.getParcelable(\"user\");\r\n\r\n        image = findViewById(R.id.iv_add);\r\n        image.setVisibility(View.INVISIBLE);\r\n        imageButton = findViewById(R.id.btn_image_add);\r\n        saveButton = findViewById(R.id.btn_save_add);\r\n        text = findViewById(R.id.tv_add);\r\n\r\n        imageButton.setOnClickListener(this);\r\n        saveButton.setOnClickListener(this);\r\n\r\n        //spinners\r\n        spinner_category = findViewById(R.id.sp_category_add);\r\n        spinner_color = findViewById(R.id.sp_color_add);\r\n        spinner_occasion = findViewById(R.id.sp_occasion_add);\r\n\r\n        //optional editable tex box for ClothName input\r\n        clothName = findViewById(R.id.et_name_add);\r\n\r\n        //supply the spinners with the String array defined in resource using instances of ArrayAdapter\r\n        setAdapter(R.array.category_array, spinner_category);\r\n        setAdapter(R.array.color_array, spinner_color);\r\n        setAdapter(R.array.occasion_array, spinner_occasion);\r\n\r\n        spinner_category.setOnItemSelectedListener(this);\r\n        spinner_color.setOnItemSelectedListener(this);\r\n        spinner_occasion.setOnItemSelectedListener(this);\r\n    }\r\n\r\n    private void constructClothAttribute(AdapterView<?> parent, View view, int pos) {\r\n        Log.d(TAG,\"VIEW: \"+ view.getId());\r\n        switch (parent.getId()) {\r\n            case R.id.sp_category_add:\r\n                try {\r\n                    String selection = parent.getItemAtPosition(pos).toString();\r\n                    clothAttribute.put(\"category\", selection);\r\n                    Log.d(TAG, \"category:\"+selection);\r\n                } catch (JSONException e) {\r\n                    e.printStackTrace();\r\n                }\r\n                break;\r\n            case R.id.sp_color_add:\r\n                try {\r\n                    String selection = parent.getItemAtPosition(pos).toString();\r\n                    clothAttribute.put(\"color\", selection);\r\n                    Log.d(TAG, \"color:\"+selection);\r\n                } catch (JSONException e) {\r\n                    e.printStackTrace();\r\n                }\r\n                break;\r\n            case R.id.sp_occasion_add:\r\n\r\n                JSONArray occasions = new JSONArray();\r\n                try {\r\n                    String selection = parent.getItemAtPosition(pos).toString();\r\n                    occasions.put(0,selection);\r\n                    clothAttribute.put(\"occasions\", occasions);\r\n                    Log.d(TAG, \"occasions:\"+occasions.get(0));\r\n                } catch (JSONException e) {\r\n                    e.printStackTrace();\r\n                }\r\n                break;\r\n\r\n            default:\r\n        }\r\n    }\r\n\r\n    public void setAdapter(int textArrayResId, @NotNull Spinner spinner) {\r\n        // Create an ArrayAdapter using the string array and a default spinner layout\r\n        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,\r\n                textArrayResId, android.R.layout.simple_spinner_item);\r\n        // Specify the layout to use when the list of choices appears\r\n        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);\r\n        // Apply the adapter to the spinner\r\n        spinner.setAdapter(adapter);\r\n    }\r\n\r\n\r\n    @Override\r\n    public void onClick(View view) {\r\n        switch (view.getId()) {\r\n            case R.id.btn_image_add:\r\n                idlingResource.increment();\r\n\r\n                if (ContextCompat.checkSelfPermission(AddClothesActivity.this,\r\n                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {\r\n                    ActivityCompat.requestPermissions(AddClothesActivity.this, new String[]\r\n                            {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);\r\n                }\r\n\r\n                imageButton.setVisibility(View.GONE);\r\n                text.setVisibility(View.GONE);\r\n                Intent selectImageIntent = new Intent(Intent.ACTION_PICK);\r\n                selectImageIntent.setType(\"image/*\");\r\n\r\n                startActivityForResult(selectImageIntent, 1);\r\n                idlingResource.decrement();\r\n                break;\r\n\r\n            case R.id.btn_save_add:\r\n                constructClothAttributeFromCheckBoxes();\r\n                constructClothAttributeClothName();\r\n                //send the cloth data to server\r\n                sendClothDataToServer(clothAttribute);\r\n\r\n                while (clothesId.equals(EMPTY_STRING)) {\r\n                    // wait for clothing id; change this\r\n                    Log.d(TAG, \"waiting for clothing id\");\r\n                }\r\n                sendImageToServer(file);\r\n\r\n                Intent setImageIntent = new Intent();\r\n                setImageIntent.putExtra(\"path\", path);\r\n                setImageIntent.putExtra(\"clothesId\", clothesId);\r\n                setResult(RESULT_OK, setImageIntent);\r\n\r\n                finish();\r\n                break;\r\n\r\n            default:\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {\r\n        //construct the clothAttribute JSONObject we want to send to server\r\n        constructClothAttribute(parent,view,pos);\r\n    }\r\n\r\n    @Override\r\n    public void onNothingSelected(AdapterView<?> parent) {\r\n        // Another interface callback\r\n        //Toast.makeText(parent.getContext(),\"You must select one of the options\",Toast.LENGTH_SHORT).show();\r\n    }\r\n\r\n    private void constructClothAttributeClothName() {\r\n        String name = clothName.getText().toString().trim();\r\n\r\n        try {\r\n            clothAttribute.put(\"name\", name);\r\n            Log.d(TAG, \"name: \"+name);\r\n        } catch (JSONException e) {\r\n            e.printStackTrace();\r\n        }\r\n\r\n    }\r\n\r\n    private void constructClothAttributeFromCheckBoxes() {\r\n        checkBox_spring = findViewById(R.id.cb_spring_add);\r\n        checkBox_summer = findViewById(R.id.cb_summer_add);\r\n        checkBox_fall = findViewById(R.id.cb_fall_add);\r\n        checkBox_winter = findViewById(R.id.cb_winter_add);\r\n        checkBox_all = findViewById(R.id.cb_all_add);\r\n\r\n        //List<String> seasons = new ArrayList<String>();\r\n        JSONArray seasons = new JSONArray();\r\n        if(checkBox_spring.isChecked()){\r\n            seasons.put(\"Spring\");\r\n        }\r\n        if(checkBox_summer.isChecked()){\r\n            seasons.put(\"Summer\");\r\n        }\r\n        if(checkBox_fall.isChecked()){\r\n            seasons.put(\"Fall\");\r\n        }\r\n        if(checkBox_winter.isChecked()){\r\n            seasons.put(\"Winter\");\r\n        }\r\n        if(checkBox_all.isChecked()){\r\n            seasons.put(\"All\");\r\n        }\r\n\r\n        try {\r\n            clothAttribute.put(\"seasons\", seasons);\r\n            Log.d(TAG, \"seasons:\"+seasons);\r\n        } catch (JSONException e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n    private void sendClothDataToServer(final JSONObject userData) {\r\n        ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();\r\n        final String data = userData.toString();\r\n        Log.d(TAG,\"prepared to sendClothDataToServer\");\r\n        Log.d(TAG,\"data: \"+data);\r\n\r\n        serverCommunication.postWithAuthentication(\"http://closet-cpen321.westus.cloudapp.azure.com/api/clothes/\"+user.getUserId(), data,user.getUserToken(), new Callback() {\r\n            @Override\r\n            public void onFailure(@NotNull Call call, @NotNull IOException e) {\r\n                e.printStackTrace();\r\n                Log.d(TAG,\"Fail to send request to server\");\r\n                Log.d(TAG, String.valueOf(e));\r\n            }\r\n\r\n            @Override\r\n            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {\r\n\r\n                String responseStr = Objects.requireNonNull(response.body()).string();\r\n                Log.d(TAG,responseStr);\r\n\r\n                JSONObject responseJson = null;\r\n                try {\r\n                    responseJson = new JSONObject(responseStr);\r\n                    extractResponseClothesData(responseJson);\r\n                } catch (JSONException e) {\r\n                    e.printStackTrace();\r\n                }\r\n                if (response.isSuccessful()) {\r\n                    //make a toast to let the server's message display to the user\r\n\r\n                    if(Objects.requireNonNull(responseJson).has(\"message\") ){\r\n                        runOnUiThread(new Runnable() {\r\n                            public void run() {\r\n                                final Toast toast = makeText(AddClothesActivity.this,message,Toast.LENGTH_LONG);\r\n                                toast.show();\r\n                            }\r\n                        });\r\n                        //startActivity(new Intent(getApplicationContext(),AddClothesActivity.class));\r\n                    }\r\n                    else{\r\n                        runOnUiThread(new Runnable() {\r\n                            public void run() {\r\n                                final Toast toast = makeText(AddClothesActivity.this,\"Successfully add a cloth!\",Toast.LENGTH_SHORT);\r\n                                toast.show();\r\n                            }\r\n                        });\r\n\r\n                        //create a new cloth instance and add it the the clothes' collection\r\n                        Clothes clothes = new Clothes(clothesId,category,color,name,updated, clothUser,seasons,occasions);\r\n                        clothHashMap.put(clothesId, clothes);\r\n\r\n                        //startActivity(new Intent(getApplicationContext(),MainActivity.class).putExtra(\"user\",new User(userId,userToken,email)));\r\n                    }\r\n\r\n                } else {\r\n                    // Request not successful\r\n                    if(Objects.requireNonNull(responseJson).has(\"message\") ){\r\n                        runOnUiThread(new Runnable() {\r\n                            public void run() {\r\n                                final Toast toast = makeText(AddClothesActivity.this,message,Toast.LENGTH_LONG);\r\n                                toast.show();\r\n                            }\r\n                        });\r\n                        //startActivity(new Intent(getApplicationContext(),AddClothesActivity.class));\r\n                    }\r\n                }\r\n            }\r\n        });\r\n    }\r\n\r\n    private void extractResponseClothesData(JSONObject responseJson) {\r\n//        JSONArray seasons_jsonArray,occasions_jsonArray;\r\n        try {\r\n            if(responseJson.has(\"message\"))\r\n                message = responseJson.getString(\"message\");\r\n            // commented for codacy issue\r\n\r\n//            if(responseJson.has(\"seasons\")){\r\n//                seasons_jsonArray = responseJson.getJSONArray(\"seasons\");\r\n//                for (int i=0;i<seasons_jsonArray.length();i++){\r\n//                    seasons.add(seasons_jsonArray.getString(i));\r\n//                }\r\n//            }\r\n//            if(responseJson.has(\"occasions\")){\r\n//                occasions_jsonArray = responseJson.getJSONArray(\"occasions\");\r\n//                for (int i=0;i<occasions_jsonArray.length();i++){\r\n//                    occasions.add(occasions_jsonArray.getString(i));\r\n//                }\r\n//            }\r\n//            if(responseJson.has(\"category\"))\r\n//                category = responseJson.getString(\"category\");\r\n//            if(responseJson.has(\"color\"))\r\n//                color = responseJson.getString(\"color\");\r\n//            if(responseJson.has(\"name\"))\r\n//                name = responseJson.getString(\"name\");\r\n//            if(responseJson.has(\"user\"))\r\n//                cloth_user = responseJson.getString(\"user\");\r\n//            if(responseJson.has(\"updated\"))\r\n//                updated = responseJson.getString(\"updated\");\r\n            if(responseJson.has(\"id\"))\r\n                clothesId = responseJson.getString(\"id\");\r\n\r\n        } catch (JSONException e) {\r\n            e.printStackTrace();\r\n        }\r\n\r\n    }\r\n\r\n    @Override\r\n    protected void onActivityResult(int requestCode, int resultCode, Intent data) {\r\n        super.onActivityResult(requestCode, resultCode, data);\r\n        Uri uri;\r\n        InputStream stream;\r\n        Bitmap bitmap;\r\n\r\n        if (resultCode == RESULT_OK) {\r\n            try {\r\n                uri = data.getData();\r\n                stream = getContentResolver().openInputStream(uri);\r\n                bitmap = BitmapFactory.decodeStream(stream);\r\n                image.setImageBitmap(bitmap);\r\n                image.setVisibility(View.VISIBLE);\r\n                path = getPath(uri);\r\n                file = new File(path);\r\n\r\n            } catch (FileNotFoundException e) {\r\n                e.printStackTrace();\r\n                final Toast toast = makeText(AddClothesActivity.this, \"Something went wrong\", Toast.LENGTH_LONG);\r\n                toast.show();\r\n            }\r\n        } else {\r\n            final Toast toast = makeText(AddClothesActivity.this, \"You haven't picked an image\", Toast.LENGTH_LONG);\r\n            toast.show();\r\n        }\r\n    }\r\n\r\n    private String getPath(Uri uri) {\r\n        String[] projection = {MediaStore.MediaColumns.DATA};\r\n        Cursor cursor = managedQuery(uri, projection, null, null, null);\r\n        int index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);\r\n        cursor.moveToFirst();\r\n        return cursor.getString(index);\r\n    }\r\n\r\n    private void sendImageToServer(File file) {\r\n        OkHttpClient client = new OkHttpClient();\r\n\r\n        RequestBody body = new MultipartBody.Builder()\r\n                .setType(MultipartBody.FORM)\r\n                .addFormDataPart(\"ClothingImage\", file.getName(), RequestBody.create(file,MediaType.parse(\"image/*\")))\r\n                .build();\r\n        Request request = new Request.Builder()\r\n                .url(\"http://closet-cpen321.westus.cloudapp.azure.com/api/images/\" + user.getUserId() + \"/\" + clothesId)\r\n                .addHeader(\"Authorization\",\"Bearer \"+ user.getUserToken())\r\n                .post(body)\r\n                .build();\r\n        Log.d(TAG,\"prepared to sendImageToServer\");\r\n\r\n        Call call = client.newCall(request);\r\n        call.enqueue(new Callback() {\r\n            @Override\r\n            public void onFailure(@NotNull Call call, @NotNull IOException e) {\r\n                e.printStackTrace();\r\n            }\r\n\r\n            @Override\r\n            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {\r\n                String responseStr = Objects.requireNonNull(response.body()).string();\r\n                Log.d(TAG, \"Successfully upload image to server:\"+responseStr);\r\n\r\n            }\r\n        });\r\n\r\n        Log.d(TAG,\"finished sendImageToServer\");\r\n    }\r\n\r\n    public static CountingIdlingResource getRegisterIdlingResourceInTest() {\r\n        return idlingResource;\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/frontend/AddClothesActivity.java	(revision 9cbc60e8f7ecbee17c2cf7b3bc84512af8dbd22d)
++++ app/src/main/java/com/example/frontend/AddClothesActivity.java	(date 1605506607594)
+@@ -90,8 +90,8 @@
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_add_clothes);
+ 
+-        Bundle data = getIntent().getExtras();
+-        user = data.getParcelable("user");
++        user = MainActivity.getUser();
++        Log.d(TAG, "testing: user id: " + user.getUserId());
+ 
+         image = findViewById(R.id.iv_add);
+         image.setVisibility(View.INVISIBLE);
+@@ -200,7 +200,7 @@
+                     // wait for clothing id; change this
+                     Log.d(TAG, "waiting for clothing id");
+                 }
+-                sendImageToServer(file);
++//                sendImageToServer(file);
+ 
+                 Intent setImageIntent = new Intent();
+                 setImageIntent.putExtra("path", path);
+@@ -313,7 +313,7 @@
+                     else{
+                         runOnUiThread(new Runnable() {
+                             public void run() {
+-                                final Toast toast = makeText(AddClothesActivity.this,"Successfully add a cloth!",Toast.LENGTH_SHORT);
++                                final Toast toast = makeText(AddClothesActivity.this,"Successfully added clothes!",Toast.LENGTH_SHORT);
+                                 toast.show();
+                             }
+                         });
+@@ -393,8 +393,8 @@
+                 bitmap = BitmapFactory.decodeStream(stream);
+                 image.setImageBitmap(bitmap);
+                 image.setVisibility(View.VISIBLE);
+-                path = getPath(uri);
+-                file = new File(path);
++//                path = getPath(uri);
++//                file = new File(path);
+ 
+             } catch (FileNotFoundException e) {
+                 e.printStackTrace();
+Index: app/src/androidTest/java/com/example/frontend/AddClothesTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.frontend;\r\n\r\nimport androidx.test.espresso.IdlingRegistry;\r\nimport androidx.test.espresso.idling.CountingIdlingResource;\r\nimport androidx.test.ext.junit.rules.ActivityScenarioRule;\r\nimport androidx.test.ext.junit.runners.AndroidJUnit4;\r\nimport androidx.test.filters.LargeTest;\r\n\r\nimport com.android21buttons.fragmenttestrule.FragmentTestRule;\r\nimport com.example.frontend.ui.clothes.ClothesFragment;\r\n\r\nimport org.junit.Rule;\r\nimport org.junit.Test;\r\nimport org.junit.runner.RunWith;\r\n\r\nimport static androidx.test.espresso.Espresso.onData;\r\nimport static androidx.test.espresso.Espresso.onView;\r\nimport static androidx.test.espresso.action.ViewActions.click;\r\nimport static androidx.test.espresso.assertion.ViewAssertions.matches;\r\nimport static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;\r\nimport static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;\r\nimport static androidx.test.espresso.matcher.ViewMatchers.withId;\r\nimport static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;\r\nimport static org.hamcrest.Matchers.allOf;\r\nimport static org.hamcrest.Matchers.containsString;\r\nimport static org.hamcrest.Matchers.instanceOf;\r\nimport static org.hamcrest.Matchers.is;\r\nimport static org.junit.Assert.fail;\r\n\r\n@LargeTest\r\n@RunWith(AndroidJUnit4.class)\r\npublic class AddClothesTest {\r\n\r\n    @Rule\r\n    public FragmentTestRule<?, ClothesFragment> fragmentRule =\r\n            FragmentTestRule.create(ClothesFragment.class);\r\n    @Rule\r\n    public ActivityScenarioRule<LoginActivity> activityRule\r\n            = new ActivityScenarioRule<>(LoginActivity.class);\r\n\r\n    @Test\r\n    public void addClothesTest() {\r\n        CountingIdlingResource idlingResource_fragment = ClothesFragment.getRegisterIdlingResourceInTest();\r\n        IdlingRegistry idlingRegistry_fragment = IdlingRegistry.getInstance();\r\n        idlingRegistry_fragment.register(idlingResource_fragment);\r\n\r\n        // click add clothes button and we should be navigate to add clothes activity\r\n        onView(withId(R.id.btn_clothes_add)).check(matches(isDisplayed())).perform(click());\r\n\r\n        CountingIdlingResource idlingResource_activity = ClothesFragment.getRegisterIdlingResourceInTest();\r\n        IdlingRegistry idlingRegistry_activity = IdlingRegistry.getInstance();\r\n        idlingRegistry_activity.register(idlingResource_activity);\r\n\r\n        // click add image button and when we come back from gallery, image should display and add image button should be invisible\r\n        onView(withId(R.id.btn_image_add)).check(matches(isDisplayed())).perform(click());\r\n        onView(withId(R.id.iv_add)).check(matches(isDisplayed()));\r\n//        onView(withId(R.id.btn_image_add)).check(matches((Matcher<? super View>) doesNotExist()));\r\n\r\n        // select \"Shirts\" in category spinner\r\n        onView(withId(R.id.sp_category_add)).check(matches(isDisplayed())).perform(click());\r\n        onData(allOf(is(instanceOf(String.class)), is(\"Shirts\"))).perform(click());\r\n        onView(withId(R.id.sp_category_add)).check(matches(withSpinnerText(containsString(\"Shirts\"))));\r\n\r\n        // select \"White\" in color spinner\r\n        onView(withId(R.id.sp_color_add)).check(matches(isDisplayed())).perform(click());\r\n        onData(allOf(is(instanceOf(String.class)), is(\"White\"))).perform(click());\r\n        onView(withId(R.id.sp_color_add)).check(matches(withSpinnerText(containsString(\"White\"))));\r\n\r\n        // click save clothes button and we should get \"Missing clothes values\" message\r\n        onView(withId(R.id.btn_save_add)).check(matches(isDisplayed())).perform(click());\r\n//        onView(withText(\"Missing clothes values\")).inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView())))).check(matches(isDisplayed()));\r\n\r\n        onView(withId(R.id.cb_spring_add)).check(matches(isDisplayed())).check(matches(isNotChecked())).perform(click());\r\n        onView(withId(R.id.cb_summer_add)).check(matches(isDisplayed())).check(matches(isNotChecked())).perform(click());\r\n\r\n        onView(withId(R.id.sp_category_add)).check(matches(isDisplayed())).perform(click());\r\n        onData(allOf(is(instanceOf(String.class)), is(\"Shirts\"))).perform(click());\r\n        onView(withId(R.id.sp_category_add)).check(matches(withSpinnerText(containsString(\"Shirts\"))));\r\n\r\n        // added for codacy issue\r\n        fail();\r\n\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/androidTest/java/com/example/frontend/AddClothesTest.java	(revision 9cbc60e8f7ecbee17c2cf7b3bc84512af8dbd22d)
++++ app/src/androidTest/java/com/example/frontend/AddClothesTest.java	(date 1605508115027)
+@@ -1,85 +1,114 @@
+ package com.example.frontend;
+ 
++import android.app.Activity;
++import android.app.Instrumentation;
++import android.content.Intent;
++import android.net.Uri;
++import android.widget.ImageView;
++
+ import androidx.test.espresso.IdlingRegistry;
+ import androidx.test.espresso.idling.CountingIdlingResource;
+-import androidx.test.ext.junit.rules.ActivityScenarioRule;
++import androidx.test.espresso.intent.Intents;
+ import androidx.test.ext.junit.runners.AndroidJUnit4;
+ import androidx.test.filters.LargeTest;
+-
+-import com.android21buttons.fragmenttestrule.FragmentTestRule;
+-import com.example.frontend.ui.clothes.ClothesFragment;
++import androidx.test.rule.ActivityTestRule;
++import androidx.test.rule.GrantPermissionRule;
+ 
+ import org.junit.Rule;
+ import org.junit.Test;
+ import org.junit.runner.RunWith;
+ 
++import java.io.File;
++
+ import static androidx.test.espresso.Espresso.onData;
+ import static androidx.test.espresso.Espresso.onView;
+ import static androidx.test.espresso.action.ViewActions.click;
++import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
++import static androidx.test.espresso.action.ViewActions.replaceText;
+ import static androidx.test.espresso.assertion.ViewAssertions.matches;
++import static androidx.test.espresso.intent.Intents.intended;
++import static androidx.test.espresso.intent.Intents.intending;
++import static androidx.test.espresso.intent.matcher.IntentMatchers.toPackage;
++import static androidx.test.espresso.matcher.ViewMatchers.hasBackground;
++import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+-import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
+ import static androidx.test.espresso.matcher.ViewMatchers.withId;
+ import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
++import static androidx.test.espresso.matcher.ViewMatchers.withText;
++import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
++
+ import static org.hamcrest.Matchers.allOf;
+ import static org.hamcrest.Matchers.containsString;
+ import static org.hamcrest.Matchers.instanceOf;
+ import static org.hamcrest.Matchers.is;
+-import static org.junit.Assert.fail;
++import static org.hamcrest.Matchers.not;
++import static org.junit.Assert.assertEquals;
++import static org.junit.Assert.assertTrue;
+ 
+ @LargeTest
+ @RunWith(AndroidJUnit4.class)
+ public class AddClothesTest {
+ 
+     @Rule
+-    public FragmentTestRule<?, ClothesFragment> fragmentRule =
+-            FragmentTestRule.create(ClothesFragment.class);
+-    @Rule
+-    public ActivityScenarioRule<LoginActivity> activityRule
+-            = new ActivityScenarioRule<>(LoginActivity.class);
++    public ActivityTestRule<AddClothesActivity> activityRule = new ActivityTestRule<>(AddClothesActivity.class);
++
++    @Rule public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.READ_EXTERNAL_STORAGE);
++
++    private int count = 1;
+ 
+     @Test
+     public void addClothesTest() {
+-        CountingIdlingResource idlingResource_fragment = ClothesFragment.getRegisterIdlingResourceInTest();
+-        IdlingRegistry idlingRegistry_fragment = IdlingRegistry.getInstance();
+-        idlingRegistry_fragment.register(idlingResource_fragment);
+ 
+-        // click add clothes button and we should be navigate to add clothes activity
+-        onView(withId(R.id.btn_clothes_add)).check(matches(isDisplayed())).perform(click());
+-
+-        CountingIdlingResource idlingResource_activity = ClothesFragment.getRegisterIdlingResourceInTest();
++        CountingIdlingResource idlingResource_activity = AddClothesActivity.getRegisterIdlingResourceInTest();
+         IdlingRegistry idlingRegistry_activity = IdlingRegistry.getInstance();
+         idlingRegistry_activity.register(idlingResource_activity);
+ 
+-        // click add image button and when we come back from gallery, image should display and add image button should be invisible
+-        onView(withId(R.id.btn_image_add)).check(matches(isDisplayed())).perform(click());
++        Uri uri = Uri.fromFile(new File("/storage/emulated/0/test.jpg"));
++        Intent data = new Intent();
++        data.setData(uri);
++        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, data);
++
++        Intents.init();
++        intending(toPackage("com.google.android.apps.photos")).respondWith(result);
++        onView(withId(R.id.btn_image_add)).perform(click());
++        countStep();
++        intended(toPackage("com.google.android.apps.photos"));
++        Intents.release();
++
+         onView(withId(R.id.iv_add)).check(matches(isDisplayed()));
+-//        onView(withId(R.id.btn_image_add)).check(matches((Matcher<? super View>) doesNotExist()));
++        ImageView image = activityRule.getActivity().findViewById(R.id.iv_add);
++        assertTrue(image.getDrawable() != null);
++        onView(withId(R.id.btn_image_add)).check(matches(not(isDisplayed())));
++        onView(withId(R.id.tv_add)).check(matches(not(isDisplayed())));
+ 
+-        // select "Shirts" in category spinner
+-        onView(withId(R.id.sp_category_add)).check(matches(isDisplayed())).perform(click());
++        onView(withId(R.id.sp_category_add)).perform(click());
+         onData(allOf(is(instanceOf(String.class)), is("Shirts"))).perform(click());
+         onView(withId(R.id.sp_category_add)).check(matches(withSpinnerText(containsString("Shirts"))));
+ 
+-        // select "White" in color spinner
+-        onView(withId(R.id.sp_color_add)).check(matches(isDisplayed())).perform(click());
++        onView(withId(R.id.sp_color_add)).perform(click());
+         onData(allOf(is(instanceOf(String.class)), is("White"))).perform(click());
+         onView(withId(R.id.sp_color_add)).check(matches(withSpinnerText(containsString("White"))));
+ 
+-        // click save clothes button and we should get "Missing clothes values" message
+-        onView(withId(R.id.btn_save_add)).check(matches(isDisplayed())).perform(click());
+-//        onView(withText("Missing clothes values")).inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView())))).check(matches(isDisplayed()));
++        onView(withId(R.id.cb_spring_add)).perform(click()).check(matches(isChecked()));
++
++        onView(withId(R.id.sp_occasion_add)).perform(click());
++        onData(allOf(is(instanceOf(String.class)), is("Home"))).perform(click());
++        onView(withId(R.id.sp_occasion_add)).check(matches(withSpinnerText(containsString("Home"))));
+ 
+-        onView(withId(R.id.cb_spring_add)).check(matches(isDisplayed())).check(matches(isNotChecked())).perform(click());
+-        onView(withId(R.id.cb_summer_add)).check(matches(isDisplayed())).check(matches(isNotChecked())).perform(click());
++        onView(withId(R.id.et_name_add)).perform(replaceText("T-shirt"), closeSoftKeyboard());
++        countStep();
+ 
+-        onView(withId(R.id.sp_category_add)).check(matches(isDisplayed())).perform(click());
+-        onData(allOf(is(instanceOf(String.class)), is("Shirts"))).perform(click());
+-        onView(withId(R.id.sp_category_add)).check(matches(withSpinnerText(containsString("Shirts"))));
++        onView(withId(R.id.btn_save_add)).perform(click());
++        countStep();
++        onView(withText("Successfully added clothes!")).inRoot(withDecorView(not(is(activityRule.getActivity().getWindow().getDecorView())))).check(matches(isDisplayed()));
+ 
+-        // added for codacy issue
+-        fail();
++        idlingRegistry_activity.unregister(idlingResource_activity);
+ 
++        System.out.println("Steps to add clothes: " + count);
++    }
++
++    private void countStep() {
++        count++;
+     }
+ 
+ }
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>ext {\r\n    CALENDAR_CREDENTIALS = 'C:\\\\Users\\\\giott\\\\Documents\\\\GitHub\\\\CPEN_321\\\\closet\\\\frontend\\\\app\\\\src\\\\main\\\\res\\\\credentials.json'\r\n}\r\napply plugin: 'com.android.application'\r\napply plugin: 'com.google.gms.google-services'\r\nandroid {\r\n    compileSdkVersion 29\r\n    buildToolsVersion '29.0.2'\r\n\r\n    lintOptions {\r\n        checkReleaseBuilds false\r\n    }\r\n\r\n    defaultConfig {\r\n        applicationId \"com.example.frontend\"\r\n        minSdkVersion 15\r\n        targetSdkVersion 30\r\n        minSdkVersion 21\r\n        targetSdkVersion 29\r\n        versionCode 1\r\n        versionName \"1.0\"\r\n        multiDexEnabled true\r\n\r\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            minifyEnabled false\r\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\r\n        }\r\n    }\r\n\r\n    configurations {\r\n        all*.exclude module: 'jsr305'\r\n        all*.exclude group: 'commons-codec', module: 'commons-codec'\r\n        all*.exclude group: 'commons-logging', module: 'commons-logging'\r\n    }\r\n\r\n    packagingOptions {\r\n        exclude 'META-INF/DEPENDENCIES'\r\n    }\r\n}\r\n\r\ndependencies {\r\n    implementation fileTree(dir: \"libs\", include: [\"*.jar\"])\r\n    implementation 'androidx.appcompat:appcompat:1.2.0'\r\n    implementation 'com.google.android.material:material:1.2.1'\r\n    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'\r\n    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'\r\n    implementation 'androidx.navigation:navigation-fragment:2.3.1'\r\n    implementation 'androidx.navigation:navigation-ui:2.3.1'\r\n    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'\r\n    testImplementation 'junit:junit:4.13.1'\r\n    implementation 'androidx.navigation:navigation-fragment:2.3.1'\r\n    implementation 'androidx.navigation:navigation-ui:2.3.1'\r\n    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'\r\n    implementation 'androidx.legacy:legacy-support-v4:1.0.0'\r\n    testImplementation 'junit:junit:4.13.1'\r\n    testImplementation 'org.junit.jupiter:junit-jupiter'\r\n    androidTestImplementation 'androidx.test.ext:junit:1.1.2'\r\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'\r\n    implementation 'com.squareup.okhttp3:okhttp:4.9.0'\r\n    implementation 'com.squareup.picasso:picasso:2.71828'\r\n\r\n    // Calendar API\r\n//    implementation 'com.google.android.gms:play-services:12.0.1'\r\n//    compile 'com.google.auth:google-auth-library-oauth2-http:0.22.0'\r\n//    compile 'com.google.apis:google-api-services-com.example.frontend.ui.calendar:v3-rev20200917-1.30.10'\r\n\r\n    //Google API services\r\n    implementation fileTree(dir: 'libs', include: ['*.jar'])\r\n    implementation 'androidx.appcompat:appcompat:1.2.0'\r\n    implementation 'com.google.android.gms:play-services-auth:18.1.0'\r\n    implementation 'pub.devrel:easypermissions:0.3.0'\r\n    implementation('com.google.api-client:google-api-client-android:1.30.11') {\r\n        exclude group: 'org.apache.httpcomponents'\r\n    }\r\n//    implementation('com.google.apis:google-api-services-com.example.frontend.ui.calendar:v3-rev99-1.19.0') {\r\n//        exclude group: 'org.apache.httpcomponents'\r\n//    }\r\n    //firebase\r\n    implementation platform('com.google.firebase:firebase-bom:25.12.0')\r\n    implementation 'com.google.firebase:firebase-analytics'\r\n    implementation 'com.google.firebase:firebase-messaging:21.0.0'\r\n\r\n    implementation 'com.squareup.picasso:picasso:2.71828'\r\n\r\n    implementation 'com.github.prolificinteractive:material-calendarview:2.0.0'\r\n    implementation 'com.jakewharton.threetenabp:threetenabp:1.2.1'\r\n\r\n    // Espresso\r\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'\r\n    androidTestImplementation 'androidx.test:runner:1.3.0'\r\n    androidTestImplementation 'androidx.test:rules:1.3.0'\r\n    implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'\r\n    androidTestImplementation 'com.21buttons:fragment-test-rule:2.0.1'\r\n    debugImplementation 'com.21buttons:fragment-test-rule-extras:2.0.1'\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(revision 9cbc60e8f7ecbee17c2cf7b3bc84512af8dbd22d)
++++ app/build.gradle	(date 1605501316804)
+@@ -96,5 +96,6 @@
+     implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
+     androidTestImplementation 'com.21buttons:fragment-test-rule:2.0.1'
+     debugImplementation 'com.21buttons:fragment-test-rule-extras:2.0.1'
++    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.2'
+ }
+ 

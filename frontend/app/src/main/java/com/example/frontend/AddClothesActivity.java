@@ -91,9 +91,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_add_clothes);
 
         user = MainActivity.getUser();
-//        Bundle data = getIntent().getExtras();
-//        user = data.getParcelable("user");
-//        Log.d(TAG, "testing: user id: " + user.getUserId());
 
         image = findViewById(R.id.iv_add);
         image.setVisibility(View.INVISIBLE);
@@ -209,6 +206,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 setImageIntent.putExtra("clothesId", clothesId);
                 setResult(RESULT_OK, setImageIntent);
 
+                final Toast toast = makeText(AddClothesActivity.this,"Successfully added clothes!",Toast.LENGTH_SHORT);
+                toast.show();
                 finish();
                 break;
 

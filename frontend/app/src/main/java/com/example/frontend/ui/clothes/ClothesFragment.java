@@ -90,7 +90,6 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 idlingResource.increment();
                 user = MainActivity.getUser();
                 Intent addClothesIntent = new Intent(ClothesFragment.this.getContext(), AddClothesActivity.class);
-                addClothesIntent.putExtra("user", user);
                 startActivityForResult(addClothesIntent, ADD);
                 idlingResource.decrement();
                 break;
@@ -123,7 +122,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             }
 
             deleteClothesFromCloset(selectedId);
-//            deleteImageFromServer();
+            deleteImageFromServer();
         }
     }
 

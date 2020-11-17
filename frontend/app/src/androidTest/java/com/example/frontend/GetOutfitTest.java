@@ -5,7 +5,6 @@ import androidx.test.espresso.idling.CountingIdlingResource;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
-import com.android21buttons.fragmenttestrule.FragmentTestRule;
 import com.example.frontend.ui.home.HomeFragment;
 
 import org.junit.Rule;
@@ -22,10 +21,6 @@ import static org.junit.Assert.fail;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class GetOutfitTest {
-
-    @Rule
-    public FragmentTestRule<?, HomeFragment> fragmentTestRule =
-            FragmentTestRule.create(HomeFragment.class);
 
     @Test
     public void getOutfitTest() {
