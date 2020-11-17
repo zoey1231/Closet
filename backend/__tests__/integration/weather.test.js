@@ -4,7 +4,7 @@ const http = require('http');
 
 const app = require('../../app');
 
-describe('Weather controller tests', () => {
+describe('Weather integration tests', () => {
   let server, api;
   beforeAll(done => {
     server = http.createServer(app);
