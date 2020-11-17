@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.idling.CountingIdlingResource;
@@ -15,6 +16,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,20 +26,31 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.not;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class RegisterTest {
+    private View decorView;
+
 
     @Rule
     public ActivityScenarioRule<RegisterActivity> activityRule
             = new ActivityScenarioRule<>(RegisterActivity.class);
-
+    @Before
+    public void setUp() {
+        activityRule.getScenario().onActivity(new ActivityScenario.ActivityAction<RegisterActivity>() {
+            @Override
+            public void perform(RegisterActivity activity) {
+                decorView = activity.getWindow().getDecorView();
+            }
+        });
+    }
     @Test
     public void registerWithExistingAccountTest() {
         //we register and unregister idling resources  with Espresso to validate asynchronous operations
@@ -94,6 +107,9 @@ public class RegisterTest {
                         isDisplayed()));
         appCompatButton.perform(click());
 
+        //check if a toast message“User exists already, please login instead” is present
+        onView(withText("User exists already, please login instead")).inRoot(withDecorView(not(decorView))).check(matches(withText("User exists already, please login instead")));
+
         //should stay at the register activity since we fail to register
         //check if all components on the register UI are there
         onView(withId(R.id.etName)).check(matches(isDisplayed()));
@@ -122,8 +138,6 @@ public class RegisterTest {
         //unregister idling resources with Espresso
         idlingRegistry.unregister(componentIdlingResource);
 
-        // added for codacy issue
-        fail();
     }
 
     private static Matcher<View> childAtPosition(

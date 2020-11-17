@@ -11,6 +11,7 @@ import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.Root;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.idling.CountingIdlingResource;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
@@ -47,8 +48,8 @@ import static org.hamcrest.Matchers.not;
 public class OutfitTest {
 
     @Rule
-    public ActivityTestRule<RegisterActivity> mActivityTestRule = new ActivityTestRule<>(RegisterActivity.class);
-
+    public ActivityScenarioRule<RegisterActivity> activityRule
+            = new ActivityScenarioRule<>(RegisterActivity.class);
     @Before
     public void setup(){
         //login into the main screen
@@ -104,6 +105,8 @@ public class OutfitTest {
         //check that like and dislike button now is enabled for select again
         onView(withId(R.id.btn_dislike_outfit1)).check(matches(isEnabled()));
         onView(withId(R.id.btn_like_outfit1)).check(matches(isEnabled()));
+        //check the undo view now is gone
+        onView(withId(R.id.view_dislike)).check(matches(not(isDisplayed())));
 
         // click like button
         onView(withId(R.id.btn_like_outfit1)).check(matches(isDisplayed())).perform(scrollTo(), click());
@@ -111,6 +114,10 @@ public class OutfitTest {
         //check the success toast message is displayed
         onView(withText("Your preference has been recorded")).inRoot(new ToastMatcher())
                 .check(matches(withText("Your preference has been recorded")));
+
+        //check that like and dislike button now is not enabled
+        onView(withId(R.id.btn_dislike_outfit1)).check(matches(not(isEnabled())));
+        onView(withId(R.id.btn_like_outfit1)).check(matches(not(isEnabled())));
         idlingRegistry2.unregister(idlingResourceHome);
 
     }

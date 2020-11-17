@@ -339,7 +339,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    private void getOutfitData(String userToken) {
+    public void getOutfitData(String userToken) {
         ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
         Log.d(TAG,"prepared to sendUserDataToServer");
 

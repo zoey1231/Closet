@@ -12,7 +12,6 @@ import androidx.test.espresso.idling.CountingIdlingResource;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -33,7 +32,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.fail;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -53,6 +51,7 @@ public class LoginTest {
     }
     @Test
     public void loginWithInvalidAccountTest() {
+
         //we register and unregister idling resources with Espresso to validate asynchronous operations
         // such as send login data to server and wait for response before proceeding to next part of UI test
         CountingIdlingResource componentIdlingResource = LoginActivity.getRegisterIdlingResourceInTest();
@@ -65,7 +64,7 @@ public class LoginTest {
         onView(withId(R.id.btn_login)).check(matches(isDisplayed()));
         onView(withId(R.id.linkToRegister)).check(matches(withText("New here? Create an Account here")));
 
-        //Try to login with invalid email
+        //Try to login with invalid account
         ViewInteraction appCompatEditText = onView(
                 allOf(withId(R.id.etEmail_login),
                         childAtPosition(
@@ -75,7 +74,7 @@ public class LoginTest {
                                 2),
                         isDisplayed()));
 
-        appCompatEditText.perform(replaceText("hi@test.com"), closeSoftKeyboard());
+        appCompatEditText.perform(replaceText("invalid@invalid.com"), closeSoftKeyboard());
 
 
         ViewInteraction appCompatEditText2 = onView(
@@ -99,6 +98,9 @@ public class LoginTest {
         appCompatButton.perform(click());
 
         //we should not able to be logged in
+        //check if a toast message“Invalid credentials, could not log you in.” is present
+        onView(withText("Invalid credentials, could not log you in.")).inRoot(withDecorView(not(decorView))).check(matches(withText("Invalid credentials, could not log you in.")));
+
         //check if all components on the Login UI are there
         onView(withId(R.id.etEmail_login)).check(matches(isDisplayed()));
         onView(withId(R.id.etPassword_login)).check(matches(isDisplayed()));
@@ -143,7 +145,7 @@ public class LoginTest {
         onView(withId(R.id.linkToRegister)).check(matches(withText("New here? Create an Account here")));
 
         //Try to login with valid account
-        onView(withId(R.id.etEmail_login)).perform(replaceText("hi@test.com"), closeSoftKeyboard());
+        onView(withId(R.id.etEmail_login)).perform(replaceText("test@test.com"), closeSoftKeyboard());
         onView(withId(R.id.etPassword_login)).perform(replaceText("123123"), closeSoftKeyboard());
         onView(withId(R.id.btn_login)).perform(click());
 
