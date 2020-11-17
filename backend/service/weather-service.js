@@ -52,14 +52,6 @@ const getWeatherInfo = async userId => {
     };
   }
 
-  if (response.status !== 200) {
-    return {
-      success: false,
-      message:
-        'Could not get weather information in your city, please try again later',
-    };
-  }
-
   const { current, daily } = response.data;
 
   /* Convert the timestamp to a more readable format,
@@ -116,24 +108,14 @@ const getGeoCode = async place => {
     };
   }
 
-  const { status, results } = response.data;
+  const { results } = response.data;
+  const { lat, lng } = results[0].geometry;
 
-  if (status.code !== 200) {
-    return {
-      success: false,
-      code: 406,
-      message: 'Cannot find your city, please check and try again',
-      ...status,
-    };
-  } else {
-    const { lat, lng } = results[0].geometry;
-
-    return {
-      success: true,
-      lat,
-      lon: lng,
-    };
-  }
+  return {
+    success: true,
+    lat,
+    lon: lng,
+  };
 };
 
 module.exports = {

@@ -147,7 +147,7 @@ const listEvents = async auth => {
       orderBy: 'startTime',
     });
   } catch (err) {
-    console.log('Error loading calendar events:', err);
+    LOG.error('Error loading calendar events:', err);
     return {
       success: false,
       reason: process.env.CALENDAR_EVENTS_ERROR,

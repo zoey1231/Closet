@@ -3,25 +3,19 @@ const mongoose = require('mongoose');
 const supertest = require('supertest');
 const http = require('http');
 
-const app = require('../app');
-
-jest.mock('jsonwebtoken');
-jest.mock('../model/user.js');
+const app = require('../../app');
 
 describe('Authentication Tests', () => {
   const testToken = 'testToken';
-  const testUserId = 1;
 
   let server, api;
   beforeAll(done => {
     server = http.createServer(app);
     server.listen(done);
     api = supertest(server);
-
-    jwt.sign.mockReturnValue(testToken);
   });
 
-  it('should fail to sign up if inputs are invalid', async () => {
+  it('422 should fail to sign up if inputs are invalid', async () => {
     const newUser = {
       name: 'TESTING',
       email: 'invalid_email',
@@ -36,7 +30,8 @@ describe('Authentication Tests', () => {
     );
   });
 
-  it('should succeed to sign up if every input is correct', async () => {
+  let userId, token;
+  it('201 should succeed to sign up if every input is correct', async () => {
     const newUser = {
       name: 'TESTING',
       email: 'testing@testing.com',
@@ -47,11 +42,14 @@ describe('Authentication Tests', () => {
 
     expect(res.statusCode).toEqual(201);
     expect(res.body.email).toEqual(newUser.email.toLowerCase());
-    expect(res.body.userId).toEqual(testUserId);
-    expect(res.body.token).toEqual(testToken);
+    expect(res.body.userId).toBeTruthy();
+    expect(res.body.token).toBeTruthy();
+
+    userId = res.body.userId;
+    token = res.body.token;
   });
 
-  it('should fail to sign up if the user has existed', async () => {
+  it('422 should fail to sign up if the user has existed', async () => {
     const existingUser = {
       name: 'TESTING',
       email: 'testing@testing.com',
@@ -66,7 +64,7 @@ describe('Authentication Tests', () => {
     );
   });
 
-  it('should succeed to login for an existing user', async () => {
+  it('200 should succeed to login for an existing user', async () => {
     const loginInfo = {
       email: 'testing@testing.com',
       password: 'TESTING',
@@ -75,12 +73,14 @@ describe('Authentication Tests', () => {
     const res = await api.post('/api/users/login').send(loginInfo);
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body.userId).toEqual(testUserId);
+    expect(res.body.userId).toBeTruthy();
     expect(res.body.email).toEqual(loginInfo.email);
-    expect(res.body.token).toEqual(testToken);
+    expect(res.body.token).toBeTruthy();
+
+    token = res.body.token;
   });
 
-  it('should fail to login if the user does not exist', async () => {
+  it('401 should fail to login if the user does not exist', async () => {
     const loginInfo = {
       email: 'NEW@NEW.com',
       password: 'NEW_PASSWORD',
@@ -94,9 +94,23 @@ describe('Authentication Tests', () => {
     );
   });
 
-  it('should fail to login if the password is invalid', async () => {
+  it('401 missing login info', async () => {
     const loginInfo = {
-      email: 'TESTING@TESTING.com',
+      email: '',
+      password: '',
+    };
+
+    const res = await api.post('/api/users/login').send(loginInfo);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual(
+      'Invalid credentials, could not log you in.'
+    );
+  });
+
+  it('401 should fail to login if the password is invalid', async () => {
+    const loginInfo = {
+      email: 'testing@testing.com',
       password: 'WRONG_PASSWORD',
     };
 
@@ -106,6 +120,17 @@ describe('Authentication Tests', () => {
     expect(res.body.message).toEqual(
       'Invalid credentials, could not log you in.'
     );
+  });
+
+  it('200 get user profile', async () => {
+    const res = await api
+      .get('/api/users/me')
+      .set('Authorization', `Bear ${token}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.id).toEqual(userId);
+    expect(res.body.email).toEqual('testing@testing.com');
+    expect(res.body.city).toEqual('vancouver');
   });
 
   afterAll(async done => {

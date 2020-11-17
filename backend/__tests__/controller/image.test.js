@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const supertest = require('supertest');
 const http = require('http');
 
-const app = require('../app');
+const app = require('../../app');
 
 const fs = require('fs');
 
-describe('image controller', () => {
+describe('Image controller tests', () => {
   let server, api;
   beforeAll(done => {
     server = http.createServer(app);
@@ -38,6 +38,19 @@ describe('image controller', () => {
     userId = res.body.userId;
   });
 
+  it('401 post image invalid parameter', async () => {
+    const res = await api
+      .post(`/api/images/${null}/${null}`)
+      .set('Authorization', `Bear ${token}`)
+      .attach(
+        'ClothingImage',
+        "../backend/static/And you don't seem to understand.png"
+      );
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual('Token missing or invalid');
+  });
+
   let clothingId = 'TEST_CLOTHING_ID';
   it('201 success post image', async () => {
     const res = await api
@@ -58,6 +71,15 @@ describe('image controller', () => {
     );
 
     expect(res.statusCode).toEqual(200);
+  });
+
+  it('401 delete image invalid parameter', async () => {
+    const res = await api
+      .delete(`/api/images/${null}/${null}`)
+      .set('Authorization', `Bear ${token}`);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual('Token missing or invalid');
   });
 
   it('200 deleted image', async () => {

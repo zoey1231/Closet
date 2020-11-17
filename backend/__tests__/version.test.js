@@ -1,6 +1,5 @@
 const config = require('../utils/config');
 const mongoose = require('mongoose');
-// const server = require('../index');
 const supertest = require('supertest');
 const http = require('http');
 

@@ -33,7 +33,7 @@ const getClothes = async (req, res, next) => {
     }
   } catch (exception) {
     LOG.error(req._id, exception.message);
-    next(new HttpError('Failed getting clothes', 500));
+    return next(new HttpError('Failed getting clothes', 500));
   }
 
   res.status(200).json({ clothes: savedClothes });
@@ -60,7 +60,7 @@ const getClothing = async (req, res, next) => {
     }
   } catch (exception) {
     LOG.error(req._id, exception.message);
-    next(new HttpError('Failed getting clothing', 500));
+    return next(new HttpError('Failed getting clothing', 500));
   }
 
   res.status(200).json(savedClothing);
@@ -91,13 +91,13 @@ const postClothing = async (req, res, next) => {
   }
 
   if (!Array.isArray(occasions)) {
-    return next(new HttpError(`Invalid occasions; should be an array`, 400));
+    return next(new HttpError('Invalid occasions; should be an array', 400));
   }
 
-  const seasonList = ['Spring', 'Summer', 'Fall', 'Winter', 'All'];
-  if (!Array.isArray(seasons) || seasonList.every(i => seasons.includes(i))) {
+  const SeasonList = ['Spring', 'Summer', 'Fall', 'Winter', 'All'];
+  if (!Array.isArray(seasons) || !seasons.every(i => SeasonList.includes(i))) {
     return next(
-      new HttpError(`Invalid seasons; can only include ${seasonList}`, 400)
+      new HttpError(`Invalid seasons; can only include ${SeasonList}`, 400)
     );
   }
 
@@ -119,7 +119,7 @@ const postClothing = async (req, res, next) => {
     res.status(201).json(savedClothing);
   } catch (exception) {
     LOG.error(req._id, exception.message);
-    next(new HttpError('Failed adding clothing', 500));
+    return next(new HttpError('Failed adding clothing', 500));
   }
 };
 
@@ -143,7 +143,7 @@ const deleteClothing = async (req, res, next) => {
     });
 
     if (!deletedClothing) {
-      next(new HttpError('Not found or already deleted', 404));
+      return next(new HttpError('Not found or already deleted', 404));
     }
 
     const user = await User.findById(userId);
@@ -151,7 +151,7 @@ const deleteClothing = async (req, res, next) => {
     await user.save();
   } catch (exception) {
     LOG.error(req._id, exception.message);
-    next(new HttpError('Failed deleting clothing', 500));
+    return next(new HttpError('Failed deleting clothing', 500));
   }
 
   res.status(200).json({ message: 'Deleted clothing' }).end();
@@ -183,13 +183,13 @@ const updateClothing = async (req, res, next) => {
   }
 
   if (!Array.isArray(occasions)) {
-    return next(new HttpError(`Invalid occasions; should be an array`, 400));
+    return next(new HttpError('Invalid occasions; should be an array', 400));
   }
 
-  const seasonList = ['Spring', 'Summer', 'Fall', 'Winter', 'All'];
-  if (!Array.isArray(seasons) || seasonList.every(i => seasons.includes(i))) {
+  const SeasonList = ['Spring', 'Summer', 'Fall', 'Winter', 'All'];
+  if (!Array.isArray(seasons) || !seasons.every(i => SeasonList.includes(i))) {
     return next(
-      new HttpError(`Invalid seasons; can only include ${seasonList}`, 400)
+      new HttpError(`Invalid seasons; can only include ${SeasonList}`, 400)
     );
   }
 
@@ -215,18 +215,16 @@ const updateClothing = async (req, res, next) => {
 
     assert(updateClothing.category === savedClothing.category);
     assert(updateClothing.color === savedClothing.color);
-    assert(updateClothing.seasons.length === savedClothing.seasons.length);
-    assert(updateClothing.occasions.length === savedClothing.occasions.length);
-    // assert(
-    //   updateClothing.seasons.length === savedClothing.seasons.length &&
-    //     updateClothing.seasons.every((u, i) => u === savedClothing.seasons[i])
-    // );
-    // assert(
-    //   updateClothing.occasions.length === savedClothing.occasions.length &&
-    //     updateClothing.occasions.every(
-    //       (u, i) => u === savedClothing.occasions[i]
-    //     )
-    // );
+    assert(
+      updateClothing.seasons.length === savedClothing.seasons.length &&
+        updateClothing.seasons.every((u, i) => u === savedClothing.seasons[i])
+    );
+    assert(
+      updateClothing.occasions.length === savedClothing.occasions.length &&
+        updateClothing.occasions.every(
+          (u, i) => u === savedClothing.occasions[i]
+        )
+    );
 
     assert(updateClothing.name === savedClothing.name);
 
