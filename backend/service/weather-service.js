@@ -1,26 +1,29 @@
 const axios = require('axios');
 
 require('dotenv').config();
+const User = require('../model/user');
 const LOG = require('../utils/logger');
 const { timestampToDate } = require('../utils/time-helper');
 
 /**
- * Return the weather of the current and next day of the given place
+ * Return the weather of the current and next day of the user's city
  *
- * @param {String} place
+ * @param {String} userId
  */
-const getWeatherInfo = async place => {
-  // Get latitude and longitude of the given place
-  const geoCode = await getGeoCode(place);
-
-  if (!geoCode.success) {
+const getWeatherInfo = async userId => {
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
     return {
       success: false,
-      message: 'Could not get weather information, please try again later',
+      code: 500,
+      message: 'Could not get your information, please try again later',
     };
   }
 
-  const { lat, lon } = geoCode;
+  const lat = user.lat;
+  const lon = user.lng;
   const units = process.env.WEATHER_UNITS;
   const exclude = process.env.WEATHER_EXCLUDE;
   const appid = process.env.WEATHER_API_KEY;
@@ -43,14 +46,9 @@ const getWeatherInfo = async place => {
     LOG.error(err.message);
     return {
       success: false,
-      message: 'Could not get weather information, please try again later',
-    };
-  }
-
-  if (response.status !== 200) {
-    return {
-      success: false,
-      message: 'Could not get weather information, please try again later',
+      code: 500,
+      message:
+        'Could not get weather information in your city, please try again later',
     };
   }
 
@@ -106,28 +104,21 @@ const getGeoCode = async place => {
     return {
       success: false,
       code: 500,
-      message: 'Internal Geo-location called failed',
+      message: 'Cannot find your city, please check and try again',
     };
   }
 
-  const { status, results } = response.data;
+  const { results } = response.data;
+  const { lat, lng } = results[0].geometry;
 
-  if (status.code !== 200) {
-    return {
-      success: false,
-      ...status,
-    };
-  } else {
-    const { lat, lng } = results[0].geometry;
-
-    return {
-      success: true,
-      lat,
-      lon: lng,
-    };
-  }
+  return {
+    success: true,
+    lat,
+    lon: lng,
+  };
 };
 
 module.exports = {
   getWeatherInfo,
+  getGeoCode,
 };

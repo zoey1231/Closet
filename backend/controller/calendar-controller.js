@@ -6,6 +6,10 @@ const LOG = require('../utils/logger');
 const getEvents = async (req, res, next) => {
   const { date } = req.params;
   const { code } = req.body;
+  
+  if (!date || !code) {
+    return next(new HttpError('Missing parameters', 400));
+  }
 
   let response;
   try {
@@ -32,7 +36,7 @@ const getEvents = async (req, res, next) => {
         message = 'Failed to load credentials, please try again later';
         break;
       case process.env.CALENDAR_CODE_ERROR:
-        message = 'Authentication failed, please enter the correct code ';
+        message = 'Authentication failed, please enter the correct code';
         statusCode = 400;
         break;
       case process.env.CALENDAR_EVENTS_ERROR:

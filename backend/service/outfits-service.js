@@ -105,7 +105,7 @@ const generateOutfit = async user_id => {
 
     let response;
     try {
-      response = await getWeatherInfo('vancouver');
+      response = await getWeatherInfo(userId);
     } catch (exception) {
       LOG.error(exception.message);
       return;
@@ -261,10 +261,10 @@ const generateOutfit = async user_id => {
 
     /* Try to generated a new formal outfit */
     const allFormal = AllClothes.filter(c => c.occasions.includes('formal'));
-    const formalOuterwear = allFormal.filter(c => c.category === 'outerwear');
-    const formalShirt = allFormal.filter(c => c.category === 'shirt');
-    const formalTrousers = allFormal.filter(c => c.category === 'trousers');
-    const formalShoes = allFormal.filter(c => c.category === 'shoes');
+    const formalOuterwear = allFormal.filter(c => c.category.toLowerCase() === 'outerwear');
+    const formalShirt = allFormal.filter(c => c.category.toLowerCase() === 'shirt');
+    const formalTrousers = allFormal.filter(c => c.category.toLowerCase() === 'trousers');
+    const formalShoes = allFormal.filter(c => c.category.toLowerCase() === 'shoes');
 
     /*
       Requirements to return a formal outfit
@@ -422,10 +422,10 @@ const generateOutfit = async user_id => {
     const allNormal = AllClothes.filter(
       c => !c.occasions.includes('formal') || c.occasions.length > 1
     );
-    let normalOuterwear = allNormal.filter(c => c.category === 'outerwear');
-    let normalShirt = allNormal.filter(c => c.category === 'shirt');
-    let normalTrousers = allNormal.filter(c => c.category === 'trousers');
-    let normalShoes = allNormal.filter(c => c.category === 'shoes');
+    let normalOuterwear = allNormal.filter(c => c.category.toLowerCase() === 'outerwear');
+    let normalShirt = allNormal.filter(c => c.category.toLowerCase() === 'shirt');
+    let normalTrousers = allNormal.filter(c => c.category.toLowerCase() === 'trousers');
+    let normalShoes = allNormal.filter(c => c.category.toLowerCase() === 'shoes');
 
     /*
       Requirements to return a normal outfit
@@ -488,6 +488,7 @@ const generateOutfit = async user_id => {
       normalShoes
     );
 
+    /* TODO: update dislike-all logic in M10 */
     /*  
       Special check:
         If we found the user has disliked all possible combinations, 
@@ -500,7 +501,7 @@ const generateOutfit = async user_id => {
       const chosenOutfit =
         dislikedNormalOutfits[randomInt(dislikedNormalOutfits.length)];
       const warning =
-        'You have disliked all normal outfits. Maybe you change your opinion on this one!';
+        'You have disliked all normal outfits. Maybe you change your opinion on this one or add more clothes into your closet';
       return {
         success: true,
         existing: true,
@@ -538,7 +539,7 @@ const generateOutfit = async user_id => {
       /*
         A simple color restriction (the following color combination is NOT allowed)
         1. Except for Grey, White, Black, All three clothes have the same color
-        2. Green and Red
+        2. Green and Red 
       */
       if (
         (!ALLOWED_COLORS.includes(color) &&
@@ -581,8 +582,6 @@ const generateOutfit = async user_id => {
         chosenShoes,
       };
     }
-
-    // (M9) how to avoid duplicated outfits returned today
 
     return {
       success: true,

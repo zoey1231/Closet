@@ -47,10 +47,18 @@ jobs:
         working-directory: ${{ env.working-directory }}
         run: npm run testCoverage
 
-      - uses: mattallty/jest-github-action@v1.0.3
+      - uses: mattallty/jest-github-action@v1.0.3	
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}	
         with:
           test-command: "npm run testCoverage"
-          changes-only: true
+          changes-only: true 
           working-directory: ${{ env.working-directory }}
+
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./backend/coverage/clover.xml # optional
+          name: backend-deploy
+          fail_ci_if_error: false # optional
+          verbose: true # optional (default = false)

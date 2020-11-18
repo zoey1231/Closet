@@ -8,6 +8,7 @@ const LOG = require('../utils/logger');
 
 const HttpError = require('../model/http-error');
 const User = require('../model/user');
+const { getGeoCode } = require('../service/weather-service');
 
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
@@ -16,6 +17,7 @@ const signup = async (req, res, next) => {
       new HttpError('Invalid inputs passed, please check your data.', 422)
     );
   }
+
   const { name, email, password } = req.body;
 
   let hashedPassword;
@@ -26,11 +28,15 @@ const signup = async (req, res, next) => {
     return next(new HttpError('Could not create user, please try again', 500));
   }
 
+  // Every new user will have "Vancouver" as the default city
   const createdUser = new User({
     name,
     email,
     password: hashedPassword,
     clothes: [],
+    city: process.env.DEFAULT_USER_CITY,
+    lat: process.env.DEFAULT_USER_LATITUDE,
+    lng: process.env.DEFAULT_USER_LONGITUDE,
   });
 
   try {
@@ -60,6 +66,12 @@ const signup = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(
+      new HttpError('Invalid credentials, could not log you in.', 401)
+    );
+  }
 
   let existingUser;
   try {
@@ -114,21 +126,80 @@ const login = async (req, res, next) => {
   });
 };
 
-const getUsers = async (req, res, next) => {
-  let users;
+const getUserProfile = async (req, res, next) => {
+  const { userId } = req.userData;
+
+  let user;
   try {
-    users = await User.find({}, '-password');
+    user = await User.findById(userId, '-password');
   } catch (err) {
     LOG.error(req._id, err.message);
     return next(
-      new HttpError('Fetching users failed, please try again later', 500)
+      new HttpError(
+        'Failed to get the profile information, please try again later',
+        500
+      )
     );
   }
-  res.json({ users: users.map(user => user.toObject({ getters: true })) });
+
+  res.status(200).json(user);
+};
+
+const updateUserProfile = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError('Invalid inputs passed, please check your data.', 422)
+    );
+  }
+
+  const { userId } = req.userData;
+  const { name, email, city } = req.body;
+
+  let geoResponse;
+  try {
+    geoResponse = await getGeoCode(city);
+  } catch (err) {
+    LOG.error(req._id, err.message);
+    return next(
+      new HttpError(
+        'We meet some problems when updating your profile, please try again later',
+        500
+      )
+    );
+  }
+
+  if (!geoResponse.success) {
+    const { code, message } = geoResponse;
+    return next(new HttpError(message, code));
+  }
+
+  const lat = geoResponse.lat;
+  const lng = geoResponse.lon;
+
+  let updatedUser;
+  try {
+    updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { name, email, city, lat, lng },
+      { new: true }
+    );
+  } catch (err) {
+    LOG.error(req._id, err.message);
+    return next(
+      new HttpError(
+        'The email has been registered, please change to another one',
+        422
+      )
+    );
+  }
+
+  res.status(200).json({ message: 'Update profile successfully', updatedUser });
 };
 
 module.exports = {
-  getUsers,
   signup,
   login,
+  getUserProfile,
+  updateUserProfile,
 };

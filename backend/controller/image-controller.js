@@ -3,14 +3,9 @@ const fs = require('fs');
 
 require('dotenv').config();
 
-const multer = require('multer');
-
 const LOG = require('../utils/logger');
 
 const HttpError = require('../model/http-error');
-
-const Clothes = require('../model/clothes');
-const User = require('../model/user');
 
 const ALLOWED_EXTENSIONS = ['.jpg', '.png', '.jpeg', '.jpe'];
 
@@ -90,7 +85,7 @@ const deleteImage = async (req, res, next) => {
   try {
     let fileExists;
     let deletePath;
-    ALLOWED_EXTENSIONS.every(extension => {
+    ALLOWED_EXTENSIONS.forEach(extension => {
       const targetPath = path.join(
         `./${process.env.IMAGE_FOLDER_NAME}/${userId}/${clothingId}${extension}`
       );

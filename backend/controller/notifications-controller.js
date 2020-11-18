@@ -6,11 +6,18 @@ const LOG = require('../utils/logger');
 
 const notification_options = {
   priority: process.env.NOTIFICATION_PRIORITY,
-  timeToLive: parseInt(process.env.NOTIFICATION_LIVE_TIME),
+  timeToLive: parseInt(process.env.NOTIFICATION_LIVE_TIME, 10), // base 10 number
 };
 
 const sendNotification = async (req, res, next) => {
   const { registrationToken, message } = req.body;
+  if (!registrationToken || !message) {
+    return next(new HttpError(
+      'Missing parameters sendNotification: registrationToken or message',
+      400
+    ));
+  }
+
   const option = notification_options;
 
   try {
