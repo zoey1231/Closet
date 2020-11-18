@@ -16,7 +16,6 @@ import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
-import com.android21buttons.fragmenttestrule.FragmentTestRule;
 import com.example.frontend.ui.home.HomeFragment;
 
 import org.hamcrest.Description;
