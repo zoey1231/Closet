@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG,"email: "+user.getEmail()+" userId: "+ user.getUserId()+ " userToken: "+ user.getUserToken());
 
         //send firebase registration token to the server
-        MyFirebaseMessagingService.getTokenNSendToServer(user.getUserToken());
+        FirebaseMsgService.getTokenNSendToServer(user.getUserToken());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each

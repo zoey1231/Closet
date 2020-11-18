@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.not;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class OutfitTest {
+public class GetOutfitTest {
 
     @Rule
     public ActivityScenarioRule<RegisterActivity> activityRule
@@ -68,9 +68,9 @@ public class OutfitTest {
     @Test
     public void outfitTest() {
 
-        CountingIdlingResource idlingResourceHome = HomeFragment.getRegisterIdlingResourceInTest();
+//        CountingIdlingResource idlingResourceHome = HomeFragment.getRegisterIdlingResourceInTest();
         IdlingRegistry idlingRegistry2 = IdlingRegistry.getInstance();
-        idlingRegistry2.register(idlingResourceHome);
+//        idlingRegistry2.register(idlingResourceHome);
 
         //On start, check the outfits’ views are not present and get outfit's button is present
         onView(withId(R.id.rl_outfit)).check(matches(not(isDisplayed())));
@@ -117,7 +117,7 @@ public class OutfitTest {
         //check that like and dislike button now is not enabled
         onView(withId(R.id.btn_dislike_outfit1)).check(matches(not(isEnabled())));
         onView(withId(R.id.btn_like_outfit1)).check(matches(not(isEnabled())));
-        idlingRegistry2.unregister(idlingResourceHome);
+//        idlingRegistry2.unregister(idlingResourceHome);
 
     }
 

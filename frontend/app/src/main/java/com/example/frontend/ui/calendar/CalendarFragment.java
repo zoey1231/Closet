@@ -1,5 +1,7 @@
 package com.example.frontend.ui.calendar;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -7,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -16,12 +19,17 @@ import androidx.fragment.app.Fragment;
 import com.example.frontend.CalendarAdapter;
 import com.example.frontend.Event;
 import com.example.frontend.EventDecorator;
+import com.example.frontend.GetAuthActivity;
+import com.example.frontend.MainActivity;
 import com.example.frontend.R;
+import com.example.frontend.ServerCommAsync;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -33,12 +41,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class CalendarFragment extends Fragment implements OnDateSelectedListener {
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
-    private MaterialCalendarView calendarView;
-    private HashMap<CalendarDay, List<Event>> map = new HashMap<>();
-    private ListView listView;
+public class CalendarFragment extends Fragment implements OnDateSelectedListener, View.OnClickListener {
+    private static final String TAG ="CalendarFragment";
+    private String userToken;
+
+    private MaterialCalendarView calendar;
+    private ListView events;
+    private Button button;
     private CalendarAdapter adapter;
+    private HashMap<CalendarDay, List<Event>> eventMap = new HashMap<>();
     private List<Event> eventList = new ArrayList<>();
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -47,25 +62,25 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_calendar, container, false);
+        userToken = MainActivity.getUser().getUserToken();
 
-        listView = root.findViewById(R.id.listView);
+        calendar = root.findViewById(R.id.calendar);
+        calendar.setDateTextAppearance(View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
+        calendar.setSelectedDate(LocalDate.now());
+        calendar.setOnDateChangedListener(this);
+
+        events = root.findViewById(R.id.lv_events);
+        events.setAdapter(adapter);
+        events.setVisibility(View.INVISIBLE);
+
+        button = root.findViewById(R.id.btn_calendar);
+        button.setOnClickListener(this);
 
         adapter = new CalendarAdapter(getActivity(), eventList);
-        listView.setAdapter(adapter);
-
-
-        calendarView = root.findViewById(R.id.calendarView);
-        calendarView.setDateTextAppearance(View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
-
-        calendarView.setSelectedDate(LocalDate.now());
-
-        calendarView.setOnDateChangedListener(this);
-
         makeJsonObjectRequest();
-
         //add small dots on event days
-        EventDecorator eventDecorator = new EventDecorator(Color.RED, map.keySet());
-        calendarView.addDecorator(eventDecorator);
+        EventDecorator eventDecorator = new EventDecorator(Color.RED, eventMap.keySet());
+        calendar.addDecorator(eventDecorator);
 
         return root;
     }
@@ -88,16 +103,16 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
                 Event event = new Event(date,title);
 
 
-                if(!map.containsKey(day))
+                if(!eventMap.containsKey(day))
                 {
                     List<Event> events = new ArrayList<>();
                     events.add(event);
-                    map.put(day,events);
+                    eventMap.put(day,events);
                 }else
                 {
-                    List<Event> events = map.get(day);
+                    List<Event> events = eventMap.get(day);
                     events.add(event);
-                    map.put(day,events);
+                    eventMap.put(day,events);
 
                 }
 
@@ -107,7 +122,7 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
         }
 
         // after parsing
-        List<Event> event =  map.get(CalendarDay.from(LocalDate.now()));
+        List<Event> event =  eventMap.get(CalendarDay.from(LocalDate.now()));
         if(event!=null && event.size()>0) {
             adapter.addItems(event);
         }else {
@@ -115,8 +130,8 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
         }
 
         //add small dots on event days
-        EventDecorator eventDecorator = new EventDecorator(Color.RED, map.keySet());
-        calendarView.addDecorator(eventDecorator);
+        EventDecorator eventDecorator = new EventDecorator(Color.RED, eventMap.keySet());
+        calendar.addDecorator(eventDecorator);
 
 
     }
@@ -140,9 +155,9 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
     @Override
     public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
 
-        calendarView.setHeaderTextAppearance(R.style.AppTheme);
+        calendar.setHeaderTextAppearance(R.style.AppTheme);
 
-        List<Event> event =  map.get(date);
+        List<Event> event =  eventMap.get(date);
         if(event!=null && event.size()>0) {
             adapter.addItems(event);
         }else {
@@ -150,4 +165,50 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(CalendarFragment.this.getContext(), GetAuthActivity.class);
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+            // here you can retrieve your bundle data.
+            String code = data.getStringExtra("code");
+            JSONObject JSONcode = new JSONObject();
+            try {
+                JSONcode.put("code", code);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendCodeToServer(JSONcode, userToken);
+
+            button.setVisibility(View.GONE);
+            events.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void sendCodeToServer(final JSONObject JSONcode, String userToken) {
+        ServerCommAsync serverComm = new ServerCommAsync();
+
+        serverComm.postWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/calendar/Nov-2020", JSONcode.toString(), userToken, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+
+                }
+                else {
+
+                }
+            }
+        });
+    }
 }

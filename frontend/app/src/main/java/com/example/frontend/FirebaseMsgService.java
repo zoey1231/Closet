@@ -29,7 +29,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class FirebaseMsgService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     private static final String EMPTY_STRING = "";
     private static String message = EMPTY_STRING;
@@ -138,7 +138,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private static void sendDataToServer(final JSONObject userData, String userToken, String url) {
-        ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
+        ServerCommAsync serverCommunication = new ServerCommAsync();
         final String data = userData.toString();
         Log.d(TAG,"usertoken in sendDataToServer is: "+userToken);
 

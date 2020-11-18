@@ -105,7 +105,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void sendUserDataToServer(final JSONObject userData) {
-        ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
+        ServerCommAsync serverCommunication = new ServerCommAsync();
         final String data = userData.toString();
         Log.d(TAG,"prepared to sendUserDataToServer");
 

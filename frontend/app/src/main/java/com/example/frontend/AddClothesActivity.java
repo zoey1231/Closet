@@ -273,7 +273,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void sendClothDataToServer(final JSONObject userData) {
-        ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
+        ServerCommAsync serverCommunication = new ServerCommAsync();
         final String data = userData.toString();
         Log.d(TAG,"prepared to sendClothDataToServer");
         Log.d(TAG,"data: "+data);
