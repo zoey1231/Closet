@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
-import android.widget.ImageView;
+import android.os.IBinder;
+import android.view.WindowManager;
 
 import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.contrib.NavigationViewActions;
+import androidx.test.espresso.Root;
 import androidx.test.espresso.idling.CountingIdlingResource;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -16,16 +16,15 @@ import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 
 import java.io.File;
 
-import static android.content.ContentValues.TAG;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -40,14 +39,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertTrue;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -71,13 +68,13 @@ public class AddClothesTest {
         onView(allOf(withId(R.id.btn_login),withText("Login"))).check(matches(isDisplayed())).perform(click());
 
         idlingRegistry.unregister(idlingResourceLogin);
-
-//        onView(withId(R.id.mobile_navigation)).perform(NavigationViewActions.navigateTo(R.id.navigation_clothes));
-        onView(withId(R.id.btn_clothes_add)).perform(click());
     }
 
     @Test
     public void addClothesTest() {
+
+        onView(withId(R.id.navigation_clothes)).perform(click());
+        onView(withId(R.id.btn_clothes_add)).perform(click());
 
         CountingIdlingResource idlingResourceAddClothes = AddClothesActivity.getRegisterIdlingResourceInTest();
         IdlingRegistry idlingRegistry_activity = IdlingRegistry.getInstance();
@@ -95,8 +92,6 @@ public class AddClothesTest {
         Intents.release();
 
         onView(withId(R.id.iv_add)).check(matches(isDisplayed()));
-//        ImageView image = .getActivity().findViewById(R.id.iv_add);
-//        assertTrue(image.getDrawable() != null);
         onView(withId(R.id.btn_image_add)).check(matches(not(isDisplayed())));
         onView(withId(R.id.tv_add)).check(matches(not(isDisplayed())));
 
@@ -117,9 +112,30 @@ public class AddClothesTest {
         onView(withId(R.id.et_name_add)).perform(replaceText("T-shirt"), closeSoftKeyboard());
 
         onView(withId(R.id.btn_save_add)).perform(click());
-//        onView(withText("Successfully added clothes!")).inRoot(withDecorView(not(is(addClothesActivityRule.getActivity().getWindow().getDecorView())))).check(matches(isDisplayed()));
+        onView(withText("Successfully added clothes!")).inRoot(new ToastMatcher()).check(matches(withText("Successfully added clothes!")));
 
         idlingRegistry_activity.unregister(idlingResourceAddClothes);
     }
+}
 
+class ToastMatcher extends TypeSafeMatcher<Root> {
+
+    @Override
+    public boolean matchesSafely(Root root) {
+        int type = root.getWindowLayoutParams().get().type;
+        if ((type == WindowManager.LayoutParams.TYPE_TOAST)) {
+            IBinder windowToken = root.getDecorView().getWindowToken();
+            IBinder appToken = root.getDecorView().getApplicationWindowToken();
+            if (windowToken == appToken) {
+                return true;
+                //means this window isn't contained by any other windows.
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void describeTo(org.hamcrest.Description description) {
+        description.appendText("ToastMatcher");
+    }
 }

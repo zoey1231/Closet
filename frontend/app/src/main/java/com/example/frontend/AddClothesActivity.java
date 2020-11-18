@@ -193,12 +193,12 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 constructClothAttributeFromCheckBoxes();
                 constructClothAttributeClothName();
                 //send the cloth data to server
-                sendClothDataToServer(clothAttribute);
-
-                while (clothesId.equals(EMPTY_STRING)) {
-                    // wait for clothing id; change this
-                    Log.d(TAG, "waiting for clothing id");
-                }
+//                sendClothDataToServer(clothAttribute);
+//
+//                while (clothesId.equals(EMPTY_STRING)) {
+//                    // wait for clothing id; change this
+//                    Log.d(TAG, "waiting for clothing id");
+//                }
 //                sendImageToServer(file);
 
                 Intent setImageIntent = new Intent();

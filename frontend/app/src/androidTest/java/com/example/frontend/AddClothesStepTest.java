@@ -31,13 +31,10 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.toPackage;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 
 @LargeTest
@@ -60,14 +57,13 @@ public class AddClothesStepTest {
         onView(allOf(withId(R.id.btn_login),withText("Login"))).check(matches(isDisplayed())).perform(click());
 
         idlingRegistry.unregister(idlingResourceLogin);
-
-//        onView(withId(R.id.mobile_navigation)).perform(NavigationViewActions.navigateTo(R.id.navigation_clothes));
     }
 
     @Test
     public void addClothesStepTest() {
         int stepcCount = 0;
 
+        onView(withId(R.id.navigation_clothes)).perform(click());
         onView(withId(R.id.btn_clothes_add)).perform(click());
         stepcCount++;
 
