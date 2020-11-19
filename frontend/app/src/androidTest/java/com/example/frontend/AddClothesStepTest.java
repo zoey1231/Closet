@@ -98,6 +98,6 @@ public class AddClothesStepTest {
         idlingRegistry_activity.unregister(idlingResourceAddClothes);
 
         assertTrue("The user should not need more than 5 steps to add a clothes item", stepcCount <= 5);
-        System.out.println("The steps performed to add a clothes item is: " + stepcCount);
+        System.out.println("The steps performed to add a clothes item is: " + stepcCount + " steps" + " which is less than expected 5 steps");
     }
 }

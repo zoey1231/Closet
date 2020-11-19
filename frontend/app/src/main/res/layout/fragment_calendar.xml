@@ -7,44 +7,22 @@
     tools:context=".ui.calendar.CalendarFragment"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#2E353D"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <!--    <ImageView-->
-            <!--        android:layout_width="30dp"-->
-            <!--        android:layout_height="match_parent"-->
-            <!--        android:padding="3dp"-->
-            <!--        android:src="@mipmap/calander" />-->
-
-        </LinearLayout>
-    </LinearLayout>
-
-
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
-    android:id="@+id/calendarView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_centerInParent="true"/>
+        android:id="@+id/calendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
 
-
-<!--    <CalendarView-->
-<!--    android:id="@+id/calendarView"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="wrap_content"-->
-<!--    android:layout_centerInParent="true" />-->
-
+    <Button
+        android:id="@+id/btn_calendar"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Get event" />
 
     <ListView
-    android:id="@+id/listView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+        android:id="@+id/lv_events"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

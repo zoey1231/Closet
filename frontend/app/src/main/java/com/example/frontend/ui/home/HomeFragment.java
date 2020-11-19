@@ -20,12 +20,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
-import com.example.frontend.ServerCommunicationAsync;
-import com.google.android.material.navigation.NavigationView;
+import com.example.frontend.ServerCommAsync;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +70,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private boolean dislike = false;
     private boolean undoDislike = false;
 
-    static CountingIdlingResource idlingResource = new CountingIdlingResource("send_get_outfit_request");
+//    static CountingIdlingResource idlingResource = new CountingIdlingResource("send_get_outfit_request");
     private String message = EMPTY_STRING;
     private String warning = EMPTY_STRING;
     private String success = EMPTY_STRING;
@@ -123,7 +121,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_outfit:
-                idlingResource.increment();
+//                idlingResource.increment();
                 outfitButton.setEnabled(false);
                 getOutfitData(userToken);
 
@@ -151,7 +149,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.btn_like_outfit1:
-                idlingResource.increment();
+//                idlingResource.increment();
                 like = true;
                 //send response to server
                 try {
@@ -162,7 +160,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.btn_dislike_outfit1:
-                idlingResource.increment();
+//                idlingResource.increment();
                 dislike = true;
                 //send response to server
                 try {
@@ -175,7 +173,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             case R.id.btn_undo:
             case R.id.tv_undo:
-                idlingResource.increment();
+//                idlingResource.increment();
                 Log.d(TAG,"clicked undo opinion");
                 undoDislike = true;
                 //send response to server
@@ -192,7 +190,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void sendOutfitOpinionToServer(JSONObject outfit_opinion,String userToken) {
-        ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
+        ServerCommAsync serverCommunication = new ServerCommAsync();
         final String data = outfit_opinion.toString();
         Log.d(TAG,"prepared to sendOutfitOpinionToServer");
         Log.d(TAG,"put request: "+outfit_opinion);
@@ -203,7 +201,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
                 Log.d(TAG, "Fail to send outfit opinion to server");
                 Log.d(TAG, String.valueOf(e));
-                idlingResource.decrement();
+//                idlingResource.decrement();
             }
 
             @Override
@@ -251,14 +249,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     }else {
                         Log.d(TAG," Error: invalid user's outfit opinion type");
                     }
-                    idlingResource.decrement();
+//                    idlingResource.decrement();
                 }
             }
         });
     }
 
     private void getWeatherData(String userToken) {
-        ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
+        ServerCommAsync serverCommunication = new ServerCommAsync();
         Log.d(TAG,"prepared to sendUserDataToServer");
 
         serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/weather/",userToken, new Callback() {
@@ -341,8 +339,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     public void getOutfitData(String userToken) {
-        ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
-        Log.d(TAG,"prepared to sendUserDataToServer");
+        ServerCommAsync serverCommunication = new ServerCommAsync();
+//        Log.d(TAG,"prepared to sendUserDataToServer");
 
         serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/one",userToken, new Callback() {
             @Override
@@ -350,7 +348,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
                 Log.d(TAG,"Fail to send request to server");
                 Log.d(TAG, String.valueOf(e));
-                idlingResource.decrement();
+//                idlingResource.decrement();
             }
 
             @Override
@@ -388,7 +386,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     Log.d(TAG,"Outfit request is unsuccessful: "+message+warning);
 
                 }
-                idlingResource.decrement();
+//                idlingResource.decrement();
             }
         });
     }
@@ -448,8 +446,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public static CountingIdlingResource getRegisterIdlingResourceInTest() {
-        return idlingResource;
-    }
+//    public static CountingIdlingResource getRegisterIdlingResourceInTest() {
+//        return idlingResource;
+//    }
 
 }

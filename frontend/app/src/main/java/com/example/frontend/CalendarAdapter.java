@@ -50,7 +50,7 @@ public class CalendarAdapter extends ArrayAdapter<Event> {
             viewHolder = (ViewHolder) returnView.getTag();
         }
 
-        viewHolder.text.setText(list.get(position).getEvents());
+        viewHolder.text.setText(list.get(position).getSummary());
 
         return returnView;
     }

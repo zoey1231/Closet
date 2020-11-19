@@ -6,19 +6,18 @@ import org.threeten.bp.LocalDate;
 public class Event {
 
     private LocalDate date;
-    private String events;
+    private String summary;
 
-    public Event(LocalDate date, String events) {
+    public Event(LocalDate date, String summary) {
         this.date = date;
-        this.events = events;
-
+        this.summary = summary;
     }
 
     public LocalDate getDate() {
         return date;
     }
 
-    public String getEvents() {
-        return events;
+    public String getSummary() {
+        return summary;
     }
 }

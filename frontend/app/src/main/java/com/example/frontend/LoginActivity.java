@@ -95,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void sendUserDataToServer(final JSONObject userData) {
-        ServerCommunicationAsync serverCommunication = new ServerCommunicationAsync();
+        ServerCommAsync serverCommunication = new ServerCommAsync();
         final String data = userData.toString();
         Log.d(TAG,"prepared to sendUserDataToServer");
 
@@ -163,7 +163,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
                         });
                         Log.d(TAG,"email: "+email+" userId: "+ userId+ " userToken: "+ userToken);
-                        startActivity(new Intent(getApplicationContext(),MainActivity.class).putExtra("user",new User(userId,userToken,email)));
+                        startActivity(new Intent(getApplicationContext(),MainActivity.class).putExtra("user",new User(userId,userToken,email, null)));
                         idlingResource_login.decrement();
                     }
 
