@@ -8,8 +8,7 @@ public class User implements Parcelable {
     private String userId;
     private String userToken;
     private String email;
-
-
+    private String code;
 
     public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
@@ -23,12 +22,12 @@ public class User implements Parcelable {
         }
     };
 
-    public User(String userId, String  userToken, String email) {
+    public User(String userId, String  userToken, String email, String code) {
 
         this.userId = userId;
         this.userToken = userToken;
         this.email = email;
-
+        this.code = code;
     }
 
     public String getUserId() {
@@ -55,12 +54,16 @@ public class User implements Parcelable {
         this.email = email;
     }
 
+    public String getCode() { return code; }
+
+    public void setCode(String code) { this.code = code; }
 
     //parcelling part
     protected User(Parcel in) {
         userId = in.readString();
         userToken = in.readString();
         email = in.readString();
+        code = in.readString();
     }
     @Override
     public int describeContents() {
@@ -71,5 +74,6 @@ public class User implements Parcelable {
         parcel.writeString(userId);
         parcel.writeString(userToken);
         parcel.writeString(email);
+        parcel.writeString(code);
     }
 }

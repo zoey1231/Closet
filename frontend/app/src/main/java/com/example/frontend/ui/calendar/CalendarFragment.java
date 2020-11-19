@@ -23,6 +23,7 @@ import com.example.frontend.GetAuthActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommAsync;
+import com.example.frontend.User;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
@@ -47,6 +48,7 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
     private static final String TAG ="CalendarFragment";
     private static final String EMPTY_STRING = "";
 
+    private User user;
     private String userToken;
     private String code;
 
@@ -63,7 +65,8 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_calendar, container, false);
-        userToken = MainActivity.getUser().getUserToken();
+        user = MainActivity.getUser();
+        userToken = user.getUserToken();
 
         calendar = root.findViewById(R.id.calendar);
         calendar.setDateTextAppearance(View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
@@ -73,10 +76,18 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
         events = root.findViewById(R.id.lv_events);
         adapter = new CalendarAdapter(getActivity(), eventList);
         events.setAdapter(adapter);
-        events.setVisibility(View.INVISIBLE);
 
         button = root.findViewById(R.id.btn_calendar);
         button.setOnClickListener(this);
+
+        if (user.getCode() == null || user.getCode().equals(EMPTY_STRING)) {
+            events.setVisibility(View.INVISIBLE);
+        }
+        else {
+            getEventsFromServer(user.getCode(), userToken);
+            addEventsToCalendar();
+            button.setVisibility(View.GONE);
+        }
 
         return root;
     }
@@ -114,33 +125,20 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            getEventsFromServer(JSONcode, userToken);
-
-            while (eventMap.size() == 0) {
-                Log.d(TAG, "waiting for events");
-            }
-            eventList = eventMap.get(CalendarDay.from(LocalDate.now().minusMonths(2)));
-
-            if (eventList != null && eventList.size() > 0) {
-                adapter.addItems(eventList);
-            }
-            else {
-                adapter.clear();
-            }
-
-            //add small dots on event days
-            EventDecorator eventDecorator = new EventDecorator(Color.RED, eventMap.keySet());
-            calendar.addDecorator(eventDecorator);
+            code = JSONcode.toString();
+            user.setCode(code);
+            getEventsFromServer(code, userToken);
+            addEventsToCalendar();
 
             button.setVisibility(View.GONE);
             events.setVisibility(View.VISIBLE);
         }
     }
 
-    private void getEventsFromServer(final JSONObject codeJSON, String userToken) {
+    private void getEventsFromServer(final String code, String userToken) {
         ServerCommAsync serverComm = new ServerCommAsync();
 
-        serverComm.postWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/calendar/Oct-2020", codeJSON.toString(), userToken, new Callback() {
+        serverComm.postWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/calendar/Oct-2020", code, userToken, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
@@ -208,5 +206,23 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
                 }
             }
         }
+    }
+
+    private void addEventsToCalendar() {
+        while (eventMap.size() == 0) {
+            Log.d(TAG, "waiting for events");
+        }
+        eventList = eventMap.get(CalendarDay.from(LocalDate.now().minusMonths(2)));
+
+        if (eventList != null && eventList.size() > 0) {
+            adapter.addItems(eventList);
+        }
+        else {
+            adapter.clear();
+        }
+
+        //add small dots on event days
+        EventDecorator eventDecorator = new EventDecorator(Color.RED, eventMap.keySet());
+        calendar.addDecorator(eventDecorator);
     }
 }
