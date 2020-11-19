@@ -27,6 +27,7 @@ import com.example.frontend.User;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -35,7 +36,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import org.threeten.bp.LocalDate;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -44,9 +47,10 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class CalendarFragment extends Fragment implements OnDateSelectedListener, View.OnClickListener {
+public class CalendarFragment extends Fragment implements OnDateSelectedListener, View.OnClickListener, OnMonthChangedListener {
     private static final String TAG ="CalendarFragment";
     private static final String EMPTY_STRING = "";
+    private static final List<String> months = Arrays.asList("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
     private User user;
     private String userToken;
@@ -71,7 +75,7 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
         calendar = root.findViewById(R.id.calendar);
         calendar.setDateTextAppearance(View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
         calendar.setSelectedDate(LocalDate.now());
-        calendar.setOnDateChangedListener(this);
+        calendar.setOnMonthChangedListener(this);
 
         events = root.findViewById(R.id.lv_events);
         adapter = new CalendarAdapter(getActivity(), eventList);
@@ -84,8 +88,6 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
             events.setVisibility(View.INVISIBLE);
         }
         else {
-            getEventsFromServer(user.getCode(), userToken);
-            addEventsToCalendar();
             button.setVisibility(View.GONE);
         }
 
@@ -104,6 +106,14 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
         else {
             adapter.clear();
         }
+    }
+
+    @Override
+    public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
+        String month = months.get(date.getMonth() - 1);
+        int year = date.getYear();
+        getEventsFromServer(user.getCode(), userToken, month, year);
+        addEventsToCalendar();
     }
 
     @Override
@@ -127,18 +137,15 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
             }
             code = JSONcode.toString();
             user.setCode(code);
-            getEventsFromServer(code, userToken);
-            addEventsToCalendar();
-
             button.setVisibility(View.GONE);
             events.setVisibility(View.VISIBLE);
         }
     }
 
-    private void getEventsFromServer(final String code, String userToken) {
+    private void getEventsFromServer(final String code, String userToken, String month, int year) {
         ServerCommAsync serverComm = new ServerCommAsync();
 
-        serverComm.postWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/calendar/Oct-2020", code, userToken, new Callback() {
+        serverComm.postWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/calendar/" + month + "-" + year, code, userToken, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
@@ -212,7 +219,7 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
         while (eventMap.size() == 0) {
             Log.d(TAG, "waiting for events");
         }
-        eventList = eventMap.get(CalendarDay.from(LocalDate.now().minusMonths(2)));
+        eventList = eventMap.get(CalendarDay.from(LocalDate.now()));
 
         if (eventList != null && eventList.size() > 0) {
             adapter.addItems(eventList);
