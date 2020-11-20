@@ -26,11 +26,20 @@ import com.example.frontend.AddClothesActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.EditClothesActivity;
+import com.example.frontend.ServerCommAsync;
 import com.example.frontend.User;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import okhttp3.Call;
@@ -46,6 +55,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private User user;
     private String path;
     private String clothesId = EMPTY_STRING;
+    private List<String> clothesIdList = new ArrayList<>();
 
     private ImageButton buttonAdd;
     private GridLayout clothesLayout;
@@ -63,10 +73,17 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_clothes, container, false);
+        user = MainActivity.getUser();
 
         buttonAdd = root.findViewById(R.id.btn_clothes_add);
         buttonAdd.setOnClickListener(this);
         clothesLayout = root.findViewById(R.id.gl_clothes);
+
+        getAllClothesFromServer();
+        while (clothesIdList.size() == 0) {
+            Log.d(TAG, "waiting for clothes id");
+        }
+        addAllClothesToCloset();
 
         return root;
     }
@@ -87,7 +104,6 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         switch (view.getId()){
             case R.id.btn_clothes_add:
                 idlingResource.increment();
-                user = MainActivity.getUser();
                 Intent addClothesIntent = new Intent(ClothesFragment.this.getContext(), AddClothesActivity.class);
                 startActivityForResult(addClothesIntent, ADD);
                 idlingResource.decrement();
@@ -133,7 +149,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             // here you can retrieve your bundle data.
             path = data.getStringExtra("path");
             clothesId = data.getStringExtra("clothesId");
-            addClothesToCloset();
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            addClothesToCloset(bitmap);
         }
 
         else if (resultCode == Activity.RESULT_OK && requestCode == EDIT) {
@@ -142,14 +159,14 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         }
     }
 
-    private void addClothesToCloset() {
+    private void addClothesToCloset(Bitmap bitmap) {
         image = new ImageView(getContext());
         image.setId(View.generateViewId());
         ConstraintLayout.LayoutParams imageParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         imageParams.width = 300;
         imageParams.height = 300;
         image.setLayoutParams(imageParams);
-        image.setImageBitmap(BitmapFactory.decodeFile(path));
+        image.setImageBitmap(bitmap);
 
         spinner = new Spinner(getContext());
         spinner.setId(View.generateViewId());
@@ -206,6 +223,74 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 Log.d(TAG, "Successfully delete image from server: " + responseStr);
             }
         });
+    }
+
+    private void getAllClothesFromServer() {
+        ServerCommAsync serverComm = new ServerCommAsync();
+
+        serverComm.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes/" + user.getUserId(), user.getUserToken(), new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseStr = Objects.requireNonNull(response.body().string());
+                if (response.isSuccessful()) {
+                    JSONObject responseJSON;
+                    try {
+                        responseJSON = new JSONObject(responseStr);
+                        extractResponseClothesData(responseJSON);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private void extractResponseClothesData(JSONObject responseJSON) throws JSONException {
+        JSONArray clothesArray = responseJSON.getJSONArray("clothes");
+        for (int i = 0; i < clothesArray.length(); i++) {
+            JSONObject clothes = clothesArray.getJSONObject(i);
+            if (clothes.has("id")) {
+                clothesIdList.add(clothes.getString("id"));
+            }
+        }
+    }
+
+    private Bitmap getClothesImage(String userId, String clothId) {
+        URL url;
+        InputStream stream;
+        BufferedInputStream buffer;
+
+        try {
+            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".png");
+            stream = url.openStream();
+            buffer = new BufferedInputStream(stream);
+            Bitmap bitmap = BitmapFactory.decodeStream(buffer);
+            if (stream != null) {
+                stream.close();
+            }
+            buffer.close();
+
+            return bitmap;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private void addAllClothesToCloset() {
+        for (int i = 0; i < clothesIdList.size(); i++) {
+            String userId = user.getUserId();
+            String clothesId = clothesIdList.get(i);
+            Bitmap bitmap = getClothesImage(userId, clothesId);
+            addClothesToCloset(bitmap);
+        }
     }
 
     @Override

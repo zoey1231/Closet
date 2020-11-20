@@ -192,14 +192,14 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
             case R.id.btn_save_add:
                 constructClothAttributeFromCheckBoxes();
                 constructClothAttributeClothName();
-                //send the cloth data to server
-//                sendClothDataToServer(clothAttribute);
-//
-//                while (clothesId.equals(EMPTY_STRING)) {
-//                    // wait for clothing id; change this
-//                    Log.d(TAG, "waiting for clothing id");
-//                }
-//                sendImageToServer(file);
+//                send the cloth data to server
+                sendClothDataToServer(clothAttribute);
+
+                while (clothesId.equals(EMPTY_STRING)) {
+                    // wait for clothing id; change this
+                    Log.d(TAG, "waiting for clothing id");
+                }
+                sendImageToServer(file);
 
                 Intent setImageIntent = new Intent();
                 setImageIntent.putExtra("path", path);
@@ -394,8 +394,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 bitmap = BitmapFactory.decodeStream(stream);
                 image.setImageBitmap(bitmap);
                 image.setVisibility(View.VISIBLE);
-//                path = getPath(uri);
-//                file = new File(path);
+                path = getPath(uri);
+                file = new File(path);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
