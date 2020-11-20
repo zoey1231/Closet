@@ -45,7 +45,6 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     private User user;
     private String path;
-    private Bitmap bitmap;
     private String clothesId = EMPTY_STRING;
 
     private ImageButton buttonAdd;
@@ -134,14 +133,11 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             // here you can retrieve your bundle data.
             path = data.getStringExtra("path");
             clothesId = data.getStringExtra("clothesId");
-            bitmap = BitmapFactory.decodeFile(path);
-
             addClothesToCloset();
         }
 
         else if (resultCode == Activity.RESULT_OK && requestCode == EDIT) {
             path = data.getStringExtra("path");
-            bitmap = BitmapFactory.decodeFile(path);
             editClothesInCloset(selectedId);
         }
     }
@@ -153,7 +149,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         imageParams.width = 300;
         imageParams.height = 300;
         image.setLayoutParams(imageParams);
-        image.setImageBitmap(bitmap);
+        image.setImageBitmap(BitmapFactory.decodeFile(path));
 
         spinner = new Spinner(getContext());
         spinner.setId(View.generateViewId());
@@ -179,10 +175,10 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     private void editClothesInCloset(int selectedId) {
         image = root.findViewById(selectedId - 1);
-        while (bitmap == null) {
-            Log.d(TAG, "waiting for bitmap");
-        }
-        image.setImageBitmap(bitmap);
+//        while (bitmap == null) {
+//            Log.d(TAG, "waiting for bitmap");
+//        }
+        image.setImageBitmap(BitmapFactory.decodeFile(path));
     }
 
     private void deleteClothesFromCloset(int selectedId) {
