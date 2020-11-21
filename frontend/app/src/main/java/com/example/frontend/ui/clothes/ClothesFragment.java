@@ -190,6 +190,15 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         clothesLayout.addView(clothes);
     }
 
+    private void addAllClothesToCloset() {
+        for (int i = 0; i < clothesIdList.size(); i++) {
+            String userId = user.getUserId();
+            String clothesId = clothesIdList.get(i);
+            Bitmap bitmap = getClothesImage(userId, clothesId);
+            addClothesToCloset(bitmap);
+        }
+    }
+
     private void editClothesInCloset(int selectedId) {
         image = root.findViewById(selectedId - 1);
 //        while (bitmap == null) {
@@ -282,15 +291,6 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         }
 
         return null;
-    }
-
-    private void addAllClothesToCloset() {
-        for (int i = 0; i < clothesIdList.size(); i++) {
-            String userId = user.getUserId();
-            String clothesId = clothesIdList.get(i);
-            Bitmap bitmap = getClothesImage(userId, clothesId);
-            addClothesToCloset(bitmap);
-        }
     }
 
     @Override

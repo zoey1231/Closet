@@ -2,8 +2,6 @@ package com.example.frontend.ui.home;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -22,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.frontend.Clothes;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommAsync;
@@ -36,6 +35,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import okhttp3.Call;
@@ -67,6 +68,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String upperClothesId = EMPTY_STRING;
     private String trousersId = EMPTY_STRING;
     private String shoesId = EMPTY_STRING;
+    private List<String> outfitsIdList = new ArrayList<>();
+    private List<String> clothesIdList = new ArrayList<>();
 
     private JSONObject outfit_opinion = new JSONObject();
     private boolean like = false;
@@ -84,6 +87,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+
+        //get User's data from MainActivity and display them on fragment
+        userToken = MainActivity.getUser().getUserToken();
+        userId = MainActivity.getUser().getUserId();
 
         tv_date_today = root.findViewById(R.id.tv_date_today);
         tv_date_tmr = root.findViewById(R.id.tv_date_tmr);
@@ -109,10 +116,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //        undoText.setOnClickListener(this);
 //        undoButton.setOnClickListener(this);
 
-        //get User's data from MainActivity and display them on fragment
-        userToken = MainActivity.getUser().getUserToken();
-        userId = MainActivity.getUser().getUserId();
-        getWeatherData(userToken);
+        getWeatherData();
+        getMultipleOutfitsFromServer();
+        while (outfitsIdList.size() == 0 || clothesIdList.size() == 0) {
+            Log.d(TAG, "waiting for ids");
+        }
+        addMultipleOutfitsOnUI();
+        outfitsLayout.setVisibility(View.VISIBLE);
 
         return root;
     }
@@ -123,7 +133,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.btn_outfit:
 //                idlingResource.increment();
                 outfitButton.setEnabled(false);
-                getOutfitData(userToken);
+                getOutfitFromServer();
 
                 while ((outfitId.equals(EMPTY_STRING) || upperClothesId.equals(EMPTY_STRING) ||
                         trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING))
@@ -153,7 +163,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //                //send response to server
 //                try {
 //                    outfit_opinion.put("opinion", "like");
-//                    sendOutfitOpinionToServer(outfit_opinion,userToken);
+//                    sendOutfitOpinionToServer(outfit_opinion);
 //                } catch (JSONException e) {
 //                    e.printStackTrace();
 //                }
@@ -164,7 +174,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //                //send response to server
 //                try {
 //                    outfit_opinion.put("opinion", "dislike");
-//                    sendOutfitOpinionToServer(outfit_opinion,userToken);
+//                    sendOutfitOpinionToServer(outfit_opinion);
 //                } catch (JSONException e) {
 //                    e.printStackTrace();
 //                }
@@ -178,7 +188,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //                //send response to server
 //                try {
 //                    outfit_opinion.put("opinion", "unknown");
-//                    sendOutfitOpinionToServer(outfit_opinion,userToken);
+//                    sendOutfitOpinionToServer(outfit_opinion);
 //                } catch (JSONException e) {
 //                    e.printStackTrace();
 //                }
@@ -205,7 +215,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void addOutfitOnUI() {
         outfitText = new TextView(getContext());
-        outfitText.setText("outfit1");
+        outfitText.setText("outfit");
 
         image1 = new ImageView(getContext());
         image1.setId(View.generateViewId());
@@ -213,7 +223,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         image1Params.width = 300;
         image1Params.height = 300;
         image1.setLayoutParams(image1Params);
-        image1.setImageBitmap(getClothesImage(userId, upperClothesId));
+        image1.setImageBitmap(getClothesImage(upperClothesId));
 
         image2 = new ImageView(getContext());
         image2.setId(View.generateViewId());
@@ -222,7 +232,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         image2Params.height = 300;
         image2Params.leftMargin = 37;
         image2.setLayoutParams(image2Params);
-        image2.setImageBitmap(getClothesImage(userId, trousersId));
+        image2.setImageBitmap(getClothesImage(trousersId));
 
         image3 = new ImageView(getContext());
         image3.setId(View.generateViewId());
@@ -231,7 +241,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         image3Params.height = 300;
         image3Params.leftMargin = 37;
         image3.setLayoutParams(image3Params);
-        image3.setImageBitmap(getClothesImage(userId, shoesId));
+        image3.setImageBitmap(getClothesImage(shoesId));
 
         // buttons
 
@@ -254,7 +264,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         outfitsLayout.addView(outfitLayout);
     }
 
-    private void getWeatherData(String userToken) {
+    private void addMultipleOutfitsOnUI() {
+        for (int i = 0; i < clothesIdList.size(); i += 3) {
+            upperClothesId = clothesIdList.get(i);
+            trousersId = clothesIdList.get(i+1);
+            shoesId = clothesIdList.get(i+2);
+            addOutfitOnUI();
+        }
+    }
+
+    private void getWeatherData() {
         ServerCommAsync serverCommunication = new ServerCommAsync();
         Log.d(TAG,"prepared to sendUserDataToServer");
 
@@ -322,7 +341,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public void getOutfitData(String userToken) {
+    public void getOutfitFromServer() {
         ServerCommAsync serverCommunication = new ServerCommAsync();
 //        Log.d(TAG,"prepared to sendUserDataToServer");
 
@@ -337,8 +356,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
                 String responseStr = Objects.requireNonNull(response.body()).string();
+
                 if (response.isSuccessful()) {
 
                     Log.d(TAG,"Outfit request is successful"+responseStr);
@@ -346,7 +365,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     try {
                         //retrieve outfit data from server's response
                         responseJson = new JSONObject(responseStr);
-                        extractResponseOutfitData(responseJson);
+                        JSONObject outfitJSON = responseJson.getJSONObject("outfit");
+                        extractResponseOutfitData(outfitJSON);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -375,37 +395,71 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void extractResponseOutfitData(JSONObject responseJson) throws JSONException{
-        JSONObject outfitJson = responseJson.getJSONObject("outfit");
-        JSONObject upperClothesJSON = outfitJson.getJSONObject("chosenUpperClothes");
-        JSONObject trousersJSON = outfitJson.getJSONObject("chosenTrousers");
-        JSONObject shoesJSON = outfitJson.getJSONObject("chosenShoes");
+    private void getMultipleOutfitsFromServer() {
+        ServerCommAsync serverComm = new ServerCommAsync();
+
+        serverComm.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/multiple", userToken, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseStr = Objects.requireNonNull(response.body().string());
+                if (response.isSuccessful()) {
+                    JSONObject responseJSON;
+                    try {
+                        responseJSON = new JSONObject(responseStr);
+                        JSONArray outfitsArray = responseJSON.getJSONArray("outfits");
+                        outfitsIdList.clear();
+                        clothesIdList.clear();
+                        for (int i = 0; i < outfitsArray.length(); i++) {
+                            JSONObject outfitJSON = outfitsArray.getJSONObject(i);
+                            extractResponseOutfitData(outfitJSON);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private void extractResponseOutfitData(JSONObject outfitJSON) throws JSONException{
+        JSONObject upperClothesJSON = outfitJSON.getJSONObject("chosenUpperClothes");
+        JSONObject trousersJSON = outfitJSON.getJSONObject("chosenTrousers");
+        JSONObject shoesJSON = outfitJSON.getJSONObject("chosenShoes");
 
         try {
-            if (outfitJson.has("_id")) {
-                outfitId = outfitJson.getString("_id");
+            if (outfitJSON.has("_id")) {
+                outfitId = outfitJSON.getString("_id");
+                outfitsIdList.add(outfitId);
             }
             if (upperClothesJSON.has("id")){
                 upperClothesId = upperClothesJSON.getString("id");
+                clothesIdList.add(upperClothesId);
             }
             if (trousersJSON.has("id")){
                 trousersId = trousersJSON.getString("id");
+                clothesIdList.add(trousersId);
             }
             if (shoesJSON.has("id")){
                 shoesId = shoesJSON.getString("id");
+                clothesIdList.add(shoesId);
             }
-            if(responseJson.has("message")){
-                message = responseJson.getString("message");
+            if(outfitJSON.has("message")){
+                message = outfitJSON.getString("message");
             }
-            if(responseJson.has("success")){
-                success = responseJson.getString("success");
+            if(outfitJSON.has("success")){
+                success = outfitJSON.getString("success");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private Bitmap getClothesImage(String userId, String clothId) {
+    private Bitmap getClothesImage(String clothId) {
         URL url;
         InputStream stream;
         BufferedInputStream buffer;
@@ -429,7 +483,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return null;
     }
 
-    private void sendOutfitOpinionToServer(JSONObject outfit_opinion,String userToken) {
+    private void sendOutfitOpinionToServer(JSONObject outfit_opinion) {
         ServerCommAsync serverCommunication = new ServerCommAsync();
         final String data = outfit_opinion.toString();
         Log.d(TAG,"prepared to sendOutfitOpinionToServer");
