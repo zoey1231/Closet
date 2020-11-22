@@ -3,7 +3,7 @@ const supertest = require('supertest');
 const http = require('http');
 
 const app = require('../../app');
-const { send } = require('process');
+const fs = require('fs');
 
 describe('Closet integration tests', () => {
   let server, api;
@@ -502,9 +502,68 @@ describe('Closet integration tests', () => {
     expect(res.body.message).toEqual('Not found');
   });
 
+  it.skip('should have correct response for POST /api/images/:userId/:clothesId', async () => {
+    res = await api
+      .post(`/api/images/${null}/${null}`)
+      .set('Authorization', `Bearer ${token}`)
+      .attach(
+        'ClothingImage',
+        "../backend/static/And you don't seem to understand.png"
+      );
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual('Token missing or invalid');
+
+    res = await api
+      .post(`/api/clothes/${userId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(testClothes);
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.seasons).toEqual(testClothes.seasons);
+    expect(res.body.occasions).toEqual(testClothes.occasions);
+    expect(res.body.color).toEqual(testClothes.color);
+    expect(res.body.category).toEqual(testClothes.category);
+    expect(res.body.user).toBeTruthy();
+    expect(res.body.id).toBeTruthy();
+    clothesId = res.body.id;
+
+    res = await api
+      .post(`/api/images/${userId}/${clothesId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .attach(
+        'ClothingImage',
+        "../backend/static/And you don't seem to understand.png"
+      );
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.message).toEqual('Uploaded image!');
+  });
+
+  it.skip('should have correct response for GET /UserClothingImages/:userId/imageName.imageExt', async () => {
+    const res = await api.get(`/UserClothingImages/${userId}/${clothesId}.png`);
+    expect(res.statusCode).toEqual(200);
+  });
+
+  it.skip('should have correct response for DELETE /api/images/:userId/:clothesId', async () => {
+    res = await api
+      .delete(`/api/images/${null}/${null}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual('Token missing or invalid');
+
+    res = await api
+      .delete(`/api/images/${userId}/${clothesId}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toEqual('Deleted image');
+
+    res = await api.get(`/UserClothingImages/${userId}/${clothesId}.png`);
+    expect(res.statusCode).toEqual(404);
+    expect(res.body.message).toEqual('Could not find this route');
+  });
+
   // it('should have correct response for ', async () => {});
 
   afterAll(async done => {
+    fs.rmdirSync('../backend/static/UserClothingImages/', { recursive: true });
     await mongoose.connection.db.dropDatabase();
     await mongoose.connection.close();
     server.close(done);
