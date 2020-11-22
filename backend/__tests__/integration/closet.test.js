@@ -13,7 +13,7 @@ describe('Closet integration tests', () => {
     api = supertest(server);
   });
 
-  let res, userId, token;
+  let res, userId, token, clothesId;
 
   const testUser = {
     name: 'TESTING',
@@ -296,10 +296,94 @@ describe('Closet integration tests', () => {
     expect(res.body.message).toEqual('Notification sent successfully!');
   });
 
-  it('should have correct response for ', async () => {});
+  const testClothes = {
+    category: 'outerwear',
+    color: 'black',
+    seasons: ['All'],
+    occasions: ['formal'],
+  };
+  const emptyClothes = {};
+  const emptyValueClothes = {
+    category: '',
+    color: '',
+    seasons: '',
+    occasions: '',
+  };
+  const invalidOccasions = {
+    category: 't-shirt',
+    color: 'blue',
+    seasons: 'Seasons',
+    occasions: 'NOT_AN_ARRAY',
+  };
+  const invalidSeasons = {
+    category: 't-shirt',
+    color: 'blue',
+    seasons: ['NOT_AN_SEASON'],
+    occasions: ['CLOTH'],
+  };
 
-  it('should have correct response for ', async () => {});
-  it('should have correct response for ', async () => {});
+  it('should have correct response for POST /api/clothes/:userId', async () => {
+    res = await api
+      .post(`/api/clothes/${userId}`)
+      .set('Authorization', 'Bear INVALID')
+      .send(testClothes);
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual('Authentication failed!');
+
+    res = await api
+      .get(`/api/clothes/${null}`)
+      .set('Authorization', `Bear ${token}`);
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual('Token missing or invalid');
+
+    res = await api
+      .post(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`)
+      .send(emptyClothes);
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.message).toEqual('Missing parameters');
+
+    res = await api
+      .post(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`)
+      .send(emptyValueClothes);
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.message).toEqual('Missing clothes values');
+
+    res = await api
+      .post(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`)
+      .send(invalidOccasions);
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.message).toEqual('Invalid occasions; should be an array');
+
+    res = await api
+      .post(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`)
+      .send(invalidSeasons);
+    const seasonList = ['Spring', 'Summer', 'Fall', 'Winter', 'All'];
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.message).toEqual(
+      `Invalid seasons; can only include ${seasonList}`
+    );
+
+    res = await api
+      .post(`/api/clothes/${userId}`)
+      .set('Authorization', `Bear ${token}`)
+      .send(testClothes);
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.seasons).toEqual(testClothes.seasons);
+    expect(res.body.occasions).toEqual(testClothes.occasions);
+    expect(res.body.color).toEqual(testClothes.color);
+    expect(res.body.category).toEqual(testClothes.category);
+    expect(res.body.user).toBeTruthy();
+    expect(res.body.id).toBeTruthy();
+
+    clothesId = res.body.id;
+  });
+
+  // it('should have correct response for ', async () => {});
+  // it('should have correct response for ', async () => {});
 
   afterAll(async done => {
     await mongoose.connection.db.dropDatabase();
