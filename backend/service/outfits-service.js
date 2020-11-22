@@ -90,6 +90,7 @@ const generateOutfit = async user_id => {
   const getTodayOutfits = async () => {
     const today = getTodayDateInTimezone();
 
+    let outfitsReturnedToday;
     try {
       outfitsReturnedToday = await TodayOutfit.find({
         user: userId,
@@ -270,7 +271,7 @@ const generateOutfit = async user_id => {
           likedFormalOutfits[randomInt(likedFormalOutfits.length)];
 
         /* Add to today returned outfits */
-        const newTodayOutfit = TodayOutfit({
+        const newTodayOutfit = new TodayOutfit({
           _id: chosenOutfit._id,
           returnedTime: getTodayDateInTimezone(),
           user: userId,
@@ -391,7 +392,7 @@ const generateOutfit = async user_id => {
     const existingOutfit = AllOutfits.find(outfit => outfit._id === hashId);
 
     /* Add to today returned outfits */
-    const newTodayOutfit = TodayOutfit({
+    const newTodayOutfit = new TodayOutfit({
       _id: hashId,
       returnedTime: getTodayDateInTimezone(),
       user: userId,
@@ -479,7 +480,7 @@ const generateOutfit = async user_id => {
 
           if (!TodayOutfitsIds.includes(chosenOutfit._id)) {
             /* Add to today returned outfits */
-            const newTodayOutfit = TodayOutfit({
+            const newTodayOutfit = new TodayOutfit({
               _id: chosenOutfit._id,
               returnedTime: getTodayDateInTimezone(),
               user: userId,
@@ -666,7 +667,7 @@ const generateOutfit = async user_id => {
 
       if (!TodayOutfitsIds.includes(hashId)) {
         /* Add to today returned outfits */
-        const newTodayOutfit = TodayOutfit({
+        const newTodayOutfit = new TodayOutfit({
           _id: hashId,
           returnedTime: getTodayDateInTimezone(),
           user: userId,
