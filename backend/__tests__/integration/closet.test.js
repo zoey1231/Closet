@@ -3,6 +3,7 @@ const supertest = require('supertest');
 const http = require('http');
 
 const app = require('../../app');
+const { send } = require('process');
 
 describe('Closet integration tests', () => {
   let server, api;
@@ -198,13 +199,104 @@ describe('Closet integration tests', () => {
     expect(res.body.updatedUser.city).toEqual(originalTestUser.city);
   });
 
-  it('should have correct response for GET /api/weather/', async () => {
+  it.skip('should have correct response for GET /api/weather/', async () => {
     res = await api.get('/api/weather').set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body.current).toBeDefined();
     expect(res.body.today).toBeDefined();
     expect(res.body.tomorrow).toBeDefined();
   });
+
+  const validDateMonth = 'Nov-2020';
+  const validDateDay = 'Nov-2020-20';
+  const emptyDate = null;
+  const invalidDate = 'Nov-2020-20-extra';
+  const validCode =
+    '4/1AfDhmrh-4Hp4mrkHhTVdZlYSqwwvwZd3U0oK87Uz-mIfvl9LSx1zUST2CWM';
+  const emptyCode = null;
+
+  it.skip('should have correct response for POST /api/calendar/:date', async () => {
+    res = await api
+      .post(`/api/calendar/${emptyDate}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.message).toEqual('Missing parameters');
+
+    res = await api
+      .post(`/api/calendar/${validDateMonth}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ code: emptyCode });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.message).toEqual('Missing parameters');
+
+    res = await api
+      .post(`/api/calendar/${invalidDate}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ code: validCode });
+    expect(res.statusCode).toEqual(500);
+    expect(res.body.message).toEqual(
+      'Failed to fetch calendar events, please check the date format'
+    );
+
+    res = await api
+      .post(`/api/calendar/${validDateMonth}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ code: validDateMonth });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.length).toEqual(31);
+
+    res = await api
+      .post(`/api/calendar/${validDateDay}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ code: validDateMonth });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.length).toEqual(1);
+  });
+
+  const registrationToken = 'sampleToken';
+  const correctMessageFormat = {
+    notification: {
+      title: 'test',
+      body: 'Welcome to Closet!',
+    },
+  };
+  const incorrectMessageFormat = {
+    message: 'I am a message',
+  };
+
+  it.skip('should have correct response for POST /api/notifications/', async () => {
+    res = await api
+      .post('/api/notifications')
+      .set('Authorization', `Bear ${token}`);
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.message).toEqual(
+      'Missing parameters sendNotification: registrationToken or message'
+    );
+
+    res = await api
+      .post('/api/notifications')
+      .set('Authorization', `Bear ${token}`)
+      .send({
+        registrationToken: registrationToken,
+        message: incorrectMessageFormat,
+      });
+    expect(res.statusCode).toEqual(500);
+    expect(res.body.message).toEqual(
+      'Could not send notification user, please try again'
+    );
+
+    res = await api
+      .post('/api/notifications')
+      .set('Authorization', `Bear ${token}`)
+      .send({
+        registrationToken: registrationToken,
+        message: correctMessageFormat,
+      });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toEqual('Notification sent successfully!');
+  });
+
+  it('should have correct response for ', async () => {});
 
   afterAll(async done => {
     await mongoose.connection.db.dropDatabase();
