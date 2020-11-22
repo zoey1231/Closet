@@ -322,7 +322,7 @@ describe('Closet integration tests', () => {
     occasions: ['CLOTH'],
   };
 
-  it('should have correct response for POST /api/clothes/:userId', async () => {
+  it.skip('should have correct response for POST /api/clothes/:userId', async () => {
     res = await api
       .post(`/api/clothes/${userId}`)
       .set('Authorization', 'Bearer INVALID')
@@ -382,7 +382,7 @@ describe('Closet integration tests', () => {
     clothesId = res.body.id;
   });
 
-  it('should have correct response for GET /api/clothes/:userId', async () => {
+  it.skip('should have correct response for GET /api/clothes/:userId', async () => {
     res = await api
       .get(`/api/clothes/${userId}`)
       .set('Authorization', `Bearer ${token}`);
@@ -396,7 +396,7 @@ describe('Closet integration tests', () => {
     expect(resClothes[0].category).toEqual(testClothes.category);
   });
 
-  it('should have correct response for GET /api/clothes/:userId/:clothesId', async () => {
+  it.skip('should have correct response for GET /api/clothes/:userId/:clothesId', async () => {
     const res = await api
       .get(`/api/clothes/${userId}/${clothesId}`)
       .set('Authorization', `Bearer ${token}`);
@@ -409,7 +409,7 @@ describe('Closet integration tests', () => {
     expect(res.body.id).toBeTruthy();
   });
 
-  it('should have correct response for GET /api/clothes/:userId?category=category', async () => {
+  it.skip('should have correct response for GET /api/clothes/:userId?category=category', async () => {
     res = await api
       .get(`/api/clothes/${userId}?category=${testClothes.category}`)
       .set('Authorization', `Bearer ${token}`);
@@ -423,7 +423,7 @@ describe('Closet integration tests', () => {
     expect(resClothes[0].category).toEqual(testClothes.category);
   });
 
-  it('should have correct response for PUT /api/clothes/:userId/:clothesId', async () => {
+  it.skip('should have correct response for PUT /api/clothes/:userId/:clothesId', async () => {
     res = await api
       .put(`/api/clothes/${null}/${clothesId}`)
       .set('Authorization', `Bearer ${token}`)
@@ -475,7 +475,7 @@ describe('Closet integration tests', () => {
     expect(res.body.id).toBeTruthy();
   });
 
-  it('should have correct response for DELETE /api/clothes/:userId/:clothesId', async () => {
+  it.skip('should have correct response for DELETE /api/clothes/:userId/:clothesId', async () => {
     res = await api
       .delete(`/api/clothes/${userId}/${clothesId}`)
       .set('Authorization', `Bearer ${token}`);
