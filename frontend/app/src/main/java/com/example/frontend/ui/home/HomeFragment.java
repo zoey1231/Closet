@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         iv_icon_today = root.findViewById(R.id.iv_icon_today);
         iv_icon_tmr = root.findViewById(R.id.iv_icon_tmr);
 
-        outfitButton = root.findViewById(R.id.btn_outfit);
+        outfitButton = root.findViewById(R.id.btn_get_outfit);
         likeButton = root.findViewById(R.id.btn_like_outfit1);
         dislikeButton = root.findViewById(R.id.btn_dislike_outfit1);
         outfitButton.setOnClickListener(this);
@@ -120,7 +120,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.btn_outfit:
+            case R.id.btn_get_outfit:
 //                idlingResource.increment();
                 outfitButton.setEnabled(false);
                 getOutfitData(userToken);

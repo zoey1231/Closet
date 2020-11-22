@@ -59,10 +59,10 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private static final String EMPTY_STRING = "";
 
     private User user;
+    private TextView text;
     private ImageView image;
     private ImageButton imageButton;
     private Button saveButton;
-    private TextView text;
     private String path;
     private File file;
 
@@ -118,55 +118,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         spinner_color.setOnItemSelectedListener(this);
         spinner_occasion.setOnItemSelectedListener(this);
     }
-
-    private void constructClothAttribute(AdapterView<?> parent, View view, int pos) {
-        Log.d(TAG,"VIEW: "+ view.getId());
-        switch (parent.getId()) {
-            case R.id.sp_category_add:
-                try {
-                    String selection = parent.getItemAtPosition(pos).toString();
-                    clothAttribute.put("category", selection);
-                    Log.d(TAG, "category:"+selection);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.sp_color_add:
-                try {
-                    String selection = parent.getItemAtPosition(pos).toString();
-                    clothAttribute.put("color", selection);
-                    Log.d(TAG, "color:"+selection);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.sp_occasion_add:
-
-                JSONArray occasions = new JSONArray();
-                try {
-                    String selection = parent.getItemAtPosition(pos).toString();
-                    occasions.put(0,selection);
-                    clothAttribute.put("occasions", occasions);
-                    Log.d(TAG, "occasions:"+occasions.get(0));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            default:
-        }
-    }
-
-    public void setAdapter(int textArrayResId, @NotNull Spinner spinner) {
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                textArrayResId, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-    }
-
 
     @Override
     public void onClick(View view) {
@@ -225,6 +176,54 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     public void onNothingSelected(AdapterView<?> parent) {
         // Another interface callback
         //Toast.makeText(parent.getContext(),"You must select one of the options",Toast.LENGTH_SHORT).show();
+    }
+
+    private void constructClothAttribute(AdapterView<?> parent, View view, int pos) {
+        Log.d(TAG,"VIEW: "+ view.getId());
+        switch (parent.getId()) {
+            case R.id.sp_category_add:
+                try {
+                    String selection = parent.getItemAtPosition(pos).toString();
+                    clothAttribute.put("category", selection);
+                    Log.d(TAG, "category:"+selection);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.sp_color_add:
+                try {
+                    String selection = parent.getItemAtPosition(pos).toString();
+                    clothAttribute.put("color", selection);
+                    Log.d(TAG, "color:"+selection);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.sp_occasion_add:
+
+                JSONArray occasions = new JSONArray();
+                try {
+                    String selection = parent.getItemAtPosition(pos).toString();
+                    occasions.put(0,selection);
+                    clothAttribute.put("occasions", occasions);
+                    Log.d(TAG, "occasions:"+occasions.get(0));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            default:
+        }
+    }
+
+    public void setAdapter(int textArrayResId, @NotNull Spinner spinner) {
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                textArrayResId, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
     }
 
     private void constructClothAttributeClothName() {
