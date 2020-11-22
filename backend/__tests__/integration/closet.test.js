@@ -30,7 +30,7 @@ describe('Closet integration tests', () => {
     password: 'TESTING',
   };
 
-  it('should have correct responses for /api/users/signup', async () => {
+  it('should have correct responses for POST /api/users/signup', async () => {
     res = await api.post('/api/users/signup').send(newUser);
     expect(res.statusCode).toEqual(201);
     expect(res.body.email).toEqual(newUser.email.toLowerCase());
@@ -68,7 +68,7 @@ describe('Closet integration tests', () => {
     password: 'TESTING',
   };
 
-  it('should have correct responses for /api/users/login', async () => {
+  it('should have correct responses for POST /api/users/login', async () => {
     res = await api.post('/api/users/login').send(invalidLoginInfo);
     expect(res.statusCode).toEqual(401);
     expect(res.body.message).toEqual(
