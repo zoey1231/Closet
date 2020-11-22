@@ -693,6 +693,7 @@ const generateOutfit = async user_id => {
     if (numOfTries === combinationWithColorRestriction.length) {
       return {
         success: false,
+        manual: true,
         message:
           'We have generated all possible outfits. Do you want to create one manually?',
       };
