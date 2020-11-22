@@ -12,10 +12,95 @@ describe('Closet integration tests', () => {
     api = supertest(server);
   });
 
-  it('should be able to authenticate a user', async () => {});
-  it('should be able to add/get/update/delete clothes and clothes images', async () => {});
-  it('should be able to get weather information and calendar event', async () => {});
-  it('should be able to get/update/create outfits', async () => {});
+  let res, userId, token;
+
+  const newUser = {
+    name: 'TESTING',
+    email: 'testing@testing.com',
+    password: 'TESTING',
+  };
+  const invalidUser = {
+    name: 'TESTING',
+    email: 'invalid_email',
+    password: 'TESTING',
+  };
+  const existingUser = {
+    name: 'TESTING',
+    email: 'testing@testing.com',
+    password: 'TESTING',
+  };
+
+  it('should have correct responses for /api/users/signup', async () => {
+    res = await api.post('/api/users/signup').send(newUser);
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.email).toEqual(newUser.email.toLowerCase());
+    expect(res.body.userId).toBeTruthy();
+    expect(res.body.token).toBeTruthy();
+    userId = res.body.userId;
+
+    res = await api.post('/api/users/signup').send(invalidUser);
+    expect(res.statusCode).toEqual(422);
+    expect(res.body.message).toEqual(
+      'Invalid inputs passed, please check your data.'
+    );
+
+    res = await api.post('/api/users/signup').send(existingUser);
+    expect(res.statusCode).toEqual(422);
+    expect(res.body.message).toEqual(
+      'User exists already, please login instead'
+    );
+  });
+
+  const invalidLoginInfo = {
+    email: '',
+    password: '',
+  };
+  const wrongPasswordLoginInfo = {
+    email: 'testing@testing.com',
+    password: 'WRONG_PASSWORD',
+  };
+  const notExistLoginInfo = {
+    email: 'NEW@NEW.com',
+    password: 'NEW_PASSWORD',
+  };
+  const correctLoginInfo = {
+    email: 'testing@testing.com',
+    password: 'TESTING',
+  };
+
+  it('should have correct responses for /api/users/login', async () => {
+    res = await api.post('/api/users/login').send(invalidLoginInfo);
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual(
+      'Invalid credentials, could not log you in.'
+    );
+
+    res = await api.post('/api/users/login').send(wrongPasswordLoginInfo);
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual(
+      'Invalid credentials, could not log you in.'
+    );
+
+    res = await api.post('/api/users/login').send(notExistLoginInfo);
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual(
+      'Invalid credentials, could not log you in.'
+    );
+
+    res = await api.post('/api/users/login').send(correctLoginInfo);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.userId).toBeTruthy();
+    expect(res.body.email).toEqual(correctLoginInfo.email);
+    expect(res.body.token).toBeTruthy();
+
+    userId = res.body.userId;
+    token = res.body.token;
+  });
+
+  it('should have correct response for ', async () => {
+    console.log(userId);
+    console.log(token);
+  });
 
   afterAll(async done => {
     await mongoose.connection.db.dropDatabase();
