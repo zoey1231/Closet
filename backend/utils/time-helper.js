@@ -93,7 +93,14 @@ const getDaysInMonth = (month, year) => {
   }
 };
 
+const getTodayDateInTimezone = () => {
+  return new Date()
+    .toLocaleString('sv', { timeZoneName: 'short' })
+    .substr(0, 10);
+};
+
 module.exports = {
   timestampToDate,
   getDaysInMonth,
+  getTodayDateInTimezone,
 };
