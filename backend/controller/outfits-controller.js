@@ -23,8 +23,8 @@ const getOneOutfit = async (req, res, next) => {
   }
 
   if (!response.success) {
-    const { message, warning } = response;
-    return res.status(400).json({ message, warning });
+    const { message, manual, warning } = response;
+    return res.status(400).json({ message, manual, warning });
   }
 
   res.status(200).json(response);

@@ -10,6 +10,8 @@ jest.mock('../../model/outfit');
 const Clothes = require('../../model/clothes');
 jest.mock('../../model/clothes');
 
+jest.mock('../../model/today-outfit.js');
+
 const { generateOutfit } = require('../../service/outfits-service');
 
 describe('Outfit service tests', () => {
@@ -82,8 +84,9 @@ describe('Outfit service tests', () => {
 
     expect(result).toBeTruthy();
     expect(result.success).toEqual(false);
-    expect(result.message).toEqual('Failed to generate an outfit');
-    expect(result.warning).toEqual('Add more clothes to get an outfit!');
+    expect(result.message).toEqual(
+      'Too few clothes in your closet, please add more clothes to get an outfit!'
+    );
   });
 
   const clothes = [
@@ -165,14 +168,10 @@ describe('Outfit service tests', () => {
 
     result = await generateOutfit(userId);
     expect(result).toBeTruthy();
-    expect(result.success).toBeTruthy();
-    expect(result.message).toEqual('New outfit generated successfully!');
-    expect(result.outfit).toBeTruthy();
-    expect(result.outfit.user).toEqual(userId);
-    expect(result.outfit.occasions).toEqual(['normal']);
-    expect(result.outfit.seasons).toEqual(['Fall']);
-    expect(result.outfit.chosenUpperClothes).toBeTruthy();
-    expect(result.outfit.chosenTrousers).toBeTruthy();
-    expect(result.outfit.chosenShoes).toBeTruthy();
+    expect(result.success).toBeFalsy();
+    expect(result.message).toEqual(
+      'We have generated all possible outfits. Do you want to create one manually?'
+    );
+    expect(result.manual).toBeTruthy();
   });
 });
