@@ -14,7 +14,7 @@ describe('Closet integration tests', () => {
 
   let res, userId, token;
 
-  const newUser = {
+  const testUser = {
     name: 'TESTING',
     email: 'testing@testing.com',
     password: 'TESTING',
@@ -31,9 +31,9 @@ describe('Closet integration tests', () => {
   };
 
   it('should have correct responses for POST /api/users/signup', async () => {
-    res = await api.post('/api/users/signup').send(newUser);
+    res = await api.post('/api/users/signup').send(testUser);
     expect(res.statusCode).toEqual(201);
-    expect(res.body.email).toEqual(newUser.email.toLowerCase());
+    expect(res.body.email).toEqual(testUser.email);
     expect(res.body.userId).toBeTruthy();
     expect(res.body.token).toBeTruthy();
     userId = res.body.userId;
@@ -97,10 +97,94 @@ describe('Closet integration tests', () => {
     token = res.body.token;
   });
 
-  it('should have correct response for ', async () => {
-    console.log(userId);
-    console.log(token);
+  it('should have correct response for GET /api/users/me', async () => {
+    // Fail without authentication
+    res = await api.get('/api/users/me');
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.message).toEqual('Authentication failed!');
+
+    res = await api
+      .get('/api/users/me')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.id).toEqual(userId);
+    expect(res.body.email).toEqual(testUser.email);
+    expect(res.body.name).toEqual(testUser.name);
+    expect(res.body.city).toEqual('vancouver');
   });
+
+  const updatedTestUser = {
+    name: 'NEW TESTING',
+    email: 'newtesting@newtesting.com',
+    city: 'burnaby',
+  };
+  const invalidProfile = {
+    name: 'NEW TESTING',
+    email: 'newtesting@newtesting.com',
+  };
+  const invalidCity = {
+    name: 'NEW TESTING',
+    email: 'newtesting@newtesting.com',
+    city: 'a',
+  };
+  const otherUser = {
+    name: 'TESTING',
+    email: 'othertesting@othertesting.com',
+    password: 'TESTING',
+  };
+  const existingUserProfile = {
+    name: 'TESTING',
+    email: 'othertesting@othertesting.com',
+    city: 'vancouver',
+  };
+
+  it('should have correct response for PUT /api/users/me', async () => {
+    res = await api
+      .put('/api/users/me')
+      .set('Authorization', `Bear ${token}`)
+      .send(invalidProfile);
+    expect(res.statusCode).toEqual(422);
+    expect(res.body.message).toEqual(
+      'Invalid inputs passed, please check your data.'
+    );
+
+    res = await api
+      .put('/api/users/me')
+      .set('Authorization', `Bear ${token}`)
+      .send(invalidCity);
+    expect(res.statusCode).toEqual(500);
+    expect(res.body.message).toEqual(
+      'Cannot find your city, please check and try again'
+    );
+
+    res = await api.post('/api/users/signup').send(otherUser);
+
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.email).toEqual(otherUser.email.toLowerCase());
+    expect(res.body.userId).toBeTruthy();
+    expect(res.body.token).toBeTruthy();
+
+    res = await api
+      .put('/api/users/me')
+      .set('Authorization', `Bear ${token}`)
+      .send(existingUserProfile);
+
+    expect(res.statusCode).toEqual(422);
+    expect(res.body.message).toEqual(
+      'The email has been registered, please change to another one'
+    );
+
+    res = await api
+      .put('/api/users/me')
+      .set('Authorization', `Bear ${token}`)
+      .send(updatedTestUser);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.updatedUser.id).toEqual(userId);
+    expect(res.body.updatedUser.email).toEqual(updatedTestUser.email);
+    expect(res.body.updatedUser.city).toEqual(updatedTestUser.city);
+  });
+
+  it('should have correct response for ', async () => {});
 
   afterAll(async done => {
     await mongoose.connection.db.dropDatabase();
