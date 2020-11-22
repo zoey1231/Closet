@@ -261,10 +261,18 @@ const generateOutfit = async user_id => {
 
     /* Try to generated a new formal outfit */
     const allFormal = AllClothes.filter(c => c.occasions.includes('formal'));
-    const formalOuterwear = allFormal.filter(c => c.category.toLowerCase() === 'outerwear');
-    const formalShirt = allFormal.filter(c => c.category.toLowerCase() === 'shirt');
-    const formalTrousers = allFormal.filter(c => c.category.toLowerCase() === 'trousers');
-    const formalShoes = allFormal.filter(c => c.category.toLowerCase() === 'shoes');
+    const formalOuterwear = allFormal.filter(
+      c => c.category.toLowerCase() === 'outerwear'
+    );
+    const formalShirt = allFormal.filter(
+      c => c.category.toLowerCase() === 'shirt'
+    );
+    const formalTrousers = allFormal.filter(
+      c => c.category.toLowerCase() === 'trousers'
+    );
+    const formalShoes = allFormal.filter(
+      c => c.category.toLowerCase() === 'shoes'
+    );
 
     /*
       Requirements to return a formal outfit
@@ -422,10 +430,18 @@ const generateOutfit = async user_id => {
     const allNormal = AllClothes.filter(
       c => !c.occasions.includes('formal') || c.occasions.length > 1
     );
-    let normalOuterwear = allNormal.filter(c => c.category.toLowerCase() === 'outerwear');
-    let normalShirt = allNormal.filter(c => c.category.toLowerCase() === 'shirt');
-    let normalTrousers = allNormal.filter(c => c.category.toLowerCase() === 'trousers');
-    let normalShoes = allNormal.filter(c => c.category.toLowerCase() === 'shoes');
+    let normalOuterwear = allNormal.filter(
+      c => c.category.toLowerCase() === 'outerwear'
+    );
+    let normalShirt = allNormal.filter(
+      c => c.category.toLowerCase() === 'shirt'
+    );
+    let normalTrousers = allNormal.filter(
+      c => c.category.toLowerCase() === 'trousers'
+    );
+    let normalShoes = allNormal.filter(
+      c => c.category.toLowerCase() === 'shoes'
+    );
 
     /*
       Requirements to return a normal outfit
