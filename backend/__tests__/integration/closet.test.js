@@ -267,7 +267,7 @@ describe('Closet integration tests', () => {
   it.skip('should have correct response for POST /api/notifications/', async () => {
     res = await api
       .post('/api/notifications')
-      .set('Authorization', `Bear ${token}`);
+      .set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toEqual(400);
     expect(res.body.message).toEqual(
       'Missing parameters sendNotification: registrationToken or message'
@@ -275,9 +275,9 @@ describe('Closet integration tests', () => {
 
     res = await api
       .post('/api/notifications')
-      .set('Authorization', `Bear ${token}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({
-        registrationToken: registrationToken,
+        registrationToken,
         message: incorrectMessageFormat,
       });
     expect(res.statusCode).toEqual(500);
@@ -287,7 +287,7 @@ describe('Closet integration tests', () => {
 
     res = await api
       .post('/api/notifications')
-      .set('Authorization', `Bear ${token}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({
         registrationToken: registrationToken,
         message: correctMessageFormat,
@@ -296,6 +296,9 @@ describe('Closet integration tests', () => {
     expect(res.body.message).toEqual('Notification sent successfully!');
   });
 
+  it('should have correct response for ', async () => {});
+
+  it('should have correct response for ', async () => {});
   it('should have correct response for ', async () => {});
 
   afterAll(async done => {
