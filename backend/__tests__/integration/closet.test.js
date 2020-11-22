@@ -118,6 +118,11 @@ describe('Closet integration tests', () => {
     email: 'newtesting@newtesting.com',
     city: 'burnaby',
   };
+  const originalTestUser = {
+    name: 'TESTING',
+    email: 'testing@testing.com',
+    city: 'vancouver',
+  };
   const invalidProfile = {
     name: 'NEW TESTING',
     email: 'newtesting@newtesting.com',
@@ -182,6 +187,15 @@ describe('Closet integration tests', () => {
     expect(res.body.updatedUser.id).toEqual(userId);
     expect(res.body.updatedUser.email).toEqual(updatedTestUser.email);
     expect(res.body.updatedUser.city).toEqual(updatedTestUser.city);
+
+    res = await api
+      .put('/api/users/me')
+      .set('Authorization', `Bear ${token}`)
+      .send(originalTestUser);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.updatedUser.id).toEqual(userId);
+    expect(res.body.updatedUser.email).toEqual(originalTestUser.email);
+    expect(res.body.updatedUser.city).toEqual(originalTestUser.city);
   });
 
   it('should have correct response for ', async () => {});
