@@ -11,6 +11,7 @@ on:
 
 jobs:
   test:
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     env:
       working-directory: ./backend
