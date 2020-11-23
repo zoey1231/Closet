@@ -952,7 +952,6 @@ describe('Closet integration tests', () => {
       .post('/api/outfits/one')
       .set('Authorization', `Bearer ${token}`)
       .send(invalidOutfitOccasions);
-    console.log(res.body);
     expect(res.statusCode).toEqual(422);
     expect(res.body.message).toEqual(
       'Invalid inputs passed, please check your data'
@@ -962,7 +961,6 @@ describe('Closet integration tests', () => {
       .post('/api/outfits/one')
       .set('Authorization', `Bearer ${token}`)
       .send(invalidOutfitClothes);
-    console.log(res.body);
     expect(res.statusCode).toEqual(422);
     expect(res.body.message).toEqual(
       'An outfit should consist of three clothes, please check your selections'
@@ -972,7 +970,6 @@ describe('Closet integration tests', () => {
       .post('/api/outfits/one')
       .set('Authorization', `Bearer ${token}`)
       .send(invalidOutfitSeasons);
-    console.log(res.body);
     expect(res.statusCode).toEqual(422);
     expect(res.body.message).toEqual(
       `Invalid seasons, should be one of ${validSeasons}, please check your input data`
