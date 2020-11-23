@@ -43,17 +43,9 @@ jobs:
         working-directory: ${{ env.working-directory }}
         run: npm ci
 
-      - name: npm run testCoverage
+      - name: npm test
         working-directory: ${{ env.working-directory }}
-        run: npm run testCoverage
-
-      - uses: mattallty/jest-github-action@v1.0.3	
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}	
-        with:
-          test-command: "npm run testCoverage"
-          changes-only: true 
-          working-directory: ${{ env.working-directory }}
+        run: npm test
 
       - uses: codecov/codecov-action@v1
         with:
