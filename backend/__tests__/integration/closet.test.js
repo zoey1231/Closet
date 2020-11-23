@@ -209,12 +209,14 @@ describe('Closet integration tests', () => {
   });
 
   const validDateMonth = 'Nov-2020';
-  const validDateDay = 'Nov-2020-20';
+  const validDateDay = 'Nov-2020-25';
   const emptyDate = null;
-  const invalidDate = 'Nov-2020-20-extra';
+  const invalidDate = 'Nov-2020-25-extra';
   const validCode =
     '4/1AfDhmrh-4Hp4mrkHhTVdZlYSqwwvwZd3U0oK87Uz-mIfvl9LSx1zUST2CWM';
   const emptyCode = null;
+  const expectedNumEventsMonth = 9;
+  const expectedNumEventsDay = 1;
 
   it('should have correct response for POST /api/calendar/:date', async () => {
     res = await api
@@ -244,14 +246,14 @@ describe('Closet integration tests', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({ code: validDateMonth });
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toEqual(30);
+    expect(res.body.length).toEqual(expectedNumEventsMonth);
 
     res = await api
       .post(`/api/calendar/${validDateDay}`)
       .set('Authorization', `Bearer ${token}`)
       .send({ code: validDateMonth });
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toEqual(1);
+    expect(res.body.length).toEqual(expectedNumEventsDay);
   });
 
   const registrationToken = 'sampleToken';
