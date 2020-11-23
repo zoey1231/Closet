@@ -4,6 +4,7 @@ const http = require('http');
 
 const app = require('../../app');
 const fs = require('fs');
+const { hashCode } = require('../../utils/hash');
 
 describe('Closet integration tests', () => {
   let server, api;
@@ -13,7 +14,7 @@ describe('Closet integration tests', () => {
     api = supertest(server);
   });
 
-  let res, userId, token, clothesId;
+  let res, userId, token, clothesId, outfitId;
 
   const testUser = {
     name: 'TESTING',
@@ -98,7 +99,7 @@ describe('Closet integration tests', () => {
     token = res.body.token;
   });
 
-  it.skip('should have correct response for GET /api/users/me', async () => {
+  it('should have correct response for GET /api/users/me', async () => {
     // Fail without authentication
     res = await api.get('/api/users/me');
     expect(res.statusCode).toEqual(401);
@@ -144,7 +145,7 @@ describe('Closet integration tests', () => {
     city: 'vancouver',
   };
 
-  it.skip('should have correct response for PUT /api/users/me', async () => {
+  it('should have correct response for PUT /api/users/me', async () => {
     res = await api
       .put('/api/users/me')
       .set('Authorization', `Bearer ${token}`)
@@ -199,7 +200,7 @@ describe('Closet integration tests', () => {
     expect(res.body.updatedUser.city).toEqual(originalTestUser.city);
   });
 
-  it.skip('should have correct response for GET /api/weather/', async () => {
+  it('should have correct response for GET /api/weather/', async () => {
     res = await api.get('/api/weather').set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toEqual(200);
     expect(res.body.current).toBeDefined();
@@ -215,7 +216,7 @@ describe('Closet integration tests', () => {
     '4/1AfDhmrh-4Hp4mrkHhTVdZlYSqwwvwZd3U0oK87Uz-mIfvl9LSx1zUST2CWM';
   const emptyCode = null;
 
-  it.skip('should have correct response for POST /api/calendar/:date', async () => {
+  it('should have correct response for POST /api/calendar/:date', async () => {
     res = await api
       .post(`/api/calendar/${emptyDate}`)
       .set('Authorization', `Bearer ${token}`);
@@ -264,7 +265,7 @@ describe('Closet integration tests', () => {
     message: 'I am a message',
   };
 
-  it.skip('should have correct response for POST /api/notifications/', async () => {
+  it('should have correct response for POST /api/notifications/', async () => {
     res = await api
       .post('/api/notifications')
       .set('Authorization', `Bearer ${token}`);
@@ -322,7 +323,7 @@ describe('Closet integration tests', () => {
     occasions: ['CLOTH'],
   };
 
-  it.skip('should have correct response for POST /api/clothes/:userId', async () => {
+  it('should have correct response for POST /api/clothes/:userId', async () => {
     res = await api
       .post(`/api/clothes/${userId}`)
       .set('Authorization', 'Bearer INVALID')
@@ -382,7 +383,7 @@ describe('Closet integration tests', () => {
     clothesId = res.body.id;
   });
 
-  it.skip('should have correct response for GET /api/clothes/:userId', async () => {
+  it('should have correct response for GET /api/clothes/:userId', async () => {
     res = await api
       .get(`/api/clothes/${userId}`)
       .set('Authorization', `Bearer ${token}`);
@@ -396,7 +397,7 @@ describe('Closet integration tests', () => {
     expect(resClothes[0].category).toEqual(testClothes.category);
   });
 
-  it.skip('should have correct response for GET /api/clothes/:userId/:clothesId', async () => {
+  it('should have correct response for GET /api/clothes/:userId/:clothesId', async () => {
     const res = await api
       .get(`/api/clothes/${userId}/${clothesId}`)
       .set('Authorization', `Bearer ${token}`);
@@ -409,7 +410,7 @@ describe('Closet integration tests', () => {
     expect(res.body.id).toBeTruthy();
   });
 
-  it.skip('should have correct response for GET /api/clothes/:userId?category=category', async () => {
+  it('should have correct response for GET /api/clothes/:userId?category=category', async () => {
     res = await api
       .get(`/api/clothes/${userId}?category=${testClothes.category}`)
       .set('Authorization', `Bearer ${token}`);
@@ -423,7 +424,7 @@ describe('Closet integration tests', () => {
     expect(resClothes[0].category).toEqual(testClothes.category);
   });
 
-  it.skip('should have correct response for PUT /api/clothes/:userId/:clothesId', async () => {
+  it('should have correct response for PUT /api/clothes/:userId/:clothesId', async () => {
     res = await api
       .put(`/api/clothes/${null}/${clothesId}`)
       .set('Authorization', `Bearer ${token}`)
@@ -475,7 +476,7 @@ describe('Closet integration tests', () => {
     expect(res.body.id).toBeTruthy();
   });
 
-  it.skip('should have correct response for DELETE /api/clothes/:userId/:clothesId', async () => {
+  it('should have correct response for DELETE /api/clothes/:userId/:clothesId', async () => {
     res = await api
       .delete(`/api/clothes/${userId}/${clothesId}`)
       .set('Authorization', `Bearer ${token}`);
@@ -502,7 +503,7 @@ describe('Closet integration tests', () => {
     expect(res.body.message).toEqual('Not found');
   });
 
-  it.skip('should have correct response for POST /api/images/:userId/:clothesId', async () => {
+  it('should have correct response for POST /api/images/:userId/:clothesId', async () => {
     res = await api
       .post(`/api/images/${null}/${null}`)
       .set('Authorization', `Bearer ${token}`)
@@ -537,12 +538,12 @@ describe('Closet integration tests', () => {
     expect(res.body.message).toEqual('Uploaded image!');
   });
 
-  it.skip('should have correct response for GET /UserClothingImages/:userId/imageName.imageExt', async () => {
+  it('should have correct response for GET /UserClothingImages/:userId/imageName.imageExt', async () => {
     const res = await api.get(`/UserClothingImages/${userId}/${clothesId}.png`);
     expect(res.statusCode).toEqual(200);
   });
 
-  it.skip('should have correct response for DELETE /api/images/:userId/:clothesId', async () => {
+  it('should have correct response for DELETE /api/images/:userId/:clothesId', async () => {
     res = await api
       .delete(`/api/images/${null}/${null}`)
       .set('Authorization', `Bearer ${token}`);
@@ -558,9 +559,454 @@ describe('Closet integration tests', () => {
     res = await api.get(`/UserClothingImages/${userId}/${clothesId}.png`);
     expect(res.statusCode).toEqual(404);
     expect(res.body.message).toEqual('Could not find this route');
+
+    // Clear clothes
+    res = await api
+      .delete(`/api/clothes/${userId}/${clothesId}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toEqual('Deleted clothing');
   });
 
-  // it('should have correct response for ', async () => {});
+  const testClothesArray = [
+    {
+      category: 'outerwear',
+      color: 'black',
+      seasons: ['All'],
+      occasions: ['formal'],
+    },
+    {
+      category: 'outerwear',
+      color: 'blue',
+      seasons: ['All'],
+      occasions: ['formal'],
+    },
+    {
+      category: 'shirt',
+      color: 'white',
+      seasons: ['All'],
+      occasions: ['formal'],
+    },
+    {
+      category: 'shirt',
+      color: 'blue',
+      seasons: ['All'],
+      occasions: ['formal'],
+    },
+    {
+      category: 'trousers',
+      color: 'black',
+      seasons: ['All'],
+      occasions: ['formal'],
+    },
+    {
+      category: 'trousers',
+      color: 'blue',
+      seasons: ['All'],
+      occasions: ['formal'],
+    },
+    {
+      category: 'shoes',
+      color: 'black',
+      seasons: ['All'],
+      occasions: ['formal'],
+    },
+    {
+      category: 'shoes',
+      color: 'white',
+      seasons: ['All'],
+      occasions: ['formal'],
+    },
+    {
+      category: 'outerwear',
+      color: 'yellow',
+      seasons: ['Summer'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'outerwear',
+      color: 'red',
+      seasons: ['Fall'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'outerwear',
+      color: 'white',
+      seasons: ['Spring', 'Winter'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'shirt',
+      color: 'blue',
+      seasons: ['Spring', 'Fall'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'shirt',
+      color: 'pink',
+      seasons: ['Summer'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'shirt',
+      color: 'purple',
+      seasons: ['Summer'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'trousers',
+      color: 'black',
+      seasons: ['Summer'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'trousers',
+      color: 'grey',
+      seasons: ['Fall'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'trousers',
+      color: 'green',
+      seasons: ['All'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'shoes',
+      color: 'pink',
+      seasons: ['Summer'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'shoes',
+      color: 'black',
+      seasons: ['Winter'],
+      occasions: ['causal'],
+    },
+    {
+      category: 'shoes',
+      color: 'white',
+      seasons: ['All'],
+      occasions: ['causal'],
+    },
+  ];
+  let testClothesIds = [];
+
+  it('should have correct response for GET /api/outfits/one', async () => {
+    // Post all necessary clothes for testing
+    for (const clothes of testClothesArray) {
+      res = await api
+        .post(`/api/clothes/${userId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(clothes);
+      expect(res.statusCode).toEqual(201);
+      testClothesIds.push(res.body.id);
+    }
+
+    // Get a formal outfit
+    res = await api
+      .get('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.success).toBeTruthy();
+    expect(res.body.message).toEqual('New outfit generated successfully!');
+    expect(res.body.outfit.occasions).toEqual(['formal']);
+    expect(res.body.outfit.seasons).toEqual(['All']);
+    expect(res.body.outfit.opinion).toEqual('unknown');
+    expect(res.body.outfit.user).toEqual(userId);
+    expect(res.body.outfit._id).toEqual(
+      hashCode(
+        res.body.outfit.chosenUpperClothes.id +
+          res.body.outfit.chosenTrousers.id +
+          res.body.outfit.chosenShoes.id
+      )
+    );
+
+    // Get two normal outfits
+    res = await api
+      .get('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.success).toBeTruthy();
+    expect(res.body.message).toEqual('New outfit generated successfully!');
+    expect(res.body.outfit.occasions).toEqual(['normal']);
+    expect(res.body.outfit.opinion).toEqual('unknown');
+    expect(res.body.outfit.user).toEqual(userId);
+    expect(res.body.outfit._id).toEqual(
+      hashCode(
+        res.body.outfit.chosenUpperClothes.id +
+          res.body.outfit.chosenTrousers.id +
+          res.body.outfit.chosenShoes.id
+      )
+    );
+
+    res = await api
+      .get('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.success).toBeTruthy();
+    expect(res.body.message).toEqual('New outfit generated successfully!');
+    expect(res.body.outfit.occasions).toEqual(['normal']);
+    expect(res.body.outfit.opinion).toEqual('unknown');
+    expect(res.body.outfit.user).toEqual(userId);
+    expect(res.body.outfit._id).toEqual(
+      hashCode(
+        res.body.outfit.chosenUpperClothes.id +
+          res.body.outfit.chosenTrousers.id +
+          res.body.outfit.chosenShoes.id
+      )
+    );
+
+    // Get error message for duplication and manual should be true
+    res = await api
+      .get('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(400);
+    expect(res.body.success).toBeFalsy();
+    expect(res.body.manual).toBeTruthy();
+    expect(res.body.message).toEqual(
+      'We have generated all possible outfits. Do you want to create one manually?'
+    );
+
+    // Clear all clothes
+    for (const id of testClothesIds) {
+      res = await api
+        .delete(`/api/clothes/${userId}/${id}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.message).toEqual('Deleted clothing');
+    }
+    testClothesIds = [];
+  });
+
+  it('should have correct response for GET /api/outfits/multiple', async () => {
+    // Post all necessary clothes for testing
+    for (const clothes of testClothesArray) {
+      res = await api
+        .post(`/api/clothes/${userId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(clothes);
+      expect(res.statusCode).toEqual(201);
+      testClothesIds.push(res.body.id);
+    }
+
+    // Get multiple outfits
+    res = await api
+      .get('/api/outfits/multiple')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(
+      res.body.messages.includes('New outfit generated successfully!')
+    ).toBeTruthy();
+    expect(res.body.warnings.length).toEqual(0);
+    expect(res.body.outfits.length).toBeGreaterThan(0);
+    for (const outfit of res.body.outfits) {
+      expect(outfit.opinion).toEqual('unknown');
+      expect(outfit.user).toEqual(userId);
+      expect(outfit._id).toEqual(
+        hashCode(
+          outfit.chosenUpperClothes.id +
+            outfit.chosenTrousers.id +
+            outfit.chosenShoes.id
+        )
+      );
+    }
+
+    // Clear all clothes
+    for (const id of testClothesIds) {
+      res = await api
+        .delete(`/api/clothes/${userId}/${id}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.message).toEqual('Deleted clothing');
+    }
+    testClothesIds = [];
+  });
+
+  const emptyOpinion = null;
+  const likeOpinion = 'like';
+  const dislikeOpinion = 'dislike';
+  const invalidOutfitId = '123';
+
+  it('should have correct response for PUT /api/outfits/:outfitId', async () => {
+    // Post all necessary clothes for testing
+    for (const clothes of testClothesArray) {
+      res = await api
+        .post(`/api/clothes/${userId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(clothes);
+      expect(res.statusCode).toEqual(201);
+      testClothesIds.push(res.body.id);
+    }
+
+    // Get an outfit
+    res = await api
+      .get('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.success).toBeTruthy();
+    expect(res.body.message).toEqual('New outfit generated successfully!');
+    expect(res.body.outfit.opinion).toEqual('unknown');
+    expect(res.body.outfit.user).toEqual(userId);
+    expect(res.body.outfit._id).toEqual(
+      hashCode(
+        res.body.outfit.chosenUpperClothes.id +
+          res.body.outfit.chosenTrousers.id +
+          res.body.outfit.chosenShoes.id
+      )
+    );
+    outfitId = res.body.outfit._id;
+
+    // Update opinion
+    res = await api
+      .put(`/api/outfits/${outfitId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ opinion: emptyOpinion });
+    expect(res.statusCode).toEqual(422);
+    expect(res.body.message).toEqual(
+      'Invalid inputs passed, please check your data'
+    );
+
+    res = await api
+      .put(`/api/outfits/${invalidOutfitId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ opinion: likeOpinion });
+    expect(res.statusCode).toEqual(500);
+    expect(res.body.message).toEqual(
+      'Failed to change user opinion of the outfit, please try again later'
+    );
+
+    res = await api
+      .put(`/api/outfits/${outfitId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ opinion: likeOpinion });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toEqual('Updated user opinion successfully!');
+    expect(res.body.updatedOutfit.opinion).toEqual(likeOpinion);
+
+    res = await api
+      .put(`/api/outfits/${outfitId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ opinion: dislikeOpinion });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toEqual('Updated user opinion successfully!');
+    expect(res.body.updatedOutfit.opinion).toEqual(dislikeOpinion);
+
+    // Clear all clothes
+    for (const id of testClothesIds) {
+      res = await api
+        .delete(`/api/clothes/${userId}/${id}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.message).toEqual('Deleted clothing');
+    }
+    testClothesIds = [];
+  });
+
+  it('should have correct response for POST /api/outfits/one', async () => {
+    // Post all necessary clothes for testing
+    for (const clothes of testClothesArray) {
+      res = await api
+        .post(`/api/clothes/${userId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(clothes);
+      expect(res.statusCode).toEqual(201);
+      testClothesIds.push(res.body.id);
+    }
+
+    const emptyOutfit = {};
+    const invalidOutfitOccasions = {
+      clothes: [testClothesIds[0], testClothesIds[4], testClothesIds[6]],
+      occasions: 'NOT_AN_ARRAY',
+      seasons: ['All'],
+    };
+    const invalidOutfitClothes = {
+      clothes: [testClothesIds[0]],
+      occasions: ['normal'],
+      seasons: ['All'],
+    };
+    const invalidOutfitSeasons = {
+      clothes: [testClothesIds[0], testClothesIds[4], testClothesIds[6]],
+      occasions: ['normal'],
+      seasons: ['NOT_AN_SEASON'],
+    };
+    const newOutfit = {
+      clothes: [testClothesIds[0], testClothesIds[4], testClothesIds[6]],
+      occasions: ['formal'],
+      seasons: ['All'],
+    };
+    const validSeasons = ['Spring', 'Summer', 'Fall', 'Winter', 'All'];
+    const defaultManualOpinion = 'like';
+
+    // Failure cases
+    res = await api
+      .post('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`)
+      .send(emptyOutfit);
+    expect(res.statusCode).toEqual(422);
+    expect(res.body.message).toEqual(
+      'Invalid inputs passed, please check your data'
+    );
+
+    res = await api
+      .post('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`)
+      .send(invalidOutfitOccasions);
+    console.log(res.body);
+    expect(res.statusCode).toEqual(422);
+    expect(res.body.message).toEqual(
+      'Invalid inputs passed, please check your data'
+    );
+
+    res = await api
+      .post('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`)
+      .send(invalidOutfitClothes);
+    console.log(res.body);
+    expect(res.statusCode).toEqual(422);
+    expect(res.body.message).toEqual(
+      'An outfit should consist of three clothes, please check your selections'
+    );
+
+    res = await api
+      .post('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`)
+      .send(invalidOutfitSeasons);
+    console.log(res.body);
+    expect(res.statusCode).toEqual(422);
+    expect(res.body.message).toEqual(
+      `Invalid seasons, should be one of ${validSeasons}, please check your input data`
+    );
+
+    res = await api
+      .post('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newOutfit);
+    expect(res.statusCode).toEqual(201);
+    expect(res.body.success).toBeTruthy();
+    expect(res.body.message).toEqual('Outfit created successfully!');
+    expect(res.body.outfit.clothes).toEqual(newOutfit.clothes);
+    expect(res.body.outfit.occasions).toEqual(newOutfit.occasions);
+    expect(res.body.outfit.seasons).toEqual(newOutfit.seasons);
+    expect(res.body.outfit.opinion).toEqual(defaultManualOpinion);
+    expect(res.body.outfit.user).toEqual(userId);
+    expect(res.body.outfit._id).toEqual(
+      hashCode(newOutfit.clothes[0], newOutfit.clothes[1], newOutfit.clothes[2])
+    );
+    expect(res.body.outfit.chosenUpperClothes.id).toEqual(newOutfit.clothes[0]);
+    expect(res.body.outfit.chosenTrousers.id).toEqual(newOutfit.clothes[1]);
+    expect(res.body.outfit.chosenShoes.id).toEqual(newOutfit.clothes[2]);
+
+    // Clear all clothes
+    for (const id of testClothesIds) {
+      res = await api
+        .delete(`/api/clothes/${userId}/${id}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.message).toEqual('Deleted clothing');
+    }
+    testClothesIds = [];
+  });
 
   afterAll(async done => {
     fs.rmdirSync('../backend/static/UserClothingImages/', { recursive: true });
