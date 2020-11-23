@@ -257,12 +257,6 @@ describe('Closet integration tests', () => {
   });
 
   const registrationToken = 'sampleToken';
-  // const correctMessageFormat = {
-  //   notification: {
-  //     title: 'test',
-  //     body: 'Welcome to Closet!',
-  //   },
-  // };
   const incorrectMessageFormat = {
     message: 'I am a message',
   };
@@ -287,16 +281,6 @@ describe('Closet integration tests', () => {
     expect(res.body.message).toEqual(
       'Could not send notification user, please try again'
     );
-
-    // res = await api
-    //   .post('/api/notifications')
-    //   .set('Authorization', `Bearer ${token}`)
-    //   .send({
-    //     registrationToken,
-    //     message: correctMessageFormat,
-    //   });
-    // expect(res.statusCode).toEqual(200);
-    // expect(res.body.message).toEqual('Notification sent successfully!');
   });
 
   const testClothes = {
