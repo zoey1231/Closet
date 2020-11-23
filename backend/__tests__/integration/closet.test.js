@@ -32,7 +32,7 @@ describe('Closet integration tests', () => {
     password: 'TESTING',
   };
 
-  it.only('should have correct responses for POST /api/users/signup', async () => {
+  it('should have correct responses for POST /api/users/signup', async () => {
     res = await api.post('/api/users/signup').send(testUser);
     expect(res.statusCode).toEqual(201);
     expect(res.body.email).toEqual(testUser.email);
@@ -70,7 +70,7 @@ describe('Closet integration tests', () => {
     password: 'TESTING',
   };
 
-  it.only('should have correct responses for POST /api/users/login', async () => {
+  it('should have correct responses for POST /api/users/login', async () => {
     res = await api.post('/api/users/login').send(invalidLoginInfo);
     expect(res.statusCode).toEqual(401);
     expect(res.body.message).toEqual(
@@ -265,7 +265,7 @@ describe('Closet integration tests', () => {
     message: 'I am a message',
   };
 
-  it.only('should have correct response for POST /api/notifications/', async () => {
+  it('should have correct response for POST /api/notifications/', async () => {
     res = await api
       .post('/api/notifications')
       .set('Authorization', `Bearer ${token}`);
