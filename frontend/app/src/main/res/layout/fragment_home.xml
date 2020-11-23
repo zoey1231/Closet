@@ -170,8 +170,10 @@
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_get_outfit">
+        app:layout_constraintTop_toBottomOf="@id/btn_get_outfit"
+        app:layout_constraintVertical_bias="0.209">
 
         <RelativeLayout
             android:id="@+id/rl_outfit"
@@ -220,21 +222,21 @@
                         android:id="@+id/iv_clothes1_outfit1"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1" />
 
                     <ImageView
                         android:id="@+id/iv_clothes2_outfit1"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginLeft="30dp"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1" />
 
                     <ImageView
                         android:id="@+id/iv_clothes3_outfit1"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginLeft="30dp"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1" />
 
                 </LinearLayout>
 
@@ -290,24 +292,23 @@
                     android:id="@+id/tv_will_not_display"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
+                    android:gravity="center"
                     android:text="We will not suggest this outfit any more, OR "
                     android:textColor="#E10A0A"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:gravity="center"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/go_blind_view"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/go_blind_view"
-                    app:layout_constraintVertical_bias="0.10">
-                </TextView>
+                    app:layout_constraintVertical_bias="0.10"></TextView>
 
                 <ImageButton
                     android:id="@+id/btn_undo"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:src="@drawable/icon_undo_70"
                     android:background="@null"
+                    android:src="@drawable/icon_undo_70"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/go_blind_view"
                     app:layout_constraintStart_toStartOf="parent"
@@ -332,5 +333,18 @@
         </RelativeLayout>
 
     </ScrollView>
+
+    <Button
+        android:id="@+id/btn_test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="428dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="@+id/sv_outfit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.467"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sv_weather"
+        app:layout_constraintVertical_bias="1.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 

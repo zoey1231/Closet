@@ -135,6 +135,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             path = data.getStringExtra("path");
             clothesId = data.getStringExtra("clothesId");
             bitmap = BitmapFactory.decodeFile(path);
+            Log.d(TAG, "testing: bitmap is " + bitmap);
 
             addClothesToCloset();
         }

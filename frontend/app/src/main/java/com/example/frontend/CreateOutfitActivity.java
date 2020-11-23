@@ -3,6 +3,7 @@ package com.example.frontend;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -36,12 +37,14 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
 
     private User user;
 
-    private TextView text;
-    private GridLayout clothesLayout;
+    private GridLayout upperClothesLayout;
+    private GridLayout trousersLayout;
+    private GridLayout shoesLayout;
     private Button button;
 
-    private List<String> clothesIdList = new ArrayList<>();
-    private HashMap<Integer, String> clothesIdMap = new HashMap<Integer, String>();
+    private List<String> upperClothesIdList = new ArrayList<>();
+    private List<String> trousersIdList = new ArrayList<>();
+    private List<String> shoesIdList = new ArrayList<>();
 
     private String attributes; //change this
 
@@ -52,13 +55,17 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
 
         user = MainActivity.getUser();
 
-        clothesLayout = findViewById(R.id.gl_outfit);
+        upperClothesLayout = findViewById(R.id.gl_upper_clothes);
+        trousersLayout = findViewById(R.id.gl_trousers);
+        shoesLayout = findViewById(R.id.gl_shoes);
         button = findViewById(R.id.btn_save_outfit);
         button.setOnClickListener(this);
-        text = findViewById(R.id.tv_outfit);
 
-        getClothesFromServer("upperClothes");
-        addClothesToCloset();
+        getAllClothesFromServer();
+        while (upperClothesIdList.size() == 0 || trousersIdList.size() == 0 || shoesIdList.size() == 0) {
+            Log.d(TAG, "waiting for ids");
+        }
+        addAllClothesOnUI();
     }
 
     @Override
@@ -74,30 +81,47 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    private void addClothesToCloset() {
-        for (int i = 0; i < clothesIdList.size(); i++) {
-            String userId = user.getUserId();
-            String clothesId = clothesIdList.get(i);
+    private ImageView addClothesOnUI(Bitmap bitmap) {
+        ImageView clothes = new ImageView(this);
+        GridLayout.LayoutParams clothesParams = new GridLayout.LayoutParams();
+        clothesParams.width = 300;
+        clothesParams.height = 300;
+        clothes.setLayoutParams(clothesParams);
+        clothes.setImageBitmap(bitmap);
+
+        return clothes;
+    }
+
+    private void addAllClothesOnUI() {
+        String userId = user.getUserId();
+
+        for (int i = 0; i < upperClothesIdList.size(); i++) {
+            String clothesId = upperClothesIdList.get(i);
             Bitmap bitmap = getClothesImage(userId, clothesId);
+            Log.d(TAG, "testing: bitmap is " + bitmap);
+            ImageView clothes = addClothesOnUI(bitmap);
+            upperClothesLayout.addView(clothes);
+        }
 
-            ImageView clothes = new ImageView(this);
-            GridLayout.LayoutParams clothesParams = new GridLayout.LayoutParams();
-            clothesParams.width = 300;
-            clothesParams.height = 300;
-            clothes.setLayoutParams(clothesParams);
-            clothes.setImageBitmap(bitmap);
-            clothes.setOnClickListener(this);
-            clothesLayout.addView(clothes);
+        for (int i = 0; i < trousersIdList.size(); i++) {
+            String clothesId = trousersIdList.get(i);
+            Bitmap bitmap = getClothesImage(userId, clothesId);
+            ImageView clothes = addClothesOnUI(bitmap);
+            trousersLayout.addView(clothes);
+        }
 
-            //need adapter here
-//            clothesIdMap.put(clothes.getId(), clothesId);
+        for (int i = 0; i < shoesIdList.size(); i++) {
+            String clothesId = shoesIdList.get(i);
+            Bitmap bitmap = getClothesImage(userId, clothesId);
+            ImageView clothes = addClothesOnUI(bitmap);
+            shoesLayout.addView(clothes);
         }
     }
 
-    private void getClothesFromServer(String category) {
+    private void getAllClothesFromServer() {
         ServerCommAsync serverComm = new ServerCommAsync();
 
-        serverComm.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes" + user.getUserId() + "/?category=" + category, user.getUserToken(), new Callback() {
+        serverComm.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes/" + user.getUserId(), user.getUserToken(), new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
@@ -106,11 +130,13 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = Objects.requireNonNull(response.body().string());
+                Log.d(TAG, responseStr);
+
                 if (response.isSuccessful()) {
                     JSONObject responseJSON;
                     try {
                         responseJSON = new JSONObject(responseStr);
-                        extractResponseClothesData(responseJSON);
+                        extractClothesDataByCategory(responseJSON);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -119,12 +145,20 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         });
     }
 
-    private void extractResponseClothesData(JSONObject responseJSON) throws JSONException {
+    private void extractClothesDataByCategory(JSONObject responseJSON) throws JSONException {
         JSONArray clothesArray = responseJSON.getJSONArray("clothes");
         for (int i = 0; i < clothesArray.length(); i++) {
             JSONObject clothes = clothesArray.getJSONObject(i);
             if (clothes.has("id")) {
-                clothesIdList.add(clothes.getString("id"));
+                if (clothes.getString("category").equals("outwear") || clothes.getString("category").equals("shirt")) {
+                    upperClothesIdList.add(clothes.getString("id"));
+                }
+                if (clothes.getString("category").equals("trousers")) {
+                    trousersIdList.add(clothes.getString("id"));
+                }
+                if (clothes.getString("category").equals("shoes")) {
+                    shoesIdList.add(clothes.getString("id"));
+                }
             }
         }
     }

@@ -33,6 +33,7 @@
         <activity android:name=".GetAuthActivity"/>
         <activity android:name=".AddClothesActivity"/>
         <activity android:name=".EditClothesActivity" />
+        <activity android:name=".CreateOutfitActivity" />
 
         <!--        <activity android:name=".CalendarActivity"></activity>-->
 <!--        <fragment android:name=".CalendarFragment"></fragment>-->

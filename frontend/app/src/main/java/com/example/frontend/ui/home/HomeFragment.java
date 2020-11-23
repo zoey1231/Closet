@@ -1,5 +1,6 @@
 package com.example.frontend.ui.home;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -21,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.frontend.CreateOutfitActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommAsync;
@@ -59,6 +61,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     ConstraintLayout view_dislike;
     TextView tv_undo;
     ImageButton undoButton;
+
+    Button test;
 
     private String outfitId = EMPTY_STRING;
     private String upperClothesId = EMPTY_STRING;
@@ -113,6 +117,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         userToken = MainActivity.getUser().getUserToken();
         userId = MainActivity.getUser().getUserId();
         getWeatherData(userToken);
+
+        test = root.findViewById(R.id.btn_test);
+        test.setOnClickListener(this);
 
         return root;
     }
@@ -183,6 +190,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                break;
+
+            case R.id.btn_test:
+                Intent intent = new Intent(HomeFragment.this.getContext(), CreateOutfitActivity.class);
+                startActivity(intent);
                 break;
 
             default:
