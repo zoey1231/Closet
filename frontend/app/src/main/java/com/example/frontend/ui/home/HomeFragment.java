@@ -133,7 +133,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.btn_outfit:
 //                idlingResource.increment();
                 outfitButton.setEnabled(false);
-                getOutfitFromServer();
+                getOutfitFromServer(userToken);
 
                 while ((outfitId.equals(EMPTY_STRING) || upperClothesId.equals(EMPTY_STRING) ||
                         trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING))
@@ -275,7 +275,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void getWeatherData() {
         ServerCommAsync serverCommunication = new ServerCommAsync();
-        Log.d(TAG,"prepared to sendUserDataToServer");
+        Log.d(TAG,"prepared to getWeatherData");
 
         serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/weather/",userToken, new Callback() {
             @Override
@@ -341,9 +341,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public void getOutfitFromServer() {
+    public void getOutfitFromServer(String userToken) {
         ServerCommAsync serverCommunication = new ServerCommAsync();
-//        Log.d(TAG,"prepared to sendUserDataToServer");
+//        Log.d(TAG,"prepared to getOutfitFromServer");
 
         serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/one",userToken, new Callback() {
             @Override

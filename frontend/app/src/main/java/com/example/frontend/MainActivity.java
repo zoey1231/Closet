@@ -2,7 +2,6 @@ package com.example.frontend;
 
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -23,7 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle data = getIntent().getExtras();
         user = data.getParcelable("user");
-        Log.d(TAG,"email: "+user.getEmail()+" userId: "+ user.getUserId()+ " userToken: "+ user.getUserToken());
+
+
 
         //send firebase registration token to the server
         FirebaseMsgService.getTokenNSendToServer(user.getUserToken());
