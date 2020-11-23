@@ -255,12 +255,12 @@ describe('Closet integration tests', () => {
   });
 
   const registrationToken = 'sampleToken';
-  const correctMessageFormat = {
-    notification: {
-      title: 'test',
-      body: 'Welcome to Closet!',
-    },
-  };
+  // const correctMessageFormat = {
+  //   notification: {
+  //     title: 'test',
+  //     body: 'Welcome to Closet!',
+  //   },
+  // };
   const incorrectMessageFormat = {
     message: 'I am a message',
   };
