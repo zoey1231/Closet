@@ -244,7 +244,7 @@ describe('Closet integration tests', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({ code: validDateMonth });
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toEqual(31);
+    expect(res.body.length).toEqual(30);
 
     res = await api
       .post(`/api/calendar/${validDateDay}`)
