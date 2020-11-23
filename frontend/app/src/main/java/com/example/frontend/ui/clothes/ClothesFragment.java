@@ -1,6 +1,7 @@
 package com.example.frontend.ui.clothes;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,7 @@ import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -23,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.example.frontend.AddClothesActivity;
+import com.example.frontend.Clothes;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.EditClothesActivity;
@@ -48,6 +51,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.widget.Toast.makeText;
+
 public class ClothesFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static final String TAG ="ClothesFragment" ;
     private static final String EMPTY_STRING = "";
@@ -63,6 +68,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private Spinner spinner;
     private ConstraintLayout clothes;
     private int selectedId;
+    private String message = EMPTY_STRING;
 
     private final int ADD = 1;
     private final int EDIT = 2;
@@ -80,10 +86,10 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         clothesLayout = root.findViewById(R.id.gl_clothes);
 
         getAllClothesFromServer();
-        while (clothesIdList.size() == 0) {
-            Log.d(TAG, "waiting for clothes id");
-        }
-        addAllClothesToCloset();
+//        while (clothesIdList.size() == 0) {
+//            Log.d(TAG, "waiting for clothes id");
+//        }
+//        addAllClothesToCloset();
 
         return root;
     }
@@ -136,8 +142,9 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 Log.d(TAG, "waiting for clothes id");
             }
 
-            deleteClothesFromCloset(selectedId);
+            deleteClothDataFromServer(TAG,getContext());
             deleteImageFromServer();
+            deleteClothesFromCloset(selectedId);
         }
     }
 
@@ -216,7 +223,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + clothesId)
-                .addHeader("Authorization", "Bearer" + user.getUserToken())
+                .addHeader("Authorization","Bearer "+ user.getUserToken())
                 .delete()
                 .build();
         Call call = client.newCall(request);
@@ -233,6 +240,61 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             }
         });
     }
+
+    private void deleteClothDataFromServer(final String TAG, final Context context) {
+        ServerCommAsync serverCommunication = new ServerCommAsync();
+
+        Log.d(TAG,"prepared to deleteClothDataFromServer");
+        serverCommunication.deleteWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes/"+user.getUserId()+ "/" + clothesId,user.getUserToken(), new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+                Log.d(TAG,"Fail to send request to server");
+                Log.d(TAG, String.valueOf(e));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+
+                String responseStr = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG,responseStr);
+
+                JSONObject responseJson = null;
+                try {
+                    responseJson = new JSONObject(responseStr);
+                    if(responseJson.has("message"))
+                        message = responseJson.getString("message");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (response.isSuccessful()) {
+                    //make a toast to let the server's message display to the user
+                    if(Objects.requireNonNull(responseJson).has("message") ){
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                final Toast toast = makeText(context,message,Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        });
+                    }
+
+                } else {
+                    // Request not successful
+                    if(Objects.requireNonNull(responseJson).has("message") ){
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                final Toast toast = makeText(context,message,Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        });
+                    }
+                }
+                Log.d(TAG,"finish deleteClothDataFromServer");
+
+            }
+        });
+    }
+
 
     private void getAllClothesFromServer() {
         ServerCommAsync serverComm = new ServerCommAsync();

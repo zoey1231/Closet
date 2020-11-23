@@ -118,10 +118,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         getWeatherData();
         getMultipleOutfitsFromServer();
-        while (outfitsIdList.size() == 0 || clothesIdList.size() == 0) {
-            Log.d(TAG, "waiting for ids");
-        }
-        addMultipleOutfitsOnUI();
+//        while (outfitsIdList.size() == 0 || clothesIdList.size() == 0) {
+//            Log.d(TAG, "waiting for ids");
+//        }
+//        addMultipleOutfitsOnUI();
         outfitsLayout.setVisibility(View.VISIBLE);
 
         return root;
