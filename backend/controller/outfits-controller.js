@@ -23,8 +23,8 @@ const getOneOutfit = async (req, res, next) => {
   }
 
   if (!response.success) {
-    const { message, manual, warning } = response;
-    return res.status(400).json({ message, manual, warning });
+    const { success, message, manual, warning } = response;
+    return res.status(400).json({ success, message, manual, warning });
   }
 
   res.status(200).json(response);
@@ -133,7 +133,18 @@ const createOneOutfit = async (req, res, next) => {
     return next(
       new HttpError(
         'An outfit should consist of three clothes, please check your selections',
-        400
+        422
+      )
+    );
+  }
+
+  // Validate seasons
+  const validSeasons = ['Spring', 'Summer', 'Fall', 'Winter', 'All'];
+  if (!seasons.every(season => validSeasons.includes(season))) {
+    return next(
+      new HttpError(
+        `Invalid seasons, should be one of ${validSeasons}, please check your input data`,
+        422
       )
     );
   }
