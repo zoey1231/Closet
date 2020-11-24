@@ -15,8 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.Toast;
+import com.example.frontend.DotSpinner;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -25,10 +25,9 @@ import androidx.fragment.app.Fragment;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.example.frontend.AddClothesActivity;
-import com.example.frontend.Clothes;
+import com.example.frontend.EditClothesActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
-import com.example.frontend.EditClothesActivity;
 import com.example.frontend.ServerCommAsync;
 import com.example.frontend.User;
 
@@ -42,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,15 +58,11 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private static final String EMPTY_STRING = "";
 
     private User user;
-    private String path;
-    private String clothesId = EMPTY_STRING;
     private List<String> clothesIdList = new ArrayList<>();
+    private HashMap<Integer, String> clothesIdMap = new HashMap<>();
 
     private ImageButton buttonAdd;
     private GridLayout clothesLayout;
-    private ImageView image;
-    private Spinner spinner;
-    private ConstraintLayout clothes;
     private int selectedId;
     private String message = EMPTY_STRING;
 
@@ -86,15 +82,15 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         clothesLayout = root.findViewById(R.id.gl_clothes);
 
         getAllClothesFromServer();
-//        while (clothesIdList.size() == 0) {
-//            Log.d(TAG, "waiting for clothes id");
-//        }
-//        addAllClothesToCloset();
+        while (clothesIdList.size() == 0) {
+            Log.d(TAG, "waiting for clothes id");
+        }
+        addAllClothesToCloset();
 
         return root;
     }
 
-    public void setAdapter(int textArrayResId, @NotNull Spinner spinner) {
+    public void setAdapter(int textArrayResId, DotSpinner spinner) {
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(ClothesFragment.this.getContext(),
                 textArrayResId, android.R.layout.simple_spinner_item);
@@ -124,26 +120,16 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         selectedId = parent.getId();
 
         if (parent.getSelectedItem().toString().equals("Edit")) {
-
-            while (clothesId.equals(EMPTY_STRING)) {
-                Log.d(TAG, "waiting for clothes id");
-            }
-
+            String clothesId = clothesIdMap.get(selectedId);
             Intent editClothesIntent = new Intent(ClothesFragment.this.getContext(), EditClothesActivity.class);
-            editClothesIntent.putExtra("user", user);
-            editClothesIntent.putExtra("path", path);
             editClothesIntent.putExtra("clothesId", clothesId);
             startActivityForResult(editClothesIntent, EDIT);
         }
 
         else if (parent.getSelectedItem().toString().equals("Delete")) {
-
-            while (clothesId.equals(EMPTY_STRING)) {
-                Log.d(TAG, "waiting for clothes id");
-            }
-
-            deleteClothDataFromServer(TAG,getContext());
-            deleteImageFromServer();
+            String clothesId = clothesIdMap.get(selectedId);
+            deleteClothDataFromServer(clothesId);
+            deleteImageFromServer(clothesId);
             deleteClothesFromCloset(selectedId);
         }
     }
@@ -154,28 +140,27 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
         if (resultCode == Activity.RESULT_OK && requestCode == ADD) {
             // here you can retrieve your bundle data.
-            path = data.getStringExtra("path");
-            clothesId = data.getStringExtra("clothesId");
-            Bitmap bitmap = BitmapFactory.decodeFile(path);
-            addClothesToCloset(bitmap);
+            String clothesId = data.getStringExtra("clothesId");
+            addClothesToCloset(clothesId);
         }
 
         else if (resultCode == Activity.RESULT_OK && requestCode == EDIT) {
-            path = data.getStringExtra("path");
             editClothesInCloset(selectedId);
         }
     }
 
-    private void addClothesToCloset(Bitmap bitmap) {
-        image = new ImageView(getContext());
+    private void addClothesToCloset(String clothesId) {
+        ImageView image = new ImageView(getContext());
         image.setId(View.generateViewId());
         ConstraintLayout.LayoutParams imageParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         imageParams.width = 300;
         imageParams.height = 300;
         image.setLayoutParams(imageParams);
+        String userId = user.getUserId();
+        Bitmap bitmap = getClothesImage(userId, clothesId);
         image.setImageBitmap(bitmap);
 
-        spinner = new Spinner(getContext());
+        DotSpinner spinner = new DotSpinner(getContext());
         spinner.setId(View.generateViewId());
         ConstraintLayout.LayoutParams spinnerParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         spinnerParams.width = 90;
@@ -185,7 +170,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         setAdapter(R.array.edit_delete_array, spinner);
         spinner.setOnItemSelectedListener(this);
 
-        clothes = new ConstraintLayout(getContext());
+        ConstraintLayout clothes = new ConstraintLayout(getContext());
         clothes.setId(View.generateViewId());
         clothes.addView(image);
         clothes.addView(spinner);
@@ -195,31 +180,31 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         constraint.applyTo(clothes);
 
         clothesLayout.addView(clothes);
+        clothesIdMap.put(spinner.getId(), clothesId);
     }
 
     private void addAllClothesToCloset() {
         for (int i = 0; i < clothesIdList.size(); i++) {
-            String userId = user.getUserId();
             String clothesId = clothesIdList.get(i);
-            Bitmap bitmap = getClothesImage(userId, clothesId);
-            addClothesToCloset(bitmap);
+            addClothesToCloset(clothesId);
         }
     }
 
     private void editClothesInCloset(int selectedId) {
-        image = root.findViewById(selectedId - 1);
-//        while (bitmap == null) {
-//            Log.d(TAG, "waiting for bitmap");
-//        }
-        image.setImageBitmap(BitmapFactory.decodeFile(path));
+        ImageView image = root.findViewById(selectedId - 1);
+        String userId = user.getUserId();
+        String clothesId = clothesIdMap.get(selectedId);
+        Bitmap bitmap = getClothesImage(userId, clothesId);
+        image.setImageBitmap(bitmap);
     }
 
     private void deleteClothesFromCloset(int selectedId) {
-        clothes = root.findViewById(selectedId + 1);
+        ConstraintLayout clothes = root.findViewById(selectedId + 1);
         clothesLayout.removeView(clothes);
+        clothesIdMap.remove(selectedId);
     }
 
-    private void deleteImageFromServer() {
+    private void deleteImageFromServer(String clothesId) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + clothesId)
@@ -241,7 +226,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         });
     }
 
-    private void deleteClothDataFromServer(final String TAG, final Context context) {
+    private void deleteClothDataFromServer(String clothesId) {
         ServerCommAsync serverCommunication = new ServerCommAsync();
 
         Log.d(TAG,"prepared to deleteClothDataFromServer");
@@ -272,7 +257,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                     if(Objects.requireNonNull(responseJson).has("message") ){
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
-                                final Toast toast = makeText(context,message,Toast.LENGTH_LONG);
+                                final Toast toast = makeText(getContext(),message,Toast.LENGTH_LONG);
                                 toast.show();
                             }
                         });
@@ -283,7 +268,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                     if(Objects.requireNonNull(responseJson).has("message") ){
                         getActivity().runOnUiThread(new Runnable() {
                             public void run() {
-                                final Toast toast = makeText(context,message,Toast.LENGTH_LONG);
+                                final Toast toast = makeText(getContext(),message,Toast.LENGTH_LONG);
                                 toast.show();
                             }
                         });
@@ -337,7 +322,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         BufferedInputStream buffer;
 
         try {
-            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".png");
+            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".jpg");
             stream = url.openStream();
             buffer = new BufferedInputStream(stream);
             Bitmap bitmap = BitmapFactory.decodeStream(buffer);

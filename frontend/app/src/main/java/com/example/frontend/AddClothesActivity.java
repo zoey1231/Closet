@@ -196,7 +196,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 sendImageToServer(file);
 
                 Intent setImageIntent = new Intent();
-                setImageIntent.putExtra("path", path);
                 setImageIntent.putExtra("clothesId", clothesId);
                 setResult(RESULT_OK, setImageIntent);
 

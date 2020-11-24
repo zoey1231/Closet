@@ -33,14 +33,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Objects;
 
 import okhttp3.Call;
@@ -59,7 +59,7 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
     private static final String EMPTY_STRING = "";
 
     private User user;
-    private String oldPath, newPath;
+    private String path;
     private String clothesId = EMPTY_STRING;
     private File file;
     private ImageView image;
@@ -74,12 +74,13 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
     private Clothes cloth;
     private String message = EMPTY_STRING;
     private JSONObject clothAttribute = new JSONObject();
-    private AddClothesActivity addClothesActivity;
     private boolean hasUpdate = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_clothes);
+        user = MainActivity.getUser();
 
         image = findViewById(R.id.iv_edit);
         imageButton = findViewById(R.id.btn_image_edit);
@@ -87,13 +88,9 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
         text = findViewById(R.id.tv_edit);
 
         Bundle data = getIntent().getExtras();
-        user = data.getParcelable("user");
-        oldPath = data.getString("path");
+        String userId = user.getUserId();
         clothesId = data.getString("clothesId");
-
-        addClothesActivity = new AddClothesActivity();
-
-        Bitmap bitmap = BitmapFactory.decodeFile(oldPath);
+        Bitmap bitmap = getClothesImage(userId, clothesId);
         image.setImageBitmap(bitmap);
 
         imageButton.setOnClickListener(this);
@@ -156,7 +153,7 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
                 }
                 sendImageToServer(file);
                 Intent setImageIntent = new Intent();
-                setImageIntent.putExtra("path", newPath);
+                setImageIntent.putExtra("path", path);
                 setImageIntent.putExtra("clothesId", clothesId);
                 setResult(RESULT_OK, setImageIntent);
 
@@ -192,8 +189,8 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
                 bitmap = BitmapFactory.decodeStream(stream);
                 image.setImageBitmap(bitmap);
                 image.setVisibility(View.VISIBLE);
-                newPath = getPath(uri);
-                file = new File(newPath);
+                path = getPath(uri);
+                file = new File(path);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -305,6 +302,31 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
             }
         });
     }
+
+    private Bitmap getClothesImage(String userId, String clothId) {
+        URL url;
+        InputStream stream;
+        BufferedInputStream buffer;
+
+        try {
+            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".jpg");
+            stream = url.openStream();
+            buffer = new BufferedInputStream(stream);
+            Bitmap bitmap = BitmapFactory.decodeStream(buffer);
+            if (stream != null) {
+                stream.close();
+            }
+            buffer.close();
+
+            return bitmap;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     private void extractResponseClothesData(JSONObject responseJSON) throws JSONException {
         if(responseJSON.has("message"))
             message = responseJSON.getString("message");
@@ -417,7 +439,6 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
                                 toast.show();
                             }
                         });
-                        //startActivity(new Intent(getApplicationContext(),AddClothesActivity.class));
                     }
                 }
                 hasUpdate = true;
