@@ -44,9 +44,9 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
-    private String userToken, userId;
     private String TAG = "HomeFragment";
     private static final String EMPTY_STRING = "";
+    private String userToken, userId;
 
     private String icon_today,icon_tmr;
     private String monthDesc_today,dayDesc_today,date_today;
@@ -80,6 +80,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String message = EMPTY_STRING;
     private String warning = EMPTY_STRING;
     private String success = EMPTY_STRING;
+
+    private boolean WAIT = true;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -118,10 +120,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         getWeatherData();
         getMultipleOutfitsFromServer();
-//        while (outfitsIdList.size() == 0 || clothesIdList.size() == 0) {
-//            Log.d(TAG, "waiting for ids");
-//        }
-//        addMultipleOutfitsOnUI();
+        while (WAIT && outfitsIdList.size() == 0) {
+            Log.d(TAG, "waiting for ids");
+        }
+        addMultipleOutfitsOnUI();
         outfitsLayout.setVisibility(View.VISIBLE);
 
         return root;
@@ -412,11 +414,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     try {
                         responseJSON = new JSONObject(responseStr);
                         JSONArray outfitsArray = responseJSON.getJSONArray("outfits");
-                        outfitsIdList.clear();
-                        clothesIdList.clear();
-                        for (int i = 0; i < outfitsArray.length(); i++) {
-                            JSONObject outfitJSON = outfitsArray.getJSONObject(i);
-                            extractResponseOutfitData(outfitJSON);
+                        if (outfitsArray.length() == 0) {
+                            WAIT = false;
+                        }
+                        else {
+                            outfitsIdList.clear();
+                            clothesIdList.clear();
+                            for (int i = 0; i < outfitsArray.length(); i++) {
+                                JSONObject outfitJSON = outfitsArray.getJSONObject(i);
+                                extractResponseOutfitData(outfitJSON);
+                            }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -465,7 +472,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         BufferedInputStream buffer;
 
         try {
-            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".png");
+            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".jpg");
             stream = url.openStream();
             buffer = new BufferedInputStream(stream);
             Bitmap bitmap = BitmapFactory.decodeStream(buffer);

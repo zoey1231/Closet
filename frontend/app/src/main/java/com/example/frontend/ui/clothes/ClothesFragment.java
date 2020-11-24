@@ -57,7 +57,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private static final String TAG ="ClothesFragment" ;
     private static final String EMPTY_STRING = "";
 
-    private User user;
+    private String userToken, userId;
     private List<String> clothesIdList = new ArrayList<>();
     private HashMap<Integer, String> clothesIdMap = new HashMap<>();
 
@@ -68,6 +68,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     private final int ADD = 1;
     private final int EDIT = 2;
+    private boolean WAIT = true;
 
     static View root;
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_request");
@@ -75,14 +76,15 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_clothes, container, false);
-        user = MainActivity.getUser();
+        userToken = MainActivity.getUser().getUserToken();
+        userId = MainActivity.getUser().getUserId();
 
         buttonAdd = root.findViewById(R.id.btn_clothes_add);
         buttonAdd.setOnClickListener(this);
         clothesLayout = root.findViewById(R.id.gl_clothes);
 
         getAllClothesFromServer();
-        while (clothesIdList.size() == 0) {
+        while (WAIT && clothesIdList.size() == 0) {
             Log.d(TAG, "waiting for clothes id");
         }
         addAllClothesToCloset();
@@ -156,8 +158,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         imageParams.width = 300;
         imageParams.height = 300;
         image.setLayoutParams(imageParams);
-        String userId = user.getUserId();
-        Bitmap bitmap = getClothesImage(userId, clothesId);
+        Bitmap bitmap = getClothesImage(clothesId);
         image.setImageBitmap(bitmap);
 
         DotSpinner spinner = new DotSpinner(getContext());
@@ -192,9 +193,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     private void editClothesInCloset(int selectedId) {
         ImageView image = root.findViewById(selectedId - 1);
-        String userId = user.getUserId();
         String clothesId = clothesIdMap.get(selectedId);
-        Bitmap bitmap = getClothesImage(userId, clothesId);
+        Bitmap bitmap = getClothesImage(clothesId);
         image.setImageBitmap(bitmap);
     }
 
@@ -207,8 +207,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private void deleteImageFromServer(String clothesId) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + user.getUserId() + "/" + clothesId)
-                .addHeader("Authorization","Bearer "+ user.getUserToken())
+                .url("http://closet-cpen321.westus.cloudapp.azure.com/api/images/" + userId + "/" + clothesId)
+                .addHeader("Authorization","Bearer "+ userToken)
                 .delete()
                 .build();
         Call call = client.newCall(request);
@@ -230,7 +230,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         ServerCommAsync serverCommunication = new ServerCommAsync();
 
         Log.d(TAG,"prepared to deleteClothDataFromServer");
-        serverCommunication.deleteWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes/"+user.getUserId()+ "/" + clothesId,user.getUserToken(), new Callback() {
+        serverCommunication.deleteWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes/"+userId+ "/" + clothesId, userToken, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
@@ -284,7 +284,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private void getAllClothesFromServer() {
         ServerCommAsync serverComm = new ServerCommAsync();
 
-        serverComm.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes/" + user.getUserId(), user.getUserToken(), new Callback() {
+        serverComm.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/clothes/" + userId, userToken, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
@@ -302,6 +302,9 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                         e.printStackTrace();
                     }
                 }
+                else {
+                    WAIT = false;
+                }
             }
         });
     }
@@ -316,13 +319,13 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         }
     }
 
-    private Bitmap getClothesImage(String userId, String clothId) {
+    private Bitmap getClothesImage(String clothesId) {
         URL url;
         InputStream stream;
         BufferedInputStream buffer;
 
         try {
-            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".jpg");
+            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/"+userId+ "/" + clothesId + ".jpg");
             stream = url.openStream();
             buffer = new BufferedInputStream(stream);
             Bitmap bitmap = BitmapFactory.decodeStream(buffer);
