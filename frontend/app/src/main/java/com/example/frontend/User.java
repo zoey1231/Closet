@@ -82,6 +82,8 @@ public class User implements Parcelable {
         userToken = in.readString();
         email = in.readString();
         code = in.readString();
+        city = in.readString();
+        name = in.readString();
 
     }
     @Override
@@ -94,6 +96,7 @@ public class User implements Parcelable {
         parcel.writeString(userToken);
         parcel.writeString(email);
         parcel.writeString(code);
-
+        parcel.writeString(city);
+        parcel.writeString(name);
     }
 }
