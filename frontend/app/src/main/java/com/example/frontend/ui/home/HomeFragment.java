@@ -2,7 +2,9 @@ package com.example.frontend.ui.home;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.wifi.SupplicantState;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,8 +61,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private Button outfitButton;
     private GridLayout outfitsLayout;
 
-    private List<String> outfitsIdList = new ArrayList<>();
-    private List<String> clothesIdList = new ArrayList<>();
+    private static List<String> outfitsIdList = new ArrayList<>();
+    private static List<String> clothesIdList = new ArrayList<>();
 
     private JSONObject outfit_opinion = new JSONObject();
     private boolean like = false;
@@ -71,8 +73,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String message = EMPTY_STRING;
     private String warning = EMPTY_STRING;
     private String success = EMPTY_STRING;
-
-    private boolean WAIT = true;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -109,11 +109,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //        undoButton.setOnClickListener(this);
 
         getWeatherData();
-//        getTodayOutfitsFromServer();
-//        while (WAIT && outfitsIdList.size() == 0) {
-//            Log.d(TAG, "waiting for ids");
-//        }
-//        addAllOutfitsOnUI();
+        Log.d(TAG, "testing: outfit id list is " + outfitsIdList);
+        Log.d(TAG, "testing: clothes id list is " + clothesIdList);
+        addTodayOutfitsOnUI();
 
         return root;
     }
@@ -125,21 +123,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //                idlingResource.increment();
                 outfitButton.setEnabled(false);
                 getOutfitFromServer();
-
-                //fail to generate an outfit
-                if(!message.equals(EMPTY_STRING)&&!warning.equals(EMPTY_STRING)&&success.equals((EMPTY_STRING))){
-                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(getContext(), warning, Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    while (WAIT && outfitsIdList.size() == 0) {
-                        Log.d(TAG, "waiting for ids");
-                    }
-                    addAllOutfitsOnUI();
 //                    likeButton.setEnabled(true);
 //                    dislikeButton.setEnabled(true);
-                    outfitsLayout.setVisibility(View.VISIBLE);
-                }
                 outfitButton.setEnabled(true);
 
                 break;
@@ -182,81 +167,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //                break;
 
             default:
-        }
-    }
-
-    private void updateWeatherOnUI() {
-        requireActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //update weather and time data on the UI
-                tv_date_today.setText(monthDesc_today+" "+date_today+" ("+dayDesc_today+")");
-                tv_temp_today.setText("Max "+temp_max_today+"°C "+"Min "+temp_min_today+"°C");
-                tv_date_tmr.setText(monthDesc_tmr+" "+date_tmr +" ("+dayDesc_tmr+")");
-                tv_temp_tmr.setText("Max "+temp_max_tmr+"°C "+"Min "+temp_min_tmr+"°C");
-                Picasso.get().load("http://openweathermap.org/img/wn/"+icon_today+"@2x.png").resize(50, 50).centerCrop().into(iv_icon_today);
-                Picasso.get().load("http://openweathermap.org/img/wn/"+icon_tmr+"@2x.png").resize(50, 50).centerCrop().into(iv_icon_tmr);
-            }
-        });
-    }
-
-    private void addOutfitOnUI(String upperClothesId, String trousersId, String shoesId) {
-        TextView outfitText = new TextView(getContext());
-        outfitText.setText("outfit");
-
-        ImageView image1 = new ImageView(getContext());
-        image1.setId(View.generateViewId());
-        LinearLayout.LayoutParams image1Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-        image1Params.width = 300;
-        image1Params.height = 300;
-        image1.setLayoutParams(image1Params);
-        image1.setImageBitmap(getClothesImage(upperClothesId));
-
-        ImageView image2 = new ImageView(getContext());
-        image2.setId(View.generateViewId());
-        LinearLayout.LayoutParams image2Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-        image2Params.width = 300;
-        image2Params.height = 300;
-        image2Params.leftMargin = 37;
-        image2.setLayoutParams(image2Params);
-        image2.setImageBitmap(getClothesImage(trousersId));
-
-        ImageView image3 = new ImageView(getContext());
-        image3.setId(View.generateViewId());
-        LinearLayout.LayoutParams image3Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-        image3Params.width = 300;
-        image3Params.height = 300;
-        image3Params.leftMargin = 37;
-        image3.setLayoutParams(image3Params);
-        image3.setImageBitmap(getClothesImage(shoesId));
-
-        // buttons
-
-
-        LinearLayout clothesLayout = new LinearLayout(getContext());
-        clothesLayout.setOrientation(LinearLayout.HORIZONTAL);
-        clothesLayout.setPadding(37, 0, 37, 0);
-        clothesLayout.addView(image1);
-        clothesLayout.addView(image2);
-        clothesLayout.addView(image3);
-
-        // buttons layout
-
-
-        LinearLayout outfitLayout = new LinearLayout(getContext());
-        outfitLayout.setOrientation(LinearLayout.VERTICAL);
-        outfitLayout.addView(outfitText);
-        outfitLayout.addView(clothesLayout);
-
-        outfitsLayout.addView(outfitLayout);
-    }
-
-    private void addAllOutfitsOnUI() {
-        for (int i = 0; i < clothesIdList.size(); i += 3) {
-            String upperClothesId = clothesIdList.get(i);
-            String trousersId = clothesIdList.get(i+1);
-            String shoesId = clothesIdList.get(i+2);
-            addOutfitOnUI(upperClothesId, trousersId, shoesId);
         }
     }
 
@@ -328,6 +238,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    private void updateWeatherOnUI() {
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //update weather and time data on the UI
+                tv_date_today.setText(monthDesc_today+" "+date_today+" ("+dayDesc_today+")");
+                tv_temp_today.setText("Max "+temp_max_today+"°C "+"Min "+temp_min_today+"°C");
+                tv_date_tmr.setText(monthDesc_tmr+" "+date_tmr +" ("+dayDesc_tmr+")");
+                tv_temp_tmr.setText("Max "+temp_max_tmr+"°C "+"Min "+temp_min_tmr+"°C");
+                Picasso.get().load("http://openweathermap.org/img/wn/"+icon_today+"@2x.png").resize(50, 50).centerCrop().into(iv_icon_today);
+                Picasso.get().load("http://openweathermap.org/img/wn/"+icon_tmr+"@2x.png").resize(50, 50).centerCrop().into(iv_icon_tmr);
+            }
+        });
+    }
+
     public void getOutfitFromServer() {
         ServerCommAsync serverCommunication = new ServerCommAsync();
 //        Log.d(TAG,"prepared to getOutfitFromServer");
@@ -339,7 +264,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 Log.d(TAG,"Fail to send request to server");
                 Log.d(TAG, String.valueOf(e));
 //                idlingResource.decrement();
-                WAIT = false;
             }
 
             @Override
@@ -347,15 +271,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 String responseStr = Objects.requireNonNull(response.body()).string();
 
                 if (response.isSuccessful()) {
-
                     Log.d(TAG,"Outfit request is successful"+responseStr);
-                    JSONObject responseJson;
+                    JSONObject responseJSON;
                     try {
                         //retrieve outfit data from server's response
-                        responseJson = new JSONObject(responseStr);
-                        JSONObject outfitJSON = responseJson.getJSONObject("outfit");
-                        extractResponseOutfitData(outfitJSON);
-
+                        responseJSON = new JSONObject(responseStr);
+                        extractResponseOutfitData(responseJSON);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -368,83 +289,49 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         // Request not successful
                         if(responseJson.has("message")){
                             message = responseJson.getString("message");
+//                            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                         }
                         if(responseJson.has("warning")){
                             warning = responseJson.getString("warning");
+//                            Toast.makeText(getContext(), warning, Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     Log.d(TAG,"Outfit request is unsuccessful: "+message+warning);
-
-                    WAIT = false;
                 }
 //                idlingResource.decrement();
             }
         });
     }
 
-    private void getTodayOutfitsFromServer() {
-        ServerCommAsync serverComm = new ServerCommAsync();
-
-        //change this
-        serverComm.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/multiple", userToken, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                e.printStackTrace();
-                WAIT = false;
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseStr = Objects.requireNonNull(response.body().string());
-                if (response.isSuccessful()) {
-                    JSONObject responseJSON;
-                    try {
-                        responseJSON = new JSONObject(responseStr);
-                        JSONArray outfitsArray = responseJSON.getJSONArray("outfits");
-                        if (outfitsArray.length() == 0) {
-                            WAIT = false;
-                        }
-                        else {
-                            outfitsIdList.clear();
-                            clothesIdList.clear();
-                            for (int i = 0; i < outfitsArray.length(); i++) {
-                                JSONObject outfitJSON = outfitsArray.getJSONObject(i);
-                                extractResponseOutfitData(outfitJSON);
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else {
-                    WAIT = false;
-                }
-            }
-        });
-    }
-
-    private void extractResponseOutfitData(JSONObject outfitJSON) throws JSONException{
+    private void extractResponseOutfitData(JSONObject responseJSON) throws JSONException{
+        JSONObject outfitJSON = responseJSON.getJSONObject("outfit");
         JSONObject upperClothesJSON = outfitJSON.getJSONObject("chosenUpperClothes");
         JSONObject trousersJSON = outfitJSON.getJSONObject("chosenTrousers");
         JSONObject shoesJSON = outfitJSON.getJSONObject("chosenShoes");
+
+        String upperClothesId = EMPTY_STRING;
+        String trousersId = EMPTY_STRING;
+        String shoesId = EMPTY_STRING;
 
         try {
             if (outfitJSON.has("_id")) {
                 String outfitId = outfitJSON.getString("_id");
                 outfitsIdList.add(outfitId);
+                Log.d(TAG, "testing: added one outfit to outfit id list");
             }
             if (upperClothesJSON.has("id")){
-                String upperClothesId = upperClothesJSON.getString("id");
+                upperClothesId = upperClothesJSON.getString("id");
                 clothesIdList.add(upperClothesId);
+                Log.d(TAG, "testing: added one upper clothes to clothes id list");
             }
             if (trousersJSON.has("id")){
-                String trousersId = trousersJSON.getString("id");
+                trousersId = trousersJSON.getString("id");
                 clothesIdList.add(trousersId);
             }
             if (shoesJSON.has("id")){
-                String shoesId = shoesJSON.getString("id");
+                shoesId = shoesJSON.getString("id");
                 clothesIdList.add(shoesId);
             }
             if(outfitJSON.has("message")){
@@ -453,8 +340,75 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             if(outfitJSON.has("success")){
                 String success = outfitJSON.getString("success");
             }
+
+            addOutfitOnUI(upperClothesId, trousersId, shoesId);
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void addOutfitOnUI(String upperClothesId, String trousersId, String shoesId) {
+        TextView outfitText = new TextView(getContext());
+        outfitText.setText("outfit");
+
+        ImageView image1 = new ImageView(getContext());
+        image1.setId(View.generateViewId());
+        LinearLayout.LayoutParams image1Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        image1Params.width = 300;
+        image1Params.height = 300;
+        image1.setLayoutParams(image1Params);
+        image1.setImageBitmap(getClothesImage(upperClothesId));
+
+        ImageView image2 = new ImageView(getContext());
+        image2.setId(View.generateViewId());
+        LinearLayout.LayoutParams image2Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        image2Params.width = 300;
+        image2Params.height = 300;
+        image2Params.leftMargin = 37;
+        image2.setLayoutParams(image2Params);
+        image2.setImageBitmap(getClothesImage(trousersId));
+
+        ImageView image3 = new ImageView(getContext());
+        image3.setId(View.generateViewId());
+        LinearLayout.LayoutParams image3Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        image3Params.width = 300;
+        image3Params.height = 300;
+        image3Params.leftMargin = 37;
+        image3.setLayoutParams(image3Params);
+        image3.setImageBitmap(getClothesImage(shoesId));
+
+        // buttons
+
+
+        LinearLayout clothesLayout = new LinearLayout(getContext());
+        clothesLayout.setOrientation(LinearLayout.HORIZONTAL);
+        clothesLayout.setPadding(37, 0, 37, 0);
+        clothesLayout.addView(image1);
+        clothesLayout.addView(image2);
+        clothesLayout.addView(image3);
+
+        // buttons layout
+
+
+        final LinearLayout outfitLayout = new LinearLayout(getContext());
+        outfitLayout.setOrientation(LinearLayout.VERTICAL);
+        outfitLayout.addView(outfitText);
+        outfitLayout.addView(clothesLayout);
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                outfitsLayout.addView(outfitLayout);
+            }
+        });
+    }
+
+    private void addTodayOutfitsOnUI() {
+        for (int i = 0; i < clothesIdList.size(); i += 3) {
+            String upperClothesId = clothesIdList.get(i);
+            String trousersId = clothesIdList.get(i+1);
+            String shoesId = clothesIdList.get(i+2);
+            addOutfitOnUI(upperClothesId, trousersId, shoesId);
         }
     }
 

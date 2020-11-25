@@ -12,9 +12,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final String TAG = "MainActivity";
     private static User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle data = getIntent().getExtras();
         user = data.getParcelable("user");
-
-
 
         //send firebase registration token to the server
         FirebaseMsgService.getTokenNSendToServer(user.getUserToken());

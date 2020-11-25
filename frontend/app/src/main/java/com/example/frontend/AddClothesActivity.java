@@ -81,8 +81,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<String> seasons = new ArrayList<>();
     private ArrayList<String> occasions = new ArrayList<>();
 
-    private HashMap<String, Clothes> clothHashMap =new HashMap<>();
-
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_data");
 
     @Override
@@ -186,12 +184,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 //                send the cloth data to server
                 sendClothDataToServer(clothAttribute,TAG,AddClothesActivity.this);
 
-                while (clothesId.equals(EMPTY_STRING)) {
-                    // wait for clothing id; change this
-                    Log.d(TAG, "waiting for clothing id");
-                }
-                sendImageToServer(file);
-
                 Intent setImageIntent = new Intent();
                 setImageIntent.putExtra("clothesId", clothesId);
                 setResult(RESULT_OK, setImageIntent);
@@ -279,13 +271,12 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 JSONObject responseJson = null;
                 try {
                     responseJson = new JSONObject(responseStr);
-                    extractResponseClothesData(responseJson);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 if (response.isSuccessful()) {
+                    extractResponseClothesId(responseJson);
                     //make a toast to let the server's message display to the user
-
                     if(Objects.requireNonNull(responseJson).has("message") ){
                         runOnUiThread(new Runnable() {
                             public void run() {
@@ -295,15 +286,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                         });
                         //startActivity(new Intent(getApplicationContext(),AddClothesActivity.class));
                     }
-                    else{
-
-                        //create a new cloth instance and add it the the clothes' collection
-                        Clothes clothes = new Clothes(clothesId,category,color,name,updated, clothUser,seasons,occasions);
-                        clothHashMap.put(clothesId, clothes);
-
-                        //startActivity(new Intent(getApplicationContext(),MainActivity.class).putExtra("user",new User(userId,userToken,email)));
-                    }
-
                 } else {
                     // Request not successful
                     if(Objects.requireNonNull(responseJson).has("message") ){
@@ -320,38 +302,14 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
-    private void extractResponseClothesData(JSONObject responseJson) {
+    private void extractResponseClothesId(JSONObject responseJson) {
 //        JSONArray seasons_jsonArray,occasions_jsonArray;
         try {
-            if(responseJson.has("message"))
-                message = responseJson.getString("message");
-            // commented for codacy issue
-
-//            if(responseJson.has("seasons")){
-//                seasons_jsonArray = responseJson.getJSONArray("seasons");
-//                for (int i=0;i<seasons_jsonArray.length();i++){
-//                    seasons.add(seasons_jsonArray.getString(i));
-//                }
-//            }
-//            if(responseJson.has("occasions")){
-//                occasions_jsonArray = responseJson.getJSONArray("occasions");
-//                for (int i=0;i<occasions_jsonArray.length();i++){
-//                    occasions.add(occasions_jsonArray.getString(i));
-//                }
-//            }
-//            if(responseJson.has("category"))
-//                category = responseJson.getString("category");
-//            if(responseJson.has("color"))
-//                color = responseJson.getString("color");
-//            if(responseJson.has("name"))
-//                name = responseJson.getString("name");
-//            if(responseJson.has("user"))
-//                cloth_user = responseJson.getString("user");
-//            if(responseJson.has("updated"))
-//                updated = responseJson.getString("updated");
+//            if(responseJson.has("message"))
+//                message = responseJson.getString("message");
             if(responseJson.has("id"))
                 clothesId = responseJson.getString("id");
-
+            sendImageToServer(file);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -374,6 +332,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 image.setVisibility(View.VISIBLE);
                 path = getPath(uri);
                 file = new File(path);
+                sendImageToServer(file);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

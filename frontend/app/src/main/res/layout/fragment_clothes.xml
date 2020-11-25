@@ -162,8 +162,8 @@
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="409dp"
-        android:layout_height="557dp"
+        android:layout_width="402dp"
+        android:layout_height="470dp"
         android:layout_marginEnd="5dp"
         android:columnCount="3"
         android:scrollbars="vertical"
@@ -180,8 +180,7 @@
             android:layout_height="match_parent"
             android:columnCount="3"
             android:gravity="center"
-            android:padding="25dp">
-        </GridLayout>
+            android:padding="25dp"></GridLayout>
 
 
     </ScrollView>

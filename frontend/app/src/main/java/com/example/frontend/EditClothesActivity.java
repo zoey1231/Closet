@@ -161,10 +161,6 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
                 constructClothAttributeClothName(clothAttribute,TAG,clothName);
                 updateClothDataToServer(clothAttribute,TAG,EditClothesActivity.this);
 
-                while (!hasUpdate) {
-                    Log.d(TAG, "waiting for update cloth");
-                }
-                sendImageToServer(file);
                 Intent setImageIntent = new Intent();
                 setImageIntent.putExtra("clothesId", clothesId);
                 setResult(RESULT_OK, setImageIntent);
@@ -203,6 +199,7 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
                 image.setVisibility(View.VISIBLE);
                 path = getPath(uri);
                 file = new File(path);
+                sendImageToServer(file);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
