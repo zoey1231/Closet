@@ -55,14 +55,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     TextView tv_date_today,tv_date_tmr,tv_temp_today,tv_temp_tmr;
     ImageView iv_icon_today,iv_icon_tmr;
 
-    Button outfitButton,likeButton,dislikeButton;
+    Button getButton,likeButton,dislikeButton, createButton;
     RelativeLayout rl_outfit;
     ImageView cloth1, cloth2, cloth3;
     ConstraintLayout view_dislike;
     TextView tv_undo;
     ImageButton undoButton;
-
-    Button test;
 
     private String outfitId = EMPTY_STRING;
     private String upperClothesId = EMPTY_STRING;
@@ -93,18 +91,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         iv_icon_today = root.findViewById(R.id.iv_icon_today);
         iv_icon_tmr = root.findViewById(R.id.iv_icon_tmr);
 
-        outfitButton = root.findViewById(R.id.btn_get_outfit);
+        getButton = root.findViewById(R.id.btn_get_outfit);
+        getButton.setOnClickListener(this);
+        createButton = root.findViewById(R.id.btn_create_outfit);
+        createButton.setVisibility(View.GONE);
+        createButton.setOnClickListener(this);
+
         likeButton = root.findViewById(R.id.btn_like_outfit1);
-        dislikeButton = root.findViewById(R.id.btn_dislike_outfit1);
-        outfitButton.setOnClickListener(this);
         likeButton.setOnClickListener(this);
+        dislikeButton = root.findViewById(R.id.btn_dislike_outfit1);
         dislikeButton.setOnClickListener(this);
 
         view_dislike = root.findViewById(R.id.view_dislike);
         view_dislike.setVisibility(View.GONE);
         tv_undo =  root.findViewById(R.id.tv_undo);
-        undoButton =  root.findViewById(R.id.btn_undo);
         tv_undo.setOnClickListener(this);
+        undoButton =  root.findViewById(R.id.btn_undo);
         undoButton.setOnClickListener(this);
 
         rl_outfit = root.findViewById(R.id.rl_outfit);
@@ -118,9 +120,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         userId = MainActivity.getUser().getUserId();
         getWeatherData(userToken);
 
-        test = root.findViewById(R.id.btn_test);
-        test.setOnClickListener(this);
-
         return root;
     }
 
@@ -129,10 +128,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         switch (view.getId()){
             case R.id.btn_get_outfit:
 //                idlingResource.increment();
-                outfitButton.setEnabled(false);
+                getButton.setEnabled(false);
                 getOutfitData(userToken);
-
-
+                
                 while ((outfitId.equals(EMPTY_STRING) || upperClothesId.equals(EMPTY_STRING) ||
                         trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING))
                         && message.equals(EMPTY_STRING)) {
@@ -151,8 +149,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     cloth2.setBackground(getClothesImage(userId, trousersId));
                     cloth3.setBackground(getClothesImage(userId, shoesId));
                 }
-                outfitButton.setEnabled(true);
-
+                getButton.setEnabled(true);
                 break;
 
             case R.id.btn_like_outfit1:
@@ -192,7 +189,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
 
-            case R.id.btn_test:
+            case R.id.btn_create_outfit:
                 Intent intent = new Intent(HomeFragment.this.getContext(), CreateOutfitActivity.class);
                 startActivity(intent);
                 break;
@@ -427,6 +424,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
             if(responseJson.has("success")){
                 success = responseJson.getString("success");
+            }
+            if (responseJson.has("manual")) {
+                if (responseJson.getString("manual").equals("true")) {
+                    createButton.setVisibility(View.VISIBLE);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();

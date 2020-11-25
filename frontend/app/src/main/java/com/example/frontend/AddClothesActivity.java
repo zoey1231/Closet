@@ -27,6 +27,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
+import com.example.frontend.ui.clothes.ClothesFragment;
+
 import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import org.json.JSONArray;
