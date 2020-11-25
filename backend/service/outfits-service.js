@@ -100,8 +100,8 @@ const generateOutfit = async user_id => {
       LOG.error(exception.message);
     }
 
-    for (const outfit of outfitsReturnedToday) {
-      TodayOutfitsIds.push(outfit._id);
+    for (const todayOutfit of outfitsReturnedToday) {
+      TodayOutfitsIds.push(todayOutfit.hashId);
     }
 
     TodayOutfits = AllOutfits.filter(outfit =>
@@ -272,7 +272,7 @@ const generateOutfit = async user_id => {
 
         /* Add to today returned outfits */
         const newTodayOutfit = new TodayOutfit({
-          _id: chosenOutfit._id,
+          hashId: chosenOutfit._id,
           returnedTime: getTodayDateInTimezone(),
           user: userId,
         });
@@ -393,7 +393,7 @@ const generateOutfit = async user_id => {
 
     /* Add to today returned outfits */
     const newTodayOutfit = new TodayOutfit({
-      _id: hashId,
+      hashId,
       returnedTime: getTodayDateInTimezone(),
       user: userId,
     });
@@ -481,7 +481,7 @@ const generateOutfit = async user_id => {
           if (!TodayOutfitsIds.includes(chosenOutfit._id)) {
             /* Add to today returned outfits */
             const newTodayOutfit = new TodayOutfit({
-              _id: chosenOutfit._id,
+              hashId: chosenOutfit._id,
               returnedTime: getTodayDateInTimezone(),
               user: userId,
             });
@@ -668,7 +668,7 @@ const generateOutfit = async user_id => {
       if (!TodayOutfitsIds.includes(hashId)) {
         /* Add to today returned outfits */
         const newTodayOutfit = new TodayOutfit({
-          _id: hashId,
+          hashId,
           returnedTime: getTodayDateInTimezone(),
           user: userId,
         });

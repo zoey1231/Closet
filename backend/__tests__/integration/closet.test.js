@@ -129,11 +129,6 @@ describe('Closet integration tests', () => {
     name: 'NEW TESTING',
     email: 'newtesting@newtesting.com',
   };
-  const invalidCity = {
-    name: 'NEW TESTING',
-    email: 'newtesting@newtesting.com',
-    city: 'a',
-  };
   const otherUser = {
     name: 'TESTING',
     email: 'othertesting@othertesting.com',
@@ -155,17 +150,7 @@ describe('Closet integration tests', () => {
       'Invalid inputs passed, please check your data.'
     );
 
-    res = await api
-      .put('/api/users/me')
-      .set('Authorization', `Bearer ${token}`)
-      .send(invalidCity);
-    expect(res.statusCode).toEqual(500);
-    expect(res.body.message).toEqual(
-      'Cannot find your city, please check and try again'
-    );
-
     res = await api.post('/api/users/signup').send(otherUser);
-
     expect(res.statusCode).toEqual(201);
     expect(res.body.email).toEqual(otherUser.email.toLowerCase());
     expect(res.body.userId).toBeTruthy();
@@ -175,7 +160,6 @@ describe('Closet integration tests', () => {
       .put('/api/users/me')
       .set('Authorization', `Bearer ${token}`)
       .send(existingUserProfile);
-
     expect(res.statusCode).toEqual(422);
     expect(res.body.message).toEqual(
       'The email has been registered, please change to another one'
