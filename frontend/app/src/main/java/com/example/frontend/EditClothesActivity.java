@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -32,10 +34,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,8 +77,10 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
     private Clothes cloth;
     private String message = EMPTY_STRING;
     private JSONObject clothAttribute = new JSONObject();
+
     private boolean hasUpdate = false;
 
+    @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +97,16 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
         clothesId = data.getString("clothesId");
         Bitmap bitmap = getClothesImage(userId, clothesId);
         image.setImageBitmap(bitmap);
+        file = Environment.getDownloadCacheDirectory();
+        try {
+            OutputStream stream = new BufferedOutputStream(new FileOutputStream(file));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            stream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         imageButton.setOnClickListener(this);
         saveButton.setOnClickListener(this);
@@ -144,14 +161,11 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
                 constructClothAttributeClothName(clothAttribute,TAG,clothName);
                 updateClothDataToServer(clothAttribute,TAG,EditClothesActivity.this);
 
-
                 while (!hasUpdate) {
-                    // wait for clothing id; change this
                     Log.d(TAG, "waiting for update cloth");
                 }
                 sendImageToServer(file);
                 Intent setImageIntent = new Intent();
-                setImageIntent.putExtra("path", path);
                 setImageIntent.putExtra("clothesId", clothesId);
                 setResult(RESULT_OK, setImageIntent);
 
@@ -189,15 +203,9 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
                 image.setVisibility(View.VISIBLE);
                 path = getPath(uri);
                 file = new File(path);
-
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                final Toast toast = makeText(EditClothesActivity.this, "Something went wrong", Toast.LENGTH_LONG);
-                toast.show();
             }
-        } else {
-            final Toast toast = makeText(EditClothesActivity.this, "You haven't picked an image", Toast.LENGTH_LONG);
-            toast.show();
         }
     }
 

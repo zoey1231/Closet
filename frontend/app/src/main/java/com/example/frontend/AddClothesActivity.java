@@ -377,12 +377,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                final Toast toast = makeText(AddClothesActivity.this, "Something went wrong", Toast.LENGTH_LONG);
-                toast.show();
             }
         } else {
-            final Toast toast = makeText(AddClothesActivity.this, "You haven't picked an image", Toast.LENGTH_LONG);
-            toast.show();
         }
     }
 
