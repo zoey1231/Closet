@@ -30,26 +30,26 @@
         app:layout_constraintHorizontal_bias="0.077"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_title_outfit"
-        app:layout_constraintVertical_bias="0.024" />
+        app:layout_constraintVertical_bias="0.012" />
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView2"
-        android:layout_width="408dp"
-        android:layout_height="121dp"
+        android:layout_width="412dp"
+        android:layout_height="133dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.159">
+        app:layout_constraintVertical_bias="0.145">
 
         <GridLayout
             android:id="@+id/gl_upper_clothes"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scrollbars="horizontal"
             android:gravity="center"
-            android:padding="25dp" />
+            android:padding="25dp"
+            android:scrollbars="horizontal" />
     </HorizontalScrollView>
 
     <TextView
@@ -63,26 +63,25 @@
         app:layout_constraintHorizontal_bias="0.088"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.321" />
+        app:layout_constraintVertical_bias="0.308" />
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView3"
-        android:layout_width="411dp"
-        android:layout_height="122dp"
+        android:layout_width="412dp"
+        android:layout_height="133dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.405">
+        app:layout_constraintVertical_bias="0.397">
 
         <GridLayout
             android:id="@+id/gl_trousers"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scrollbars="horizontal"
             android:gravity="center"
-            android:padding="25dp" />
+            android:padding="25dp"
+            android:scrollbars="horizontal" />
     </HorizontalScrollView>
 
     <TextView
@@ -96,26 +95,26 @@
         app:layout_constraintHorizontal_bias="0.077"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.53" />
+        app:layout_constraintVertical_bias="0.52" />
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView4"
-        android:layout_width="411dp"
-        android:layout_height="122dp"
+        android:layout_width="412dp"
+        android:layout_height="133dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.65">
+        app:layout_constraintVertical_bias="0.649">
 
         <GridLayout
             android:id="@+id/gl_shoes"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scrollbars="horizontal"
             android:gravity="center"
-            android:padding="25dp" />
+            android:padding="25dp"
+            android:scrollbars="horizontal" />
     </HorizontalScrollView>
 
     <Button

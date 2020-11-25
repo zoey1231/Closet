@@ -2,6 +2,7 @@ package com.example.frontend;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -24,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -32,8 +35,9 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class CreateOutfitActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class CreateOutfitActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "CreateOutfitActivity";
+    private static final String EMPTY_STRING = "";
 
     private User user;
 
@@ -46,7 +50,16 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
     private List<String> trousersIdList = new ArrayList<>();
     private List<String> shoesIdList = new ArrayList<>();
 
+    private HashMap<Integer, String> upperClothesIdMap = new HashMap<>();
+    private HashMap<Integer, String> trousersIdMap = new HashMap<>();
+    private HashMap<Integer, String> shoesIdMap = new HashMap<>();
+
     private String attributes; //change this
+    private String upperClothesId = EMPTY_STRING;
+    private String trousersId = EMPTY_STRING;
+    private String shoesId = EMPTY_STRING;
+
+    private boolean WAIT = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,7 +75,7 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         button.setOnClickListener(this);
 
         getAllClothesFromServer();
-        while (upperClothesIdList.size() == 0 || trousersIdList.size() == 0 || shoesIdList.size() == 0) {
+        while (WAIT && (upperClothesIdList.size() == 0 || trousersIdList.size() == 0 || shoesIdList.size() == 0)) {
             Log.d(TAG, "waiting for ids");
         }
         addAllClothesOnUI();
@@ -70,26 +83,34 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_save_outfit:
-                sendOutfitToServer();
+        int selectedId = view.getId();
+
+        if (selectedId == R.id.btn_save_outfit) {
+            sendOutfitToServer();
+        }
+        else {
+            if (upperClothesIdMap.containsKey(selectedId)) {
+                upperClothesId = upperClothesIdMap.get(selectedId);
+            }
+            else if (trousersIdMap.containsKey(selectedId)) {
+                trousersId = trousersIdMap.get(selectedId);
+            }
+            else {
+                shoesId = shoesIdMap.get(selectedId);
+            }
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-    }
-
     private ImageView addClothesOnUI(Bitmap bitmap) {
-        ImageView clothes = new ImageView(this);
+        ImageView image = new ImageView(this);
         GridLayout.LayoutParams clothesParams = new GridLayout.LayoutParams();
         clothesParams.width = 300;
         clothesParams.height = 300;
-        clothes.setLayoutParams(clothesParams);
-        clothes.setImageBitmap(bitmap);
+        image.setLayoutParams(clothesParams);
+        image.setImageBitmap(bitmap);
+        image.setOnClickListener(this);
 
-        return clothes;
+        return image;
     }
 
     private void addAllClothesOnUI() {
@@ -98,23 +119,28 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         for (int i = 0; i < upperClothesIdList.size(); i++) {
             String clothesId = upperClothesIdList.get(i);
             Bitmap bitmap = getClothesImage(userId, clothesId);
-            Log.d(TAG, "testing: bitmap is " + bitmap);
-            ImageView clothes = addClothesOnUI(bitmap);
-            upperClothesLayout.addView(clothes);
+            ImageView image = addClothesOnUI(bitmap);
+            image.setId(View.generateViewId());
+            upperClothesLayout.addView(image);
+            upperClothesIdMap.put(image.getId(), clothesId);
         }
 
         for (int i = 0; i < trousersIdList.size(); i++) {
             String clothesId = trousersIdList.get(i);
             Bitmap bitmap = getClothesImage(userId, clothesId);
-            ImageView clothes = addClothesOnUI(bitmap);
-            trousersLayout.addView(clothes);
+            ImageView image = addClothesOnUI(bitmap);
+            image.setId(View.generateViewId());
+            trousersLayout.addView(image);
+            trousersIdMap.put(image.getId(), clothesId);
         }
 
         for (int i = 0; i < shoesIdList.size(); i++) {
             String clothesId = shoesIdList.get(i);
             Bitmap bitmap = getClothesImage(userId, clothesId);
-            ImageView clothes = addClothesOnUI(bitmap);
-            shoesLayout.addView(clothes);
+            ImageView image = addClothesOnUI(bitmap);
+            image.setId(View.generateViewId());
+            shoesLayout.addView(image);
+            shoesIdMap.put(image.getId(), clothesId);
         }
     }
 
@@ -125,6 +151,7 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
+                WAIT = false;
             }
 
             @Override
@@ -141,6 +168,9 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
                         e.printStackTrace();
                     }
                 }
+                else {
+                    WAIT = false;
+                }
             }
         });
     }
@@ -150,13 +180,13 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         for (int i = 0; i < clothesArray.length(); i++) {
             JSONObject clothes = clothesArray.getJSONObject(i);
             if (clothes.has("id")) {
-                if (clothes.getString("category").equals("outwear") || clothes.getString("category").equals("shirt")) {
+                if (clothes.getString("category").equals("Outwear") || clothes.getString("category").equals("Shirts")) {
                     upperClothesIdList.add(clothes.getString("id"));
                 }
-                if (clothes.getString("category").equals("trousers")) {
+                else if (clothes.getString("category").equals("Trousers")) {
                     trousersIdList.add(clothes.getString("id"));
                 }
-                if (clothes.getString("category").equals("shoes")) {
+                else {
                     shoesIdList.add(clothes.getString("id"));
                 }
             }
@@ -169,7 +199,7 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         BufferedInputStream buffer;
 
         try {
-            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".png");
+            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".jpg");
             stream = url.openStream();
             buffer = new BufferedInputStream(stream);
             Bitmap bitmap = BitmapFactory.decodeStream(buffer);
@@ -202,4 +232,5 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
             }
         });
     }
+
 }
