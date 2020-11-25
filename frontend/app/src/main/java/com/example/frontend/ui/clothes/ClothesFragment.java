@@ -288,6 +288,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
+                WAIT = false;
             }
 
             @Override

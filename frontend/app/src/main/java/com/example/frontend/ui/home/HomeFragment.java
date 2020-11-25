@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -56,18 +57,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private ImageView iv_icon_today,iv_icon_tmr;
 
     private Button outfitButton;
-    private RelativeLayout outfitsLayout;
-    private LinearLayout outfitLayout, clothesLayout, buttonsLayout;
-    private ImageView image1, image2, image3;
-    private Button likeButton, dislikeButton;
-    private ConstraintLayout dislikeLayout;
-    private TextView outfitText, undoText;
-    private ImageButton undoButton;
+    private GridLayout outfitsLayout;
 
-    private String outfitId = EMPTY_STRING;
-    private String upperClothesId = EMPTY_STRING;
-    private String trousersId = EMPTY_STRING;
-    private String shoesId = EMPTY_STRING;
     private List<String> outfitsIdList = new ArrayList<>();
     private List<String> clothesIdList = new ArrayList<>();
 
@@ -101,8 +92,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         iv_icon_today = root.findViewById(R.id.iv_icon_today);
         iv_icon_tmr = root.findViewById(R.id.iv_icon_tmr);
 
-        outfitsLayout = root.findViewById(R.id.rl_outfit);
-        outfitsLayout.setVisibility(View.GONE);
+        outfitsLayout = root.findViewById(R.id.gl_outfit);
 
         outfitButton = root.findViewById(R.id.btn_outfit);
 //        likeButton = root.findViewById(R.id.btn_like_outfit1);
@@ -119,12 +109,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //        undoButton.setOnClickListener(this);
 
         getWeatherData();
-        getMultipleOutfitsFromServer();
-        while (WAIT && outfitsIdList.size() == 0) {
-            Log.d(TAG, "waiting for ids");
-        }
-        addMultipleOutfitsOnUI();
-        outfitsLayout.setVisibility(View.VISIBLE);
+//        getTodayOutfitsFromServer();
+//        while (WAIT && outfitsIdList.size() == 0) {
+//            Log.d(TAG, "waiting for ids");
+//        }
+//        addAllOutfitsOnUI();
 
         return root;
     }
@@ -135,13 +124,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.btn_outfit:
 //                idlingResource.increment();
                 outfitButton.setEnabled(false);
-                getOutfitFromServer(userToken);
-
-                while ((outfitId.equals(EMPTY_STRING) || upperClothesId.equals(EMPTY_STRING) ||
-                        trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING))
-                        && message.equals(EMPTY_STRING)) {
-                    Log.d(TAG, "waiting for ids");
-                }
+                getOutfitFromServer();
 
                 //fail to generate an outfit
                 if(!message.equals(EMPTY_STRING)&&!warning.equals(EMPTY_STRING)&&success.equals((EMPTY_STRING))){
@@ -149,8 +132,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     Toast.makeText(getContext(), warning, Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    addOutfitOnUI();
-
+                    while (WAIT && outfitsIdList.size() == 0) {
+                        Log.d(TAG, "waiting for ids");
+                    }
+                    addAllOutfitsOnUI();
 //                    likeButton.setEnabled(true);
 //                    dislikeButton.setEnabled(true);
                     outfitsLayout.setVisibility(View.VISIBLE);
@@ -215,11 +200,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void addOutfitOnUI() {
-        outfitText = new TextView(getContext());
+    private void addOutfitOnUI(String upperClothesId, String trousersId, String shoesId) {
+        TextView outfitText = new TextView(getContext());
         outfitText.setText("outfit");
 
-        image1 = new ImageView(getContext());
+        ImageView image1 = new ImageView(getContext());
         image1.setId(View.generateViewId());
         LinearLayout.LayoutParams image1Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         image1Params.width = 300;
@@ -227,7 +212,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         image1.setLayoutParams(image1Params);
         image1.setImageBitmap(getClothesImage(upperClothesId));
 
-        image2 = new ImageView(getContext());
+        ImageView image2 = new ImageView(getContext());
         image2.setId(View.generateViewId());
         LinearLayout.LayoutParams image2Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         image2Params.width = 300;
@@ -236,7 +221,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         image2.setLayoutParams(image2Params);
         image2.setImageBitmap(getClothesImage(trousersId));
 
-        image3 = new ImageView(getContext());
+        ImageView image3 = new ImageView(getContext());
         image3.setId(View.generateViewId());
         LinearLayout.LayoutParams image3Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         image3Params.width = 300;
@@ -248,7 +233,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         // buttons
 
 
-        clothesLayout = new LinearLayout(getContext());
+        LinearLayout clothesLayout = new LinearLayout(getContext());
         clothesLayout.setOrientation(LinearLayout.HORIZONTAL);
         clothesLayout.setPadding(37, 0, 37, 0);
         clothesLayout.addView(image1);
@@ -258,7 +243,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         // buttons layout
 
 
-        outfitLayout = new LinearLayout(getContext());
+        LinearLayout outfitLayout = new LinearLayout(getContext());
         outfitLayout.setOrientation(LinearLayout.VERTICAL);
         outfitLayout.addView(outfitText);
         outfitLayout.addView(clothesLayout);
@@ -266,12 +251,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         outfitsLayout.addView(outfitLayout);
     }
 
-    private void addMultipleOutfitsOnUI() {
+    private void addAllOutfitsOnUI() {
         for (int i = 0; i < clothesIdList.size(); i += 3) {
-            upperClothesId = clothesIdList.get(i);
-            trousersId = clothesIdList.get(i+1);
-            shoesId = clothesIdList.get(i+2);
-            addOutfitOnUI();
+            String upperClothesId = clothesIdList.get(i);
+            String trousersId = clothesIdList.get(i+1);
+            String shoesId = clothesIdList.get(i+2);
+            addOutfitOnUI(upperClothesId, trousersId, shoesId);
         }
     }
 
@@ -343,7 +328,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public void getOutfitFromServer(String userToken) {
+    public void getOutfitFromServer() {
         ServerCommAsync serverCommunication = new ServerCommAsync();
 //        Log.d(TAG,"prepared to getOutfitFromServer");
 
@@ -354,6 +339,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 Log.d(TAG,"Fail to send request to server");
                 Log.d(TAG, String.valueOf(e));
 //                idlingResource.decrement();
+                WAIT = false;
             }
 
             @Override
@@ -391,19 +377,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     }
                     Log.d(TAG,"Outfit request is unsuccessful: "+message+warning);
 
+                    WAIT = false;
                 }
 //                idlingResource.decrement();
             }
         });
     }
 
-    private void getMultipleOutfitsFromServer() {
+    private void getTodayOutfitsFromServer() {
         ServerCommAsync serverComm = new ServerCommAsync();
 
+        //change this
         serverComm.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/multiple", userToken, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
+                WAIT = false;
             }
 
             @Override
@@ -429,6 +418,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         e.printStackTrace();
                     }
                 }
+                else {
+                    WAIT = false;
+                }
             }
         });
     }
@@ -440,39 +432,39 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         try {
             if (outfitJSON.has("_id")) {
-                outfitId = outfitJSON.getString("_id");
+                String outfitId = outfitJSON.getString("_id");
                 outfitsIdList.add(outfitId);
             }
             if (upperClothesJSON.has("id")){
-                upperClothesId = upperClothesJSON.getString("id");
+                String upperClothesId = upperClothesJSON.getString("id");
                 clothesIdList.add(upperClothesId);
             }
             if (trousersJSON.has("id")){
-                trousersId = trousersJSON.getString("id");
+                String trousersId = trousersJSON.getString("id");
                 clothesIdList.add(trousersId);
             }
             if (shoesJSON.has("id")){
-                shoesId = shoesJSON.getString("id");
+                String shoesId = shoesJSON.getString("id");
                 clothesIdList.add(shoesId);
             }
             if(outfitJSON.has("message")){
-                message = outfitJSON.getString("message");
+                String message = outfitJSON.getString("message");
             }
             if(outfitJSON.has("success")){
-                success = outfitJSON.getString("success");
+                String success = outfitJSON.getString("success");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private Bitmap getClothesImage(String clothId) {
+    private Bitmap getClothesImage(String clothesId) {
         URL url;
         InputStream stream;
         BufferedInputStream buffer;
 
         try {
-            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothId + ".jpg");
+            url = new URL("http://closet-cpen321.westus.cloudapp.azure.com/UserClothingImages/" + userId + "/" + clothesId + ".jpg");
             stream = url.openStream();
             buffer = new BufferedInputStream(stream);
             Bitmap bitmap = BitmapFactory.decodeStream(buffer);
@@ -490,71 +482,71 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return null;
     }
 
-    private void sendOutfitOpinionToServer(JSONObject outfit_opinion) {
-        ServerCommAsync serverCommunication = new ServerCommAsync();
-        final String data = outfit_opinion.toString();
-        Log.d(TAG,"prepared to sendOutfitOpinionToServer");
-        Log.d(TAG,"put request: "+outfit_opinion);
-
-        serverCommunication.putWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/"+outfitId, data,userToken, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                e.printStackTrace();
-                Log.d(TAG, "Fail to send outfit opinion to server");
-                Log.d(TAG, String.valueOf(e));
-//                idlingResource.decrement();
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
-                String responseStr = Objects.requireNonNull(response.body()).string();
-                Log.d(TAG, responseStr);
-
-                if (response.isSuccessful()) {
-                    if(like){
-                        like = !like;
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getContext(), "Your preference has been recorded", Toast.LENGTH_SHORT).show();
-                                likeButton.setEnabled(false);
-                                dislikeButton.setEnabled(false);
-                            }
-                        });
-
-
-                    } else if(dislike){
-                        dislike = !dislike;
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-                                dislikeLayout.setVisibility(View.VISIBLE);
-                                likeButton.setEnabled(false);
-                                dislikeButton.setEnabled(false);
-                                undoButton.setEnabled(true);
-                                undoText.setEnabled(true);
-                            }
-                        });
-
-                    } else if (undoDislike){
-                        undoDislike = !undoDislike;
-                        Log.d(TAG,"undo dislike");
-                        //when finish undo dislike,jump back to main screen and let user to select again
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-                                dislikeLayout.setVisibility(View.GONE);
-                                likeButton.setEnabled(true);
-                                dislikeButton.setEnabled(true);
-                            }
-                        });
-
-                    }else {
-                        Log.d(TAG," Error: invalid user's outfit opinion type");
-                    }
-//                    idlingResource.decrement();
-                }
-            }
-        });
-    }
+//    private void sendOutfitOpinionToServer(JSONObject outfit_opinion) {
+//        ServerCommAsync serverCommunication = new ServerCommAsync();
+//        final String data = outfit_opinion.toString();
+//        Log.d(TAG,"prepared to sendOutfitOpinionToServer");
+//        Log.d(TAG,"put request: "+outfit_opinion);
+//
+//        serverCommunication.putWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/"+outfitId, data,userToken, new Callback() {
+//            @Override
+//            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//                e.printStackTrace();
+//                Log.d(TAG, "Fail to send outfit opinion to server");
+//                Log.d(TAG, String.valueOf(e));
+////                idlingResource.decrement();
+//            }
+//
+//            @Override
+//            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+//
+//                String responseStr = Objects.requireNonNull(response.body()).string();
+//                Log.d(TAG, responseStr);
+//
+//                if (response.isSuccessful()) {
+//                    if(like){
+//                        like = !like;
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            public void run() {
+//                                Toast.makeText(getContext(), "Your preference has been recorded", Toast.LENGTH_SHORT).show();
+//                                likeButton.setEnabled(false);
+//                                dislikeButton.setEnabled(false);
+//                            }
+//                        });
+//
+//
+//                    } else if(dislike){
+//                        dislike = !dislike;
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            public void run() {
+//                                dislikeLayout.setVisibility(View.VISIBLE);
+//                                likeButton.setEnabled(false);
+//                                dislikeButton.setEnabled(false);
+//                                undoButton.setEnabled(true);
+//                                undoText.setEnabled(true);
+//                            }
+//                        });
+//
+//                    } else if (undoDislike){
+//                        undoDislike = !undoDislike;
+//                        Log.d(TAG,"undo dislike");
+//                        //when finish undo dislike,jump back to main screen and let user to select again
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            public void run() {
+//                                dislikeLayout.setVisibility(View.GONE);
+//                                likeButton.setEnabled(true);
+//                                dislikeButton.setEnabled(true);
+//                            }
+//                        });
+//
+//                    }else {
+//                        Log.d(TAG," Error: invalid user's outfit opinion type");
+//                    }
+////                    idlingResource.decrement();
+//                }
+//            }
+//        });
+//    }
 
 //    public static CountingIdlingResource getRegisterIdlingResourceInTest() {
 //        return idlingResource;

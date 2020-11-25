@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="@+id/btn_clothes_add"
         app:layout_constraintHorizontal_bias="0.004"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/btn_clothes_add"
@@ -165,6 +165,8 @@
         android:layout_width="409dp"
         android:layout_height="557dp"
         android:layout_marginEnd="5dp"
+        android:columnCount="3"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.4"

@@ -1,4 +1,4 @@
-package com.example.frontend.ui.clothes;
+package com.example.frontend;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
