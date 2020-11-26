@@ -1,17 +1,19 @@
 package com.example.frontend;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +36,9 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class CreateOutfitActivity extends AppCompatActivity implements View.OnClickListener {
+import static android.widget.Toast.makeText;
+
+public class CreateOutfitActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private static final String TAG = "CreateOutfitActivity";
     private static final String EMPTY_STRING = "";
 
@@ -54,11 +57,14 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
     private HashMap<Integer, String> trousersIdMap = new HashMap<>();
     private HashMap<Integer, String> shoesIdMap = new HashMap<>();
 
-    private String attributes; //change this
+    private JSONObject clothAttribute = new JSONObject();
+    String[] clothesID = new String[3];
+    JSONArray clothes = new JSONArray();
     private String upperClothesId = EMPTY_STRING;
     private String trousersId = EMPTY_STRING;
     private String shoesId = EMPTY_STRING;
-
+    private Spinner spinner_occasion;
+    private String message = EMPTY_STRING;
     private boolean WAIT = true;
 
     @Override
@@ -74,6 +80,12 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         button = findViewById(R.id.btn_save_outfit);
         button.setOnClickListener(this);
 
+        //occasion spinner
+        spinner_occasion = findViewById(R.id.sp_occasion_outfit);
+
+        setAdapter(R.array.occasion_array, spinner_occasion);
+        spinner_occasion.setOnItemSelectedListener(this);
+
         getAllClothesFromServer();
         while (WAIT && (upperClothesIdList.size() == 0 || trousersIdList.size() == 0 || shoesIdList.size() == 0)) {
             Log.d(TAG, "waiting for ids");
@@ -86,20 +98,111 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         int selectedId = view.getId();
 
         if (selectedId == R.id.btn_save_outfit) {
-            sendOutfitToServer();
+            constructClothAttributeFromCheckBoxes();
+            constructClothAttributeClothID();
+            sendOutfitToServer(clothAttribute);
+            Intent intent = new Intent();
+            //TODO:  intent.putExtra() etc.
+            setResult(RESULT_OK, intent);
+            finish();
         }
         else {
             if (upperClothesIdMap.containsKey(selectedId)) {
                 upperClothesId = upperClothesIdMap.get(selectedId);
+                clothesID[0] = upperClothesId;
             }
             else if (trousersIdMap.containsKey(selectedId)) {
                 trousersId = trousersIdMap.get(selectedId);
+                clothesID[1] = trousersId;
             }
-            else {
+            else if (shoesIdMap.containsKey(selectedId)){
                 shoesId = shoesIdMap.get(selectedId);
+                clothesID[2] = shoesId;
             }
         }
     }
+
+    private void constructClothAttributeClothID() {
+        for(int i = 0;i < clothesID.length;i++){
+            clothes.put(clothesID[i]);
+        }
+        try {
+            clothAttribute.put("clothes", clothes);
+            Log.d(TAG, "clothes:"+clothes);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    public void setAdapter(int textArrayResId, @NotNull Spinner spinner) {
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                textArrayResId, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+    }
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
+        //construct the clothAttribute JSONObject we want to send to server
+        constructClothAttribute(parent,view,pos);
+    }
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
+        //Toast.makeText(parent.getContext(),"You must select one of the options",Toast.LENGTH_SHORT).show();
+    }
+    private void constructClothAttribute(AdapterView<?> parent, View view, int pos) {
+        Log.d(TAG,"VIEW: "+ view.getId());
+        switch (parent.getId()) {
+            case R.id.sp_occasion_outfit:
+                JSONArray occasions = new JSONArray();
+                try {
+                    String selection = parent.getItemAtPosition(pos).toString();
+                    occasions.put(0,selection);
+                    clothAttribute.put("occasions", occasions);
+                    Log.d(TAG, "occasions:"+occasions.get(0));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            default:
+        }
+    }
+
+    private void constructClothAttributeFromCheckBoxes() {
+        CheckBox checkBox_spring = findViewById(R.id.cb_spring_outfit);
+        CheckBox checkBox_summer = findViewById(R.id.cb_summer_outfit);
+        CheckBox checkBox_fall = findViewById(R.id.cb_fall_outfit);
+        CheckBox checkBox_winter = findViewById(R.id.cb_winter_outfit);
+        CheckBox checkBox_all = findViewById(R.id.cb_all_outfit);
+
+        JSONArray seasons = new JSONArray();
+        if(checkBox_spring.isChecked()){
+            seasons.put("Spring");
+        }
+        if(checkBox_summer.isChecked()){
+            seasons.put("Summer");
+        }
+        if(checkBox_fall.isChecked()){
+            seasons.put("Fall");
+        }
+        if(checkBox_winter.isChecked()){
+            seasons.put("Winter");
+        }
+        if(checkBox_all.isChecked()){
+            seasons.put("All");
+        }
+
+        try {
+            clothAttribute.put("seasons", seasons);
+            Log.d(TAG, "seasons:"+seasons);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private ImageView addClothesOnUI(Bitmap bitmap) {
         ImageView image = new ImageView(this);
@@ -217,18 +320,60 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         return null;
     }
 
-    private void sendOutfitToServer() {
+    private void sendOutfitToServer(JSONObject userData) {
         ServerCommAsync serverCommu = new ServerCommAsync();
-
-        serverCommu.postWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/one", attributes, user.getUserToken(), new Callback() {
+        final String data = userData.toString();
+        Log.d(TAG,"data: "+data);
+        serverCommu.postWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/one", data, user.getUserToken(), new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
+                Log.d(TAG,"Fail to send request to server");
+                Log.d(TAG, String.valueOf(e));
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseStr = Objects.requireNonNull(response.body()).string();
+                Log.d(TAG,responseStr);
+                JSONObject responseJson = null;
+                try {
+                    responseJson = new JSONObject(responseStr);
+                    if(responseJson.has("message"))
+                        message = responseJson.getString("message");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (response.isSuccessful()) {
+                    //make a toast to let the server's message display to the user
 
+                    if(Objects.requireNonNull(responseJson).has("message") ){
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                final Toast toast = makeText(CreateOutfitActivity.this,message,Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        });
+                    }
+                    else{
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                final Toast toast = makeText(CreateOutfitActivity.this,"Successfully create an outfit!",Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        });
+                    }
+                }else {
+                    // Request not successful
+                    if(Objects.requireNonNull(responseJson).has("message") ){
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                final Toast toast = makeText(CreateOutfitActivity.this,message,Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        });
+                    }
+                }
             }
         });
     }

@@ -94,7 +94,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         getButton = root.findViewById(R.id.btn_get_outfit);
         getButton.setOnClickListener(this);
         createButton = root.findViewById(R.id.btn_create_outfit);
-        createButton.setVisibility(View.GONE);
+        //createButton.setVisibility(View.GONE);
         createButton.setOnClickListener(this);
 
         likeButton = root.findViewById(R.id.btn_like_outfit1);
