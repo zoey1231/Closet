@@ -28,7 +28,7 @@ outfitsRouter.post(
   '/one',
   [
     check('clothes').notEmpty().isArray(),
-    check('occasions').notEmpty(),
+    check('occasions').notEmpty().isArray(),
     check('seasons').notEmpty().isArray(),
   ],
   outfitsController.createOneOutfit

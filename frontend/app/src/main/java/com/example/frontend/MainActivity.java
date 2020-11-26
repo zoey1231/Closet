@@ -2,7 +2,6 @@ package com.example.frontend;
 
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -13,8 +12,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final String TAG = "MainActivity";
     private static User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle data = getIntent().getExtras();
         user = data.getParcelable("user");
-        Log.d(TAG,"email: "+user.getEmail()+" userId: "+ user.getUserId()+ " userToken: "+ user.getUserToken());
 
         //send firebase registration token to the server
         FirebaseMsgService.getTokenNSendToServer(user.getUserToken());
@@ -38,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
     }
+
 
     public static User getUser(){
         return user;

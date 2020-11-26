@@ -18,7 +18,7 @@ public class OutfitResponseTimeTest {
         HomeFragment homeFragment = new HomeFragment();
         long startTime = System.currentTimeMillis();
         System.out.println("The timestamp before sending request to get an outfit recommendation is: "+startTime+"ms");
-        homeFragment.getOutfitDataFromServer(testUserToken);
+        homeFragment.getOutfitFromServer(testUserToken);
         long endTime = System.currentTimeMillis();
         System.out.println("The timestamp when receiving server's response is: "+endTime+"ms");
         long elapsedTime = endTime - startTime;

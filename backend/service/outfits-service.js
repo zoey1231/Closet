@@ -1,12 +1,16 @@
 require('dotenv').config();
 const { getCalendarEvents } = require('./calendar-service');
 const { getWeatherInfo } = require('./weather-service');
-const { timestampToDate } = require('../utils/time-helper');
+const {
+  timestampToDate,
+  getTodayDateInTimezone,
+} = require('../utils/time-helper');
 const { hashCode, randomInt } = require('../utils/hash');
 const LOG = require('../utils/logger');
 
 const Clothes = require('../model/clothes');
 const Outfit = require('../model/outfit');
+const TodayOutfit = require('../model/today-outfit');
 
 const FORMAL_KEYWORDS = [
   'conference',
@@ -32,6 +36,7 @@ const generateOutfit = async user_id => {
   let AllClothes = [];
   let TodayFormalEvents = [];
   let TodayOutfits = [];
+  let TodayOutfitsIds = [];
   let TodayFormalOutfits = [];
   // Need to initialized during creating a normal outfit
   let TodayWhether = {};
@@ -82,13 +87,25 @@ const generateOutfit = async user_id => {
   };
 
   // Return outfits generated today
-  const getTodayOutfits = () => {
-    const today = new Date()
-      .toLocaleString('sv', { timeZoneName: 'short' })
-      .substr(0, 10);
+  const getTodayOutfits = async () => {
+    const today = getTodayDateInTimezone();
 
-    TodayOutfits = AllOutfits.filter(
-      outfit => outfit.created.toISOString().substr(0, 10) === today
+    let outfitsReturnedToday;
+    try {
+      outfitsReturnedToday = await TodayOutfit.find({
+        user: userId,
+        returnedTime: today,
+      });
+    } catch (exception) {
+      LOG.error(exception.message);
+    }
+
+    for (const todayOutfit of outfitsReturnedToday) {
+      TodayOutfitsIds.push(todayOutfit.hashId);
+    }
+
+    TodayOutfits = AllOutfits.filter(outfit =>
+      TodayOutfitsIds.includes(outfit._id)
     );
   };
 
@@ -124,8 +141,9 @@ const generateOutfit = async user_id => {
     if (!result.success) {
       return {
         success: false,
+        message: result.message,
+        manual: result.manual,
         warning: result.warning,
-        message: 'Failed to generate an outfit',
       };
     }
 
@@ -211,7 +229,7 @@ const generateOutfit = async user_id => {
       LOG.error(exception.message);
       return {
         success: false,
-        message: 'Failed to save outfit',
+        message: 'Failed to save outfit, please try again later',
       };
     }
 
@@ -251,6 +269,25 @@ const generateOutfit = async user_id => {
       if (likedFormalOutfits.length) {
         const chosenOutfit =
           likedFormalOutfits[randomInt(likedFormalOutfits.length)];
+
+        /* Add to today returned outfits */
+        const newTodayOutfit = new TodayOutfit({
+          hashId: chosenOutfit._id,
+          returnedTime: getTodayDateInTimezone(),
+          user: userId,
+        });
+
+        try {
+          await newTodayOutfit.save();
+        } catch (exception) {
+          LOG.error(exception.message);
+          return {
+            success: false,
+            message:
+              'There is a problem when generating the outfit, please try again later',
+          };
+        }
+
         return {
           success: true,
           existing: true,
@@ -313,22 +350,23 @@ const generateOutfit = async user_id => {
     /*  
       Special check:
         If we found the user has disliked all possible combinations, 
-        we will randomly return a disliked one with a warning message
+        we will a warning message to let the user manually create an outfit for himself/herself
      */
     const dislikedFormalOutfits = AllOutfits.filter(
       outfit =>
         outfit.occasions.includes('formal') && outfit.opinion === 'dislike'
     );
     if (allCombinations.length === dislikedFormalOutfits.length) {
-      const chosenOutfit =
-        dislikedFormalOutfits[randomInt(dislikedFormalOutfits.length)];
-      const warning =
-        'You have disliked all formal outfits. Maybe you change your opinion on this one!';
+      let message =
+        'We notice you have the following events today, but you disliked all the generated clothes!\n';
+      TodayFormalEvents.forEach(event => {
+        message += `${event}\n`;
+      });
+      message += 'Do you want to generate an outfit manually for yourself?';
       return {
-        success: true,
-        existing: true,
-        warning,
-        outfit: chosenOutfit,
+        success: false,
+        manual: true,
+        message,
       };
     }
 
@@ -352,6 +390,24 @@ const generateOutfit = async user_id => {
       chosenUpperClothes.id + chosenTrousers.id + chosenShoes.id
     );
     const existingOutfit = AllOutfits.find(outfit => outfit._id === hashId);
+
+    /* Add to today returned outfits */
+    const newTodayOutfit = new TodayOutfit({
+      hashId,
+      returnedTime: getTodayDateInTimezone(),
+      user: userId,
+    });
+
+    try {
+      await newTodayOutfit.save();
+    } catch (exception) {
+      LOG.error(exception.message);
+      return {
+        success: false,
+        message:
+          'There is a problem when generating the outfit, please try again later',
+      };
+    }
 
     if (existingOutfit) {
       // Existed
@@ -414,15 +470,42 @@ const generateOutfit = async user_id => {
       );
 
       if (likedNormalOutfitsWithSeason.length) {
-        const chosenOutfit =
-          likedNormalOutfitsWithSeason[
-            randomInt(likedNormalOutfitsWithSeason.length)
-          ];
-        return {
-          success: true,
-          existing: true,
-          outfit: chosenOutfit,
-        };
+        numOfTries = 0;
+
+        while (numOfTries < likedNormalOutfitsWithSeason.length) {
+          const chosenOutfit =
+            likedNormalOutfitsWithSeason[
+              randomInt(likedNormalOutfitsWithSeason.length)
+            ];
+
+          if (!TodayOutfitsIds.includes(chosenOutfit._id)) {
+            /* Add to today returned outfits */
+            const newTodayOutfit = new TodayOutfit({
+              hashId: chosenOutfit._id,
+              returnedTime: getTodayDateInTimezone(),
+              user: userId,
+            });
+
+            try {
+              await newTodayOutfit.save();
+            } catch (exception) {
+              LOG.error(exception.message);
+              return {
+                success: false,
+                message:
+                  'There is a problem when generating the outfit, please try again later',
+              };
+            }
+
+            return {
+              success: true,
+              existing: true,
+              outfit: chosenOutfit,
+            };
+          }
+
+          numOfTries++;
+        }
       }
     }
 
@@ -461,7 +544,8 @@ const generateOutfit = async user_id => {
     ) {
       return {
         success: false,
-        warning: 'Add more clothes to get an outfit!',
+        message:
+          'Too few clothes in your closet, please add more clothes to get an outfit!',
       };
     }
 
@@ -504,25 +588,21 @@ const generateOutfit = async user_id => {
       normalShoes
     );
 
-    /* TODO: update dislike-all logic in M10 */
     /*  
       Special check:
         If we found the user has disliked all possible combinations, 
-        we will randomly return a disliked one with a warning message
+        we will a warning message to let the user manually create an outfit for himself/herself
      */
     const dislikedNormalOutfits = normalOutfits.filter(
       outfit => outfit.opinion === 'dislike'
     );
     if (allCombinations.length === dislikedNormalOutfits.length) {
-      const chosenOutfit =
-        dislikedNormalOutfits[randomInt(dislikedNormalOutfits.length)];
-      const warning =
-        'You have disliked all normal outfits. Maybe you change your opinion on this one or add more clothes into your closet';
+      const message =
+        'You have disliked all normal outfits. Do you want to generate an outfit manually for yourself';
       return {
-        success: true,
-        existing: true,
-        warning,
-        outfit: chosenOutfit,
+        success: false,
+        manual: true,
+        message,
       };
     }
 
@@ -535,56 +615,92 @@ const generateOutfit = async user_id => {
       return index === -1;
     });
 
-    /* Randomly choose one combination (with color restrictions) */
-    let chosenCombination, chosenUpperClothes, chosenTrousers, chosenShoes;
+    let upperClothes, trousers, shoes;
     let colors = [];
-    let numOfTries = 0;
-    do {
-      chosenCombination = combinations[randomInt(combinations.length)];
-      chosenUpperClothes = chosenCombination[0];
-      chosenTrousers = chosenCombination[1];
-      chosenShoes = chosenCombination[2];
-
-      colors = [
-        chosenUpperClothes.color,
-        chosenTrousers.color,
-        chosenShoes.color,
-      ];
-      const color = chosenUpperClothes.color;
+    let color;
+    const combinationWithColorRestriction = combinations.filter(combo => {
+      upperClothes = combo[0];
+      trousers = combo[1];
+      shoes = combo[2];
+      colors = [upperClothes.color, trousers.color, shoes.color];
+      color = upperClothes.color;
 
       /*
         A simple color restriction (the following color combination is NOT allowed)
         1. Except for Grey, White, Black, All three clothes have the same color
         2. Green and Red 
       */
-      if (
-        (!ALLOWED_COLORS.includes(color) &&
-          chosenTrousers.color === color &&
-          chosenShoes.color === color) ||
-        (colors.includes('Green') && colors.includes('Red'))
-      ) {
-        numOfTries++;
-        colors = [];
-        continue;
-      } else {
-        break;
+      if (colors.includes('Green') && colors.includes('Red')) {
+        return false;
       }
-    } while (numOfTries !== combinations.length);
+      if (
+        !ALLOWED_COLORS.includes(color) &&
+        trousers.color === color &&
+        shoes.color === color
+      ) {
+        return false;
+      }
+      return true;
+    });
 
-    /* End while loop with failure */
-    if (numOfTries === combinations.length) {
+    if (!combinationWithColorRestriction.length) {
       return {
         success: false,
-        warning:
+        message:
           'Could find a good color combination, please add more clothes in your closet!',
       };
     }
 
-    /* End while loop with success */
+    /* Randomly choose one combination (with color restrictions) */
+    let chosenUpperClothes, chosenTrousers, chosenShoes;
+    let numOfTries = 0;
+    let hashId;
+
+    for (const combo of combinationWithColorRestriction) {
+      chosenUpperClothes = combo[0];
+      chosenTrousers = combo[1];
+      chosenShoes = combo[2];
+
+      hashId = hashCode(
+        chosenUpperClothes.id + chosenTrousers.id + chosenShoes.id
+      );
+
+      if (!TodayOutfitsIds.includes(hashId)) {
+        /* Add to today returned outfits */
+        const newTodayOutfit = new TodayOutfit({
+          hashId,
+          returnedTime: getTodayDateInTimezone(),
+          user: userId,
+        });
+
+        try {
+          await newTodayOutfit.save();
+        } catch (exception) {
+          LOG.error(exception.message);
+          return {
+            success: false,
+            message:
+              'There is a problem when generating the outfit, please try again later',
+          };
+        }
+
+        break;
+      }
+
+      numOfTries++;
+    }
+
+    /* End while loop with failure */
+    if (numOfTries === combinationWithColorRestriction.length) {
+      return {
+        success: false,
+        manual: true,
+        message:
+          'We have generated all possible outfits. Do you want to create one manually?',
+      };
+    }
+
     /* Check if the outfit has existed */
-    const hashId = hashCode(
-      chosenUpperClothes.id + chosenTrousers.id + chosenShoes.id
-    );
     const existingOutfit = AllOutfits.find(outfit => outfit._id === hashId);
 
     if (existingOutfit) {
@@ -592,6 +708,7 @@ const generateOutfit = async user_id => {
       return {
         success: true,
         existing: true,
+        warning,
         outfit: existingOutfit,
         chosenUpperClothes,
         chosenTrousers,
@@ -601,6 +718,7 @@ const generateOutfit = async user_id => {
 
     return {
       success: true,
+      warning,
       _id: hashId,
       occasions: ['normal'],
       seasons: [currSeason],
@@ -623,7 +741,7 @@ const generateOutfit = async user_id => {
     await getAllOutfits();
     await getAllClothes();
     await getTodayFormalEvents();
-    getTodayOutfits();
+    await getTodayOutfits();
     getTodayFormalOutfits();
   } catch (exception) {
     LOG.error(exception.message);
