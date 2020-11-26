@@ -94,8 +94,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         getButton = root.findViewById(R.id.btn_get_outfit);
         getButton.setOnClickListener(this);
         createButton = root.findViewById(R.id.btn_create_outfit);
-        //createButton.setVisibility(View.GONE);
         createButton.setOnClickListener(this);
+        createButton.setVisibility(View.GONE);
 
         likeButton = root.findViewById(R.id.btn_like_outfit1);
         likeButton.setOnClickListener(this);
@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.btn_get_outfit:
 //                idlingResource.increment();
                 getButton.setEnabled(false);
-                getOutfitData(userToken);
+                getOutfitDataFromServer();
                 
                 while ((outfitId.equals(EMPTY_STRING) || upperClothesId.equals(EMPTY_STRING) ||
                         trousersId.equals(EMPTY_STRING) || shoesId.equals(EMPTY_STRING))
@@ -190,8 +190,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.btn_create_outfit:
+                createButton.setEnabled(false);
                 Intent intent = new Intent(HomeFragment.this.getContext(), CreateOutfitActivity.class);
                 startActivity(intent);
+                createButton.setVisibility(View.GONE);
                 break;
 
             default:
@@ -347,7 +349,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public void getOutfitData(String userToken) {
+    public void getOutfitDataFromServer() {
         ServerCommAsync serverCommunication = new ServerCommAsync();
 //        Log.d(TAG,"prepared to sendUserDataToServer");
 
@@ -355,8 +357,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
-                Log.d(TAG,"Fail to send request to server");
-                Log.d(TAG, String.valueOf(e));
 //                idlingResource.decrement();
             }
 
@@ -365,29 +365,36 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 String responseStr = Objects.requireNonNull(response.body()).string();
                 if (response.isSuccessful()) {
-
                     Log.d(TAG,"Outfit request is successful"+responseStr);
                     JSONObject responseJson;
                     try {
                         //retrieve outfit data from server's response
                         responseJson = new JSONObject(responseStr);
                         extractResponseOutfitData(responseJson);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 } else {
                     JSONObject responseJson;
                     try {
                         //retrieve outfit data from server's response
                         responseJson = new JSONObject(responseStr);
                         // Request not successful
-                        if(responseJson.has("message")){
+                        if (responseJson.has("message")){
                             message = responseJson.getString("message");
                         }
-                        if(responseJson.has("warning")){
+                        if (responseJson.has("warning")){
                             warning = responseJson.getString("warning");
+                        }
+                        if (responseJson.has("manual")) {
+                            if (responseJson.getBoolean("manual")) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        createButton.setVisibility(View.VISIBLE);
+                                    }
+                                });
+                            }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -418,17 +425,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
             if (shoesJSON.has("id")){
                 shoesId = shoesJSON.getString("id");
-            }
-            if(responseJson.has("message")){
-                message = responseJson.getString("message");
-            }
-            if(responseJson.has("success")){
-                success = responseJson.getString("success");
-            }
-            if (responseJson.has("manual")) {
-                if (responseJson.getString("manual").equals("true")) {
-                    createButton.setVisibility(View.VISIBLE);
-                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
