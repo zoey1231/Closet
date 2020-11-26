@@ -161,11 +161,12 @@
 
     <ScrollView
         android:id="@+id/sv_outfit"
-        android:layout_width="402dp"
-        android:layout_height="382dp"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="7dp"
         android:layout_marginEnd="5dp"
+        android:layout_marginBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -176,155 +177,10 @@
         <GridLayout
             android:id="@+id/gl_outfit"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="match_parent"
             android:columnCount="1"
-            android:scrollbars="vertical">
-
-            <!--            <LinearLayout-->
-            <!--                android:id="@+id/ll_outfit1"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="220dp"-->
-            <!--                android:orientation="vertical">-->
-
-            <!--                <TextView-->
-            <!--                    android:id="@+id/tv_outfit1"-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:layout_marginTop="2dp"-->
-            <!--                    android:layout_marginBottom="4dp"-->
-            <!--                    android:text="This will be the outfit title"-->
-            <!--                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
-            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                    app:layout_constraintHorizontal_bias="0.0"-->
-            <!--                    app:layout_constraintStart_toStartOf="parent"-->
-            <!--                    app:layout_constraintTop_toTopOf="parent"-->
-            <!--                    app:layout_constraintVertical_bias="0.056"-->
-            <!--                    tools:text="My outfit1" />-->
-
-            <!--                <LinearLayout-->
-            <!--                    android:id="@+id/ll_clothes_outfit1"-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="147dp"-->
-            <!--                    android:orientation="horizontal"-->
-            <!--                    android:padding="25dp"-->
-            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                    app:layout_constraintHorizontal_bias="0.0"-->
-            <!--                    app:layout_constraintStart_toStartOf="parent"-->
-            <!--                    app:layout_constraintTop_toBottomOf="@id/tv_outfit1"-->
-            <!--                    app:layout_constraintVertical_bias="1.0">-->
-
-            <!--                    <ImageView-->
-            <!--                        android:id="@+id/iv_clothes1_outfit1"-->
-            <!--                        android:layout_width="100dp"-->
-            <!--                        android:layout_height="100dp"/>-->
-
-            <!--                    <ImageView-->
-            <!--                        android:id="@+id/iv_clothes2_outfit1"-->
-            <!--                        android:layout_width="100dp"-->
-            <!--                        android:layout_height="100dp"-->
-            <!--                        android:layout_marginLeft="30dp"/>-->
-
-            <!--                    <ImageView-->
-            <!--                        android:id="@+id/iv_clothes3_outfit1"-->
-            <!--                        android:layout_width="100dp"-->
-            <!--                        android:layout_height="100dp"-->
-            <!--                        android:layout_marginLeft="30dp"/>-->
-
-            <!--                </LinearLayout>-->
-
-            <!--                <LinearLayout-->
-            <!--                    android:id="@+id/ll_btns_outfit1"-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="34dp"-->
-            <!--                    android:orientation="horizontal"-->
-            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                    app:layout_constraintStart_toStartOf="parent"-->
-            <!--                    app:layout_constraintTop_toBottomOf="@id/ll_clothes_outfit1">-->
-
-            <!--                    <Button-->
-            <!--                        android:id="@+id/btn_like_outfit1"-->
-            <!--                        android:layout_width="0dip"-->
-            <!--                        android:layout_height="35dp"-->
-            <!--                        android:layout_marginLeft="40dp"-->
-            <!--                        android:layout_marginRight="40dp"-->
-            <!--                        android:layout_weight="1"-->
-            <!--                        android:text="LIke it!" />-->
-
-            <!--                    <Button-->
-            <!--                        android:id="@+id/btn_dislike_outfit1"-->
-            <!--                        android:layout_width="0dip"-->
-            <!--                        android:layout_height="35dp"-->
-            <!--                        android:layout_marginLeft="40dp"-->
-            <!--                        android:layout_marginRight="40dp"-->
-            <!--                        android:layout_weight="1"-->
-            <!--                        android:text="Dislike" />-->
-            <!--                </LinearLayout>-->
-
-            <!--            </LinearLayout>-->
-
-            <!--            <androidx.constraintlayout.widget.ConstraintLayout-->
-            <!--                android:id="@+id/view_dislike"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="220dp"-->
-            <!--                android:visibility="invisible"-->
-            <!--                tools:visibility="visible">-->
-
-            <!--                <View-->
-            <!--                    android:id="@+id/go_blind_view"-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="220dp"-->
-            <!--                    android:background="#9F5E5D5D"-->
-            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                    app:layout_constraintStart_toStartOf="parent"-->
-            <!--                    app:layout_constraintTop_toTopOf="parent" />-->
-
-            <!--                <TextView-->
-            <!--                    android:id="@+id/tv_will_not_display"-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="60dp"-->
-            <!--                    android:gravity="center"-->
-            <!--                    android:text="We will not suggest this outfit any more, OR "-->
-            <!--                    android:textColor="#E10A0A"-->
-            <!--                    android:textSize="18sp"-->
-            <!--                    android:textStyle="bold"-->
-            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                    app:layout_constraintEnd_toEndOf="@+id/go_blind_view"-->
-            <!--                    app:layout_constraintStart_toStartOf="parent"-->
-            <!--                    app:layout_constraintTop_toTopOf="@+id/go_blind_view"-->
-            <!--                    app:layout_constraintVertical_bias="0.10"></TextView>-->
-
-            <!--                <ImageButton-->
-            <!--                    android:id="@+id/btn_undo"-->
-            <!--                    android:layout_width="70dp"-->
-            <!--                    android:layout_height="70dp"-->
-            <!--                    android:background="@null"-->
-            <!--                    android:src="@drawable/icon_undo_70"-->
-            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                    app:layout_constraintEnd_toEndOf="@+id/go_blind_view"-->
-            <!--                    app:layout_constraintStart_toStartOf="parent"-->
-            <!--                    app:layout_constraintTop_toBottomOf="@+id/tv_will_not_display"-->
-            <!--                    app:layout_constraintVertical_bias="0.37000002" />-->
-
-            <!--                <TextView-->
-            <!--                    android:id="@+id/tv_undo"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text="Undo"-->
-            <!--                    android:textColor="#45B48F"-->
-            <!--                    android:textSize="20sp"-->
-            <!--                    android:textStyle="bold"-->
-
-            <!--                    app:layout_constraintBottom_toBottomOf="@+id/go_blind_view"-->
-            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                    app:layout_constraintStart_toStartOf="parent"-->
-            <!--                    app:layout_constraintTop_toBottomOf="@+id/btn_undo"-->
-            <!--                    app:layout_constraintVertical_bias="0.00" />-->
-            <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
-        </GridLayout>
+            android:gravity="center"
+            android:padding="10dp"></GridLayout>
 
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

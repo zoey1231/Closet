@@ -191,7 +191,7 @@ public class NotificationsFragment extends Fragment implements View.OnClickListe
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
 
                 String responseStr = Objects.requireNonNull(response.body()).string();
-
+                Log.d(TAG,responseStr);
 
                 JSONObject responseJson = null;
                 try {
