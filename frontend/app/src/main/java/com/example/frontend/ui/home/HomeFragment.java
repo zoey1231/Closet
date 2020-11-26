@@ -6,10 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.StrictMode;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,9 +67,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private Button outfitButton;
     private GridLayout outfitsLayout;
 
-    private static List<String> outfitsIdList = new ArrayList<>();
-    private static List<String> clothesIdList = new ArrayList<>();
-
     private JSONObject outfit_opinion = new JSONObject();
     private boolean like = false;
     private boolean dislike = false;
@@ -83,11 +78,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String warning = EMPTY_STRING;
     private String success = EMPTY_STRING;
 
+    private static List<String> outfitIdList = new ArrayList<>();
+    private static List<String> clothesIdList = new ArrayList<>();
+    private static HashMap<Integer, String> outfitIdMap = new HashMap<>();
+    private HashMap<Integer, String[]> opinionMap = new HashMap<>();
+
     View root;
-
-    private HashMap<Integer, String[]> outfitIdMap = new HashMap<>();
-
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -112,8 +108,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         outfitButton.setOnClickListener(this);
 
         getWeatherData();
-        Log.d(TAG, "testing: outfit id list is " + outfitsIdList);
-        Log.d(TAG, "testing: clothes id list is " + clothesIdList);
         addTodayOutfitsOnUI();
 
         return root;
@@ -129,8 +123,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             getOutfitFromServer();
             outfitButton.setEnabled(true);
         }
-        else if(!outfitIdMap.get(selectedId).equals(null)){
-            String[] valueArray = outfitIdMap.get(selectedId);
+        else if(opinionMap.containsKey(selectedId)){
+            String[] valueArray = opinionMap.get(selectedId);
             String likeOrDislike = valueArray[0];
             String outfitID = valueArray[1];
             if(likeOrDislike.equals("like")){
@@ -149,6 +143,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                String outfitId = outfitIdMap.get(selectedId);
+                int outfitIndex = outfitIdList.indexOf(outfitId);
+                outfitIdList.remove(outfitIndex);
+                clothesIdList.remove(outfitIndex*3+2);
+                clothesIdList.remove(outfitIndex*3+1);
+                clothesIdList.remove(outfitIndex*3);
             }else if(likeOrDislike.equals("unknown")){
 
                 Log.d(TAG,"clicked undo opinion");
@@ -333,13 +333,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         try {
             if (outfitJSON.has("_id")) {
                 outfitId = outfitJSON.getString("_id");
-                outfitsIdList.add(outfitId);
-                Log.d(TAG, "testing: added one outfit to outfit id list");
+                outfitIdList.add(outfitId);
             }
             if (upperClothesJSON.has("id")){
                 upperClothesId = upperClothesJSON.getString("id");
                 clothesIdList.add(upperClothesId);
-                Log.d(TAG, "testing: added one upper clothes to clothes id list");
             }
             if (trousersJSON.has("id")){
                 trousersId = trousersJSON.getString("id");
@@ -361,6 +359,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
     }
+
     private void addOutfitOnUI(String outfitId,String upperClothesId, String trousersId, String shoesId) {
         Log.d(TAG,"in addOutfitOnUI");
         TextView outfitText = new TextView(getContext());
@@ -533,15 +532,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-
         //record buttons/clickable text's corresponding outfitID in hashMap outfitIdMap
-        outfitIdMap.put(likeBtn.getId(), new String[]{"like", outfitId});
-        outfitIdMap.put(dislikeBtn.getId(), new String[]{"dislike", outfitId});
-        outfitIdMap.put(undoBtn.getId(), new String[]{"unknown", outfitId});
-        outfitIdMap.put(undoText.getId(), new String[]{"unknown", outfitId});
-        outfitIdMap.put(dislikeLayout.getId(), new String[]{"dislikeLayout", outfitId});
+        opinionMap.put(likeBtn.getId(), new String[]{"like", outfitId});
+        opinionMap.put(dislikeBtn.getId(), new String[]{"dislike", outfitId});
+        opinionMap.put(undoBtn.getId(), new String[]{"unknown", outfitId});
+        opinionMap.put(undoText.getId(), new String[]{"unknown", outfitId});
+        opinionMap.put(dislikeLayout.getId(), new String[]{"dislikeLayout", outfitId});
 
-        for (Map.Entry<Integer, String[]> entry : outfitIdMap.entrySet()) {
+        outfitIdMap.put(dislikeBtn.getId(), outfitId);
+
+        for (Map.Entry<Integer, String[]> entry : opinionMap.entrySet()) {
             Log.d(TAG,entry.getKey()+" : "+entry.getValue()[0]+" "+entry.getValue()[1]);
         }
         Log.d(TAG,"opinion:"+opinion);
@@ -553,7 +553,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             String upperClothesId = clothesIdList.get(i);
             String trousersId = clothesIdList.get(i+1);
             String shoesId = clothesIdList.get(i+2);
-            String outfitId = outfitsIdList.get(i/3);
+            String outfitId = outfitIdList.get(i/3);
             addOutfitOnUI(outfitId,upperClothesId, trousersId, shoesId);
         }
     }
@@ -654,7 +654,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
      * @param enable set buttons/texts to enable if true; set to disable if false
      */
     private void setEnable(String[] valueInMap,Boolean enable) {
-        Set<Integer> keySet = getKeysByValue(outfitIdMap,valueInMap);
+        Set<Integer> keySet = getKeysByValue(opinionMap,valueInMap);
         for(Integer id : keySet){
             getView().findViewById(id).setEnabled(enable);
         }
@@ -665,7 +665,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
      * @param visibility
      */
     private void setVisibility(String[] valueInMap,int visibility) {
-        Set<Integer> keySet = getKeysByValue(outfitIdMap,valueInMap);
+        Set<Integer> keySet = getKeysByValue(opinionMap,valueInMap);
         for(Integer id : keySet){
             getView().findViewById(id).setVisibility(visibility);
         }
