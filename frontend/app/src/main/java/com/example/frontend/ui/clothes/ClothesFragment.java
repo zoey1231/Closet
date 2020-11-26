@@ -58,8 +58,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private static final String EMPTY_STRING = "";
 
     private String userToken, userId;
-    private List<String> clothesIdList = new ArrayList<>();
-    private HashMap<Integer, String> clothesIdMap = new HashMap<>();
+    private static List<String> clothesIdList = new ArrayList<>();
+    private static HashMap<Integer, String> clothesIdMap = new HashMap<>();
 
     private ImageButton buttonAdd;
     private GridLayout clothesLayout;
@@ -82,7 +82,9 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         buttonAdd.setOnClickListener(this);
         clothesLayout = root.findViewById(R.id.gl_clothes);
 
-        getAllClothesFromServer();
+        if (clothesIdList.size() == 0) {
+            getAllClothesFromServer();
+        }
         addAllClothesToCloset();
 
         return root;
