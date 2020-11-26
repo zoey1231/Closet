@@ -3,6 +3,8 @@ package com.example.frontend;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -65,7 +67,10 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
     private String shoesId = EMPTY_STRING;
     private Spinner spinner_occasion;
     private String message = EMPTY_STRING;
-    private boolean WAIT = true;
+
+    private ImageView upperClothesImage;
+    private ImageView trousersImage;
+    private ImageView shoesImage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,17 +92,13 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         spinner_occasion.setOnItemSelectedListener(this);
 
         getAllClothesFromServer();
-        while (WAIT && (upperClothesIdList.size() == 0 || trousersIdList.size() == 0 || shoesIdList.size() == 0)) {
-            Log.d(TAG, "waiting for ids");
-        }
-        addAllClothesOnUI();
     }
 
     @Override
     public void onClick(View view) {
-        int selectedId = view.getId();
+        int viewId = view.getId();
 
-        if (selectedId == R.id.btn_save_outfit) {
+        if (viewId == R.id.btn_save_outfit) {
             constructClothAttributeFromCheckBoxes();
             constructClothAttributeClothID();
             sendOutfitToServer(clothAttribute);
@@ -107,17 +108,34 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
             finish();
         }
         else {
-            if (upperClothesIdMap.containsKey(selectedId)) {
-                upperClothesId = upperClothesIdMap.get(selectedId);
+            Drawable highlight = getResources().getDrawable(R.drawable.highlight);
+
+            if (upperClothesIdMap.containsKey(viewId)) {
+                if (upperClothesImage != null) {
+                    upperClothesImage.setBackground(null);
+                }
+                upperClothesId = upperClothesIdMap.get(viewId);
                 clothesID[0] = upperClothesId;
+                upperClothesImage = view.findViewById(viewId);
+                upperClothesImage.setBackground(highlight);
             }
-            else if (trousersIdMap.containsKey(selectedId)) {
-                trousersId = trousersIdMap.get(selectedId);
+            else if (trousersIdMap.containsKey(viewId)) {
+                if (trousersImage != null) {
+                    trousersImage.setBackground(null);
+                }
+                trousersId = trousersIdMap.get(viewId);
                 clothesID[1] = trousersId;
+                trousersImage = view.findViewById(viewId);
+                trousersImage.setBackground(highlight);
             }
-            else if (shoesIdMap.containsKey(selectedId)){
-                shoesId = shoesIdMap.get(selectedId);
+            else if (shoesIdMap.containsKey(viewId)){
+                if (shoesImage != null) {
+                    shoesImage.setBackground(null);
+                }
+                shoesId = shoesIdMap.get(viewId);
                 clothesID[2] = shoesId;
+                shoesImage = view.findViewById(viewId);
+                shoesImage.setBackground(highlight);
             }
         }
     }
@@ -142,16 +160,19 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
     }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
         //construct the clothAttribute JSONObject we want to send to server
         constructClothAttribute(parent,view,pos);
     }
+
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // Another interface callback
         //Toast.makeText(parent.getContext(),"You must select one of the options",Toast.LENGTH_SHORT).show();
     }
+
     private void constructClothAttribute(AdapterView<?> parent, View view, int pos) {
         Log.d(TAG,"VIEW: "+ view.getId());
         switch (parent.getId()) {
@@ -254,7 +275,6 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 e.printStackTrace();
-                WAIT = false;
             }
 
             @Override
@@ -270,9 +290,6 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }
-                else {
-                    WAIT = false;
                 }
             }
         });
@@ -294,6 +311,12 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
                 }
             }
         }
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                addAllClothesOnUI();
+            }
+        });
     }
 
     private Bitmap getClothesImage(String userId, String clothId) {
