@@ -1,6 +1,7 @@
 package com.example.frontend;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -12,7 +13,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -81,8 +81,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private ArrayList<String> seasons = new ArrayList<>();
     private ArrayList<String> occasions = new ArrayList<>();
 
-    private HashMap<String, Clothes> clothHashMap =new HashMap<>();
-
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_data");
 
     @Override
@@ -110,61 +108,52 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         clothName = findViewById(R.id.et_name_add);
 
         //supply the spinners with the String array defined in resource using instances of ArrayAdapter
-        setAdapter(R.array.category_array, spinner_category);
-        setAdapter(R.array.color_array, spinner_color);
-        setAdapter(R.array.occasion_array, spinner_occasion);
+        spinnerAdapter.setAdapter(R.array.category_array, spinner_category,this);
+        spinnerAdapter.setAdapter(R.array.color_array, spinner_color,this);
+        spinnerAdapter.setAdapter(R.array.occasion_array, spinner_occasion,this);
 
         spinner_category.setOnItemSelectedListener(this);
         spinner_color.setOnItemSelectedListener(this);
         spinner_occasion.setOnItemSelectedListener(this);
+
+        //checkboxes
+        checkBox_spring = findViewById(R.id.cb_spring_add);
+        checkBox_summer = findViewById(R.id.cb_summer_add);
+        checkBox_fall = findViewById(R.id.cb_fall_add);
+        checkBox_winter = findViewById(R.id.cb_winter_add);
+        checkBox_all = findViewById(R.id.cb_all_add);
     }
 
-    private void constructClothAttribute(AdapterView<?> parent, View view, int pos) {
+    public void constructClothAttribute(JSONObject clothData,AdapterView<?> parent, View view, int pos,final String TAG, int resourceID_category,int resourceID_color,int resourceID_occasions) {
         Log.d(TAG,"VIEW: "+ view.getId());
-        switch (parent.getId()) {
-            case R.id.sp_category_add:
-                try {
-                    String selection = parent.getItemAtPosition(pos).toString();
-                    clothAttribute.put("category", selection);
-                    Log.d(TAG, "category:"+selection);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.sp_color_add:
-                try {
-                    String selection = parent.getItemAtPosition(pos).toString();
-                    clothAttribute.put("color", selection);
-                    Log.d(TAG, "color:"+selection);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.sp_occasion_add:
-
-                JSONArray occasions = new JSONArray();
-                try {
-                    String selection = parent.getItemAtPosition(pos).toString();
-                    occasions.put(0,selection);
-                    clothAttribute.put("occasions", occasions);
-                    Log.d(TAG, "occasions:"+occasions.get(0));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            default:
+        if(parent.getId() == resourceID_category){
+            try {
+                String selection = parent.getItemAtPosition(pos).toString();
+                clothData.put("category", selection);
+                Log.d(TAG, "category:"+selection);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }else if(parent.getId() == resourceID_color){
+            try {
+                String selection = parent.getItemAtPosition(pos).toString();
+                clothData.put("color", selection);
+                Log.d(TAG, "color:"+selection);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }else if(parent.getId() == resourceID_occasions){
+            JSONArray occasions = new JSONArray();
+            try {
+                String selection = parent.getItemAtPosition(pos).toString();
+                occasions.put(0,selection);
+                clothData.put("occasions", occasions);
+                Log.d(TAG, "occasions:"+occasions.get(0));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-    }
 
-    public void setAdapter(int textArrayResId, @NotNull Spinner spinner) {
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                textArrayResId, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
     }
 
 
@@ -190,19 +179,12 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.btn_save_add:
-                constructClothAttributeFromCheckBoxes();
-                constructClothAttributeClothName();
-                //send the cloth data to server
-//                sendClothDataToServer(clothAttribute);
-//
-//                while (clothesId.equals(EMPTY_STRING)) {
-//                    // wait for clothing id; change this
-//                    Log.d(TAG, "waiting for clothing id");
-//                }
-//                sendImageToServer(file);
+                constructClothAttributeFromCheckBoxes(clothAttribute,TAG,checkBox_spring,checkBox_summer,checkBox_fall,checkBox_winter,checkBox_all);
+                constructClothAttributeClothName(clothAttribute,TAG,clothName);
+//                send the cloth data to server
+                sendClothDataToServer(clothAttribute,TAG,AddClothesActivity.this);
 
                 Intent setImageIntent = new Intent();
-                setImageIntent.putExtra("path", path);
                 setImageIntent.putExtra("clothesId", clothesId);
                 setResult(RESULT_OK, setImageIntent);
 
@@ -218,7 +200,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
         //construct the clothAttribute JSONObject we want to send to server
-        constructClothAttribute(parent,view,pos);
+        constructClothAttribute(clothAttribute,parent,view,pos,TAG,R.id.sp_category_add,R.id.sp_color_add,R.id.sp_occasion_add);
     }
 
     @Override
@@ -227,11 +209,11 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         //Toast.makeText(parent.getContext(),"You must select one of the options",Toast.LENGTH_SHORT).show();
     }
 
-    private void constructClothAttributeClothName() {
-        String name = clothName.getText().toString().trim();
+    public void constructClothAttributeClothName(JSONObject clothData,String TAG,EditText clothname) {
+        String name = clothname.getText().toString().trim();
 
         try {
-            clothAttribute.put("name", name);
+            clothData.put("name", name);
             Log.d(TAG, "name: "+name);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -239,40 +221,34 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    private void constructClothAttributeFromCheckBoxes() {
-        checkBox_spring = findViewById(R.id.cb_spring_add);
-        checkBox_summer = findViewById(R.id.cb_summer_add);
-        checkBox_fall = findViewById(R.id.cb_fall_add);
-        checkBox_winter = findViewById(R.id.cb_winter_add);
-        checkBox_all = findViewById(R.id.cb_all_add);
+    public void constructClothAttributeFromCheckBoxes(JSONObject clothData,String TAG,CheckBox spring,CheckBox summer,CheckBox fall,CheckBox winter,CheckBox all) {
 
-        //List<String> seasons = new ArrayList<String>();
         JSONArray seasons = new JSONArray();
-        if(checkBox_spring.isChecked()){
+        if(spring.isChecked()){
             seasons.put("Spring");
         }
-        if(checkBox_summer.isChecked()){
+        if(summer.isChecked()){
             seasons.put("Summer");
         }
-        if(checkBox_fall.isChecked()){
+        if(fall.isChecked()){
             seasons.put("Fall");
         }
-        if(checkBox_winter.isChecked()){
+        if(winter.isChecked()){
             seasons.put("Winter");
         }
-        if(checkBox_all.isChecked()){
+        if(all.isChecked()){
             seasons.put("All");
         }
 
         try {
-            clothAttribute.put("seasons", seasons);
+            clothData.put("seasons", seasons);
             Log.d(TAG, "seasons:"+seasons);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private void sendClothDataToServer(final JSONObject userData) {
+     public void sendClothDataToServer(final JSONObject userData, final String TAG, final Context context) {
         ServerCommAsync serverCommunication = new ServerCommAsync();
         final String data = userData.toString();
         Log.d(TAG,"prepared to sendClothDataToServer");
@@ -295,43 +271,27 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 JSONObject responseJson = null;
                 try {
                     responseJson = new JSONObject(responseStr);
-                    extractResponseClothesData(responseJson);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 if (response.isSuccessful()) {
+                    extractResponseClothesId(responseJson);
                     //make a toast to let the server's message display to the user
-
                     if(Objects.requireNonNull(responseJson).has("message") ){
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                final Toast toast = makeText(AddClothesActivity.this,message,Toast.LENGTH_LONG);
+                                final Toast toast = makeText(context,message,Toast.LENGTH_LONG);
                                 toast.show();
                             }
                         });
                         //startActivity(new Intent(getApplicationContext(),AddClothesActivity.class));
                     }
-                    else{
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                final Toast toast = makeText(AddClothesActivity.this,"Successfully added clothes!",Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        });
-
-                        //create a new cloth instance and add it the the clothes' collection
-                        Clothes clothes = new Clothes(clothesId,category,color,name,updated, clothUser,seasons,occasions);
-                        clothHashMap.put(clothesId, clothes);
-
-                        //startActivity(new Intent(getApplicationContext(),MainActivity.class).putExtra("user",new User(userId,userToken,email)));
-                    }
-
                 } else {
                     // Request not successful
                     if(Objects.requireNonNull(responseJson).has("message") ){
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                final Toast toast = makeText(AddClothesActivity.this,message,Toast.LENGTH_LONG);
+                                final Toast toast = makeText(context,message,Toast.LENGTH_LONG);
                                 toast.show();
                             }
                         });
@@ -342,38 +302,14 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
-    private void extractResponseClothesData(JSONObject responseJson) {
+    private void extractResponseClothesId(JSONObject responseJson) {
 //        JSONArray seasons_jsonArray,occasions_jsonArray;
         try {
-            if(responseJson.has("message"))
-                message = responseJson.getString("message");
-            // commented for codacy issue
-
-//            if(responseJson.has("seasons")){
-//                seasons_jsonArray = responseJson.getJSONArray("seasons");
-//                for (int i=0;i<seasons_jsonArray.length();i++){
-//                    seasons.add(seasons_jsonArray.getString(i));
-//                }
-//            }
-//            if(responseJson.has("occasions")){
-//                occasions_jsonArray = responseJson.getJSONArray("occasions");
-//                for (int i=0;i<occasions_jsonArray.length();i++){
-//                    occasions.add(occasions_jsonArray.getString(i));
-//                }
-//            }
-//            if(responseJson.has("category"))
-//                category = responseJson.getString("category");
-//            if(responseJson.has("color"))
-//                color = responseJson.getString("color");
-//            if(responseJson.has("name"))
-//                name = responseJson.getString("name");
-//            if(responseJson.has("user"))
-//                cloth_user = responseJson.getString("user");
-//            if(responseJson.has("updated"))
-//                updated = responseJson.getString("updated");
+//            if(responseJson.has("message"))
+//                message = responseJson.getString("message");
             if(responseJson.has("id"))
                 clothesId = responseJson.getString("id");
-
+            sendImageToServer(file);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -394,17 +330,14 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 bitmap = BitmapFactory.decodeStream(stream);
                 image.setImageBitmap(bitmap);
                 image.setVisibility(View.VISIBLE);
-//                path = getPath(uri);
-//                file = new File(path);
+                path = getPath(uri);
+                file = new File(path);
+                sendImageToServer(file);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                final Toast toast = makeText(AddClothesActivity.this, "Something went wrong", Toast.LENGTH_LONG);
-                toast.show();
             }
         } else {
-            final Toast toast = makeText(AddClothesActivity.this, "You haven't picked an image", Toast.LENGTH_LONG);
-            toast.show();
         }
     }
 
