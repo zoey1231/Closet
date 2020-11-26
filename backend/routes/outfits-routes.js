@@ -23,4 +23,15 @@ outfitsRouter.put(
   outfitsController.updateUserOpinion
 );
 
+// Manually create an outfit by user
+outfitsRouter.post(
+  '/one',
+  [
+    check('clothes').notEmpty().isArray(),
+    check('occasions').notEmpty().isArray(),
+    check('seasons').notEmpty().isArray(),
+  ],
+  outfitsController.createOneOutfit
+);
+
 module.exports = outfitsRouter;

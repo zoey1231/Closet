@@ -1,4 +1,8 @@
-const { timestampToDate, getDaysInMonth } = require('../../utils/time-helper');
+const {
+  timestampToDate,
+  getDaysInMonth,
+  getTodayDateInTimezone,
+} = require('../../utils/time-helper');
 
 describe('Time stamp to date tests', () => {
   let timestamp;
@@ -54,5 +58,16 @@ describe('Get days in months tests', () => {
     year = 500;
     const days = getDaysInMonth(month, year);
     expect(days).toEqual(28);
+  });
+});
+
+describe('Get today date in timezone test', () => {
+  it('should return the correct date', () => {
+    const dateString = getTodayDateInTimezone();
+
+    const date = dateString.split('-');
+    expect(date[0]).toEqual(new Date().getFullYear().toString());
+    expect(date[1]).toEqual((new Date().getMonth() + 1).toString());
+    expect(date[2]).toEqual(new Date().getDate().toString());
   });
 });
