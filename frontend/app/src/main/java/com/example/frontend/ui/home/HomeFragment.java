@@ -361,9 +361,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void addOutfitOnUI(String outfitId,String upperClothesId, String trousersId, String shoesId) {
-        Log.d(TAG,"in addOutfitOnUI");
-        TextView outfitText = new TextView(getContext());
-        outfitText.setText("outfit");
 
         ImageView image1 = new ImageView(getContext());
         image1.setId(View.generateViewId());
@@ -442,7 +439,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         outfitLayout.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams outfitLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
         outfitLayout.setLayoutParams(outfitLayoutParams);
-        outfitLayout.addView(outfitText);
         outfitLayout.addView(clothesLayout);
         outfitLayout.addView(buttonsLayout);
 

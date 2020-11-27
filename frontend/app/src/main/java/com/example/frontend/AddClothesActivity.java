@@ -36,8 +36,6 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 import okhttp3.Call;
@@ -74,12 +72,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private String message = EMPTY_STRING;
     private String clothesId = EMPTY_STRING;
     private String category= EMPTY_STRING;
-    private String color= EMPTY_STRING;
-    private String name= EMPTY_STRING;
-    private String updated= EMPTY_STRING;
-    private String clothUser = EMPTY_STRING;
-    private ArrayList<String> seasons = new ArrayList<>();
-    private ArrayList<String> occasions = new ArrayList<>();
 
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_data");
 
@@ -156,7 +148,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -186,6 +177,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
                 Intent setImageIntent = new Intent();
                 setImageIntent.putExtra("clothesId", clothesId);
+                setImageIntent.putExtra("category", category);
                 setResult(RESULT_OK, setImageIntent);
 
                 final Toast toast = makeText(AddClothesActivity.this,"Successfully added clothes!",Toast.LENGTH_SHORT);
@@ -195,18 +187,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 
             default:
         }
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
-        //construct the clothAttribute JSONObject we want to send to server
-        constructClothAttribute(clothAttribute,parent,view,pos,TAG,R.id.sp_category_add,R.id.sp_color_add,R.id.sp_occasion_add);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Another interface callback
-        //Toast.makeText(parent.getContext(),"You must select one of the options",Toast.LENGTH_SHORT).show();
     }
 
     public void constructClothAttributeClothName(JSONObject clothData,String TAG,EditText clothname) {
@@ -275,7 +255,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                     e.printStackTrace();
                 }
                 if (response.isSuccessful()) {
-                    extractResponseClothesId(responseJson);
+                    extractResponseClothesData(responseJson);
                     //make a toast to let the server's message display to the user
                     if(Objects.requireNonNull(responseJson).has("message") ){
                         runOnUiThread(new Runnable() {
@@ -302,18 +282,21 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
-    private void extractResponseClothesId(JSONObject responseJson) {
-//        JSONArray seasons_jsonArray,occasions_jsonArray;
+    private void extractResponseClothesData(JSONObject responseJson) {
         try {
-//            if(responseJson.has("message"))
-//                message = responseJson.getString("message");
-            if(responseJson.has("id"))
+            if (responseJson.has("message")) {
+                message = responseJson.getString("message");
+            }
+            if (responseJson.has("id")) {
                 clothesId = responseJson.getString("id");
+            }
+            if (responseJson.has("category")) {
+                category = responseJson.getString("category");
+            }
             sendImageToServer(file);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -379,6 +362,18 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         });
 
         Log.d(TAG,"finished sendImageToServer");
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
+        //construct the clothAttribute JSONObject we want to send to server
+        constructClothAttribute(clothAttribute,parent,view,pos,TAG,R.id.sp_category_add,R.id.sp_color_add,R.id.sp_occasion_add);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
+        //Toast.makeText(parent.getContext(),"You must select one of the options",Toast.LENGTH_SHORT).show();
     }
 
     public static CountingIdlingResource getRegisterIdlingResourceInTest() {

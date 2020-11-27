@@ -83,13 +83,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/tv_today" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <View
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="#03A9F4" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="200dp">
@@ -140,6 +133,13 @@
                     app:layout_constraintStart_toEndOf="@+id/tv_date_tmr"
                     app:layout_constraintTop_toBottomOf="@+id/tv_tmr"
                     app:layout_constraintVertical_bias="0.254" />
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="#03A9F4"
+                    tools:layout_editor_absoluteX="10dp"
+                    tools:layout_editor_absoluteY="10dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
@@ -157,13 +157,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sv_weather"
-        app:layout_constraintVertical_bias="0.025" />
+        app:layout_constraintVertical_bias="0.012" />
 
     <ScrollView
-        android:id="@+id/sv_outfit"
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_marginStart="5dp"
+        android:id="@+id/scrollView3"
+        android:layout_width="413dp"
+        android:layout_height="373dp"
         android:layout_marginTop="7dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="80dp"
@@ -179,8 +178,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:columnCount="1"
-            android:gravity="center"
-            android:padding="10dp"></GridLayout>
+            android:gravity="center" />
 
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
