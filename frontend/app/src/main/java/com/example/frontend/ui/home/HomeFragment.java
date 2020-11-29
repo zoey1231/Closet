@@ -24,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.example.frontend.CreateOutfitActivity;
 import com.example.frontend.MainActivity;
@@ -76,7 +77,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private boolean undoDislike = false;
     private String opinion = EMPTY_STRING;
 
-//    static CountingIdlingResource idlingResource = new CountingIdlingResource("send_get_outfit_request");
+    static CountingIdlingResource idlingResource = new CountingIdlingResource("send_get_outfit_request");
     private String message = EMPTY_STRING;
     private String warning = EMPTY_STRING;
     private String success = EMPTY_STRING;
@@ -130,9 +131,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         int selectedId = view.getId();
         if(selectedId == R.id.btn_get_outfit){
-            //                idlingResource.increment();
+                            idlingResource.increment();
             getButton.setEnabled(false);
-            getOutfitFromServer();
+            getOutfitFromServer(userToken);
             getButton.setEnabled(true);
         }
         if(selectedId == R.id.fa_button_refresh_weather){
@@ -183,7 +184,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
             }
             //send response to server
-//                idlingResource.increment();
+                idlingResource.increment();
             sendOutfitOpinionToServer(outfit_opinion,outfitID);
 
         }
@@ -272,7 +273,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    public void getOutfitFromServer() {
+    public void getOutfitFromServer(final String userToken) {
         ServerCommAsync serverCommunication = new ServerCommAsync();
         Log.d(TAG,"prepared to getOutfitFromServer");
 
@@ -282,7 +283,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
                 Log.d(TAG,"Fail to send request to server");
                 Log.d(TAG, String.valueOf(e));
-//                idlingResource.decrement();
+                idlingResource.decrement();
             }
 
             @Override
@@ -315,6 +316,27 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+
+                if (response.isSuccessful()) {
+                    if(success.equals("true")){
+                        Log.d(TAG,"[response.isSuccessful()]Outfit request is successful\n"+responseStr);
+                        try {
+                            //retrieve outfit data from server's response
+                            responseJson = new JSONObject(responseStr);
+                            extractResponseOutfitData(responseJson);
+                            idlingResource.decrement();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }else if(success.equals("false")){
+                        Log.d(TAG,"[response.isSuccessful()]Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
+                    }
+
+                } else {
+                    Log.d(TAG,"Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
+                }
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                         if(!message.equals(EMPTY_STRING)){
@@ -326,25 +348,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         }
                     }
                 });
-                if (response.isSuccessful()) {
-                    if(success.equals("true")){
-                        Log.d(TAG,"[response.isSuccessful()]Outfit request is successful\n"+responseStr);
-                        try {
-                            //retrieve outfit data from server's response
-                            responseJson = new JSONObject(responseStr);
-                            extractResponseOutfitData(responseJson);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }else if(success.equals("false")){
-                        Log.d(TAG,"[response.isSuccessful()]Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
-                    }
-
-                } else {
-                    Log.d(TAG,"Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
+                if(message.equals("Failed to generate an outfit, please try again later") && success.equals(EMPTY_STRING)&&warning.equals(EMPTY_STRING)){
+                    getOutfitFromServer(userToken);
                 }
-//                idlingResource.decrement();
+
             }
         });
     }
@@ -448,13 +455,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         dislikeBtn.setOnClickListener(this);
         likeBtn.setEnabled(true);
         dislikeBtn.setEnabled(true);
-//        if(opinion.equals(EMPTY_STRING)){
-//            likeBtn.setEnabled(true);
-//            dislikeBtn.setEnabled(true);
-//        }else if(opinion.equals("like")){
-//            likeBtn.setEnabled(false);
-//            dislikeBtn.setEnabled(false);
-//        }
 
         // buttons layout
         LinearLayout buttonsLayout = new LinearLayout(getContext());
@@ -540,9 +540,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         dislikeLayout.addView(willNotDisplayText);
         dislikeLayout.addView(undoBtn);
         dislikeLayout.addView(undoText);
-//        if(opinion.equals(EMPTY_STRING)){
-//            dislikeLayout.setVisibility(View.INVISIBLE);
-//        }
+
         dislikeLayout.setVisibility(View.INVISIBLE);
 
         //Main relative layout
@@ -622,7 +620,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
                 Log.d(TAG, "Fail to send outfit opinion to server");
                 Log.d(TAG, String.valueOf(e));
-//                idlingResource.decrement();
+                idlingResource.decrement();
             }
 
             @Override
@@ -668,7 +666,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     }else {
                         Log.d(TAG," Error: invalid user's outfit opinion type");
                     }
-//                    idlingResource.decrement();
+                    idlingResource.decrement();
                 }
             }
 
@@ -716,8 +714,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
 
 
-//    public static CountingIdlingResource getRegisterIdlingResourceInTest() {
-//        return idlingResource;
-//    }
+    public static CountingIdlingResource getRegisterIdlingResourceInTest() {
+        return idlingResource;
+    }
 
 }
