@@ -164,7 +164,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 text.setVisibility(View.GONE);
                 Intent selectImageIntent = new Intent(Intent.ACTION_PICK);
                 selectImageIntent.setType("image/*");
-
                 startActivityForResult(selectImageIntent, 1);
                 idlingResource.decrement();
                 break;
@@ -175,14 +174,8 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
 //                send the cloth data to server
                 sendClothDataToServer(clothAttribute,TAG,AddClothesActivity.this);
 
-                Intent setImageIntent = new Intent();
-                setImageIntent.putExtra("clothesId", clothesId);
-                setImageIntent.putExtra("category", category);
-                setResult(RESULT_OK, setImageIntent);
-
                 final Toast toast = makeText(AddClothesActivity.this,"Successfully added clothes!",Toast.LENGTH_SHORT);
                 toast.show();
-                finish();
                 break;
 
             default:
@@ -293,7 +286,14 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
             if (responseJson.has("category")) {
                 category = responseJson.getString("category");
             }
+
             sendImageToServer(file);
+
+            Intent setImageIntent = new Intent();
+            setImageIntent.putExtra("clothesId", clothesId);
+            setImageIntent.putExtra("category", category);
+            setResult(RESULT_OK, setImageIntent);
+            finish();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -315,7 +315,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 image.setVisibility(View.VISIBLE);
                 path = getPath(uri);
                 file = new File(path);
-                sendImageToServer(file);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

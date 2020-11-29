@@ -3,6 +3,7 @@ package com.example.frontend;
 
 import java.util.List;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 public class CalendarAdapter extends ArrayAdapter<Event> {
-
+    private static final String TAG ="CalendarFragment";
     private List<Event> list;
     private LayoutInflater mInflater;
 
@@ -30,7 +31,6 @@ public class CalendarAdapter extends ArrayAdapter<Event> {
         this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();
-
     }
 
 

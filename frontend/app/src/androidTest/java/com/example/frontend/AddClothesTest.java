@@ -79,7 +79,7 @@ public class AddClothesTest {
         IdlingRegistry idlingRegistry_activity = IdlingRegistry.getInstance();
         idlingRegistry_activity.register(idlingResourceAddClothes);
 
-        Uri uri = Uri.fromFile(new File("/storage/emulated/0/test.jpg"));
+        Uri uri = Uri.fromFile(new File("/storage/emulated/0/Download/images.jpg"));
         Intent data = new Intent();
         data.setData(uri);
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, data);
