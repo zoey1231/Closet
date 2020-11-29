@@ -34,6 +34,23 @@
                 android:layout_width="180dp"
                 android:layout_height="200dp">
 
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fa_button_refresh_weather"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:clickable="true"
+                    android:src="@drawable/ic_refresh"
+                    app:fabSize="mini"
+                    android:elevation="10dp"
+                    app:maxImageSize="30dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_today"
+                    app:layout_constraintHorizontal_bias="0.321"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.159" />
+
+
                 <TextView
                     android:id="@+id/tv_today"
                     android:layout_width="wrap_content"
@@ -42,9 +59,10 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.733"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.143" />
+                    app:layout_constraintVertical_bias="0.164" />
 
                 <TextView
                     android:id="@+id/tv_date_today"
@@ -81,6 +99,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/tv_date_today"
                     app:layout_constraintTop_toBottomOf="@+id/tv_today" />
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
@@ -162,7 +182,7 @@
     <ScrollView
         android:id="@+id/sv_outfit"
         android:layout_width="match_parent"
-        android:layout_height="442dp"
+        android:layout_height="350dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="5dp"

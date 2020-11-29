@@ -24,6 +24,7 @@ import com.example.frontend.R;
 import com.example.frontend.RegisterActivity;
 import com.example.frontend.ServerCommAsync;
 import com.example.frontend.User;
+import com.example.frontend.ui.home.HomeFragment;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;

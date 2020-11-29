@@ -29,6 +29,8 @@ import com.example.frontend.CreateOutfitActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommAsync;
+import com.example.frontend.User;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -56,18 +58,18 @@ import okhttp3.Response;
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private String TAG = "HomeFragment";
     private static final String EMPTY_STRING = "";
-    private String userToken, userId;
-
-    private String icon_today,icon_tmr;
-    private String monthDesc_today,dayDesc_today,date_today;
-    private String monthDesc_tmr,dayDesc_tmr,date_tmr;
-    private String temp_min_today,temp_max_today,temp_min_tmr,temp_max_tmr;
+    private String userToken, userId, userCity;
+    private User user;
+    private static String icon_today,icon_tmr;
+    private static String monthDesc_today,dayDesc_today,date_today;
+    private static String monthDesc_tmr,dayDesc_tmr,date_tmr;
+    private static String temp_min_today,temp_max_today,temp_min_tmr,temp_max_tmr;
     private TextView tv_date_today,tv_date_tmr,tv_temp_today,tv_temp_tmr;
     private ImageView iv_icon_today,iv_icon_tmr;
 
     private Button getButton, createButton;
     private GridLayout outfitsLayout;
-
+    private FloatingActionButton refreshWeatherBtn;
     private JSONObject outfit_opinion = new JSONObject();
     private boolean like = false;
     private boolean dislike = false;
@@ -93,8 +95,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         root = inflater.inflate(R.layout.fragment_home, container, false);
 
         //get User's data from MainActivity
-        userToken = MainActivity.getUser().getUserToken();
-        userId = MainActivity.getUser().getUserId();
+        user = MainActivity.getUser();
+        userToken = user.getUserToken();
+        userId = user.getUserId();
 
         tv_date_today = root.findViewById(R.id.tv_date_today);
         tv_date_tmr = root.findViewById(R.id.tv_date_tmr);
@@ -107,7 +110,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         getButton.setOnClickListener(this);
         createButton = root.findViewById(R.id.btn_create_outfit);
         createButton.setOnClickListener(this);
-        createButton.setVisibility(View.GONE);
+        //createButton.setVisibility(View.GONE);
+
+        refreshWeatherBtn = root.findViewById(R.id.fa_button_refresh_weather);
+        refreshWeatherBtn.setOnClickListener(this);
 
         outfitsLayout = root.findViewById(R.id.gl_outfit);
 
@@ -116,6 +122,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         return root;
     }
+
+
 
     @Override
     public void onClick(View view) {
@@ -126,6 +134,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             getButton.setEnabled(false);
             getOutfitFromServer();
             getButton.setEnabled(true);
+        }
+        if(selectedId == R.id.fa_button_refresh_weather){
+            Log.d(TAG,"clicked fresh weather button");
+            getWeatherData();
         }
         else if (selectedId == R.id.btn_create_outfit) {
             createButton.setEnabled(false);
@@ -438,13 +450,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         dislikeBtnParams.rightMargin = 20;
         dislikeBtn.setLayoutParams(dislikeBtnParams);
         dislikeBtn.setOnClickListener(this);
-        if(opinion.equals(EMPTY_STRING)){
-            likeBtn.setEnabled(true);
-            dislikeBtn.setEnabled(true);
-        }else if(opinion.equals("like")){
-            likeBtn.setEnabled(false);
-            dislikeBtn.setEnabled(false);
-        }
+        likeBtn.setEnabled(true);
+        dislikeBtn.setEnabled(true);
+//        if(opinion.equals(EMPTY_STRING)){
+//            likeBtn.setEnabled(true);
+//            dislikeBtn.setEnabled(true);
+//        }else if(opinion.equals("like")){
+//            likeBtn.setEnabled(false);
+//            dislikeBtn.setEnabled(false);
+//        }
 
         // buttons layout
         LinearLayout buttonsLayout = new LinearLayout(getContext());
@@ -531,9 +545,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         dislikeLayout.addView(willNotDisplayText);
         dislikeLayout.addView(undoBtn);
         dislikeLayout.addView(undoText);
-        if(opinion.equals(EMPTY_STRING)){
-            dislikeLayout.setVisibility(View.INVISIBLE);
-        }
+//        if(opinion.equals(EMPTY_STRING)){
+//            dislikeLayout.setVisibility(View.INVISIBLE);
+//        }
+        dislikeLayout.setVisibility(View.INVISIBLE);
 
         //Main relative layout
         final RelativeLayout mainLayout = new RelativeLayout(getContext());

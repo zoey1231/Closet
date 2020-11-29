@@ -30,6 +30,7 @@ public class User implements Parcelable {
         this.userToken = userToken;
         this.email = email;
         this.code = code;
+        this.city = "Vancouver";//set the default city to Vancouver
     }
 
     public String getUserId() {
