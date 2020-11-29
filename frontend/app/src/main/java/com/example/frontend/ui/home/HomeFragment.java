@@ -339,13 +339,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                        if(!message.equals(EMPTY_STRING)){
-                            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                        }
-                        if(!warning.equals(EMPTY_STRING)){
-                            Toast.makeText(getContext(), warning, Toast.LENGTH_SHORT).show();
+                    if(!message.equals(EMPTY_STRING)&& !warning.equals(EMPTY_STRING)){
+                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), warning, Toast.LENGTH_SHORT).show();
+                    }
 
-                        }
                     }
                 });
                 if(message.equals("Failed to generate an outfit, please try again later") && success.equals(EMPTY_STRING)&&warning.equals(EMPTY_STRING)){
