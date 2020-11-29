@@ -1,5 +1,6 @@
 package com.example.frontend.ui.home;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -24,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.frontend.CreateOutfitActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommAsync;
@@ -51,7 +53,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private String TAG = "HomeFragment";
     private static final String EMPTY_STRING = "";
@@ -64,7 +65,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private TextView tv_date_today,tv_date_tmr,tv_temp_today,tv_temp_tmr;
     private ImageView iv_icon_today,iv_icon_tmr;
 
-    private Button outfitButton;
+    private Button getButton, createButton;
     private GridLayout outfitsLayout;
 
     private JSONObject outfit_opinion = new JSONObject();
@@ -102,10 +103,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         iv_icon_today = root.findViewById(R.id.iv_icon_today);
         iv_icon_tmr = root.findViewById(R.id.iv_icon_tmr);
 
-        outfitsLayout = root.findViewById(R.id.gl_outfit);
+        getButton = root.findViewById(R.id.btn_get_outfit);
+        getButton.setOnClickListener(this);
+        createButton = root.findViewById(R.id.btn_create_outfit);
+        createButton.setOnClickListener(this);
+        createButton.setVisibility(View.GONE);
 
-        outfitButton = root.findViewById(R.id.btn_outfit);
-        outfitButton.setOnClickListener(this);
+        outfitsLayout = root.findViewById(R.id.gl_outfit);
 
         getWeatherData();
         addTodayOutfitsOnUI();
@@ -117,11 +121,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
 
         int selectedId = view.getId();
-        if(selectedId == R.id.btn_outfit){
+        if(selectedId == R.id.btn_get_outfit){
             //                idlingResource.increment();
-            outfitButton.setEnabled(false);
+            getButton.setEnabled(false);
             getOutfitFromServer();
-            outfitButton.setEnabled(true);
+            getButton.setEnabled(true);
+        }
+        else if (selectedId == R.id.btn_create_outfit) {
+            createButton.setEnabled(false);
+            Intent intent = new Intent(HomeFragment.this.getContext(), CreateOutfitActivity.class);
+            startActivity(intent);
+            createButton.setVisibility(View.GONE);
         }
         else if(opinionMap.containsKey(selectedId)){
             String[] valueArray = opinionMap.get(selectedId);
@@ -166,8 +176,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         }
     }
-
-
 
     private void getWeatherData() {
         ServerCommAsync serverCommunication = new ServerCommAsync();
@@ -280,6 +288,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     }
                     if(responseJson.has("warning")){
                         warning = responseJson.getString("warning");
+                    }
+                    if (responseJson.has("manual")) {
+                        if (responseJson.getBoolean("manual")) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    createButton.setVisibility(View.VISIBLE);
+                                }
+                            });
+                        }
                     }
 
                 } catch (JSONException e) {

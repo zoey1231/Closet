@@ -146,7 +146,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/btn_outfit"
+        android:id="@+id/btn_get_outfit"
         android:layout_width="229dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -157,20 +157,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sv_weather"
-        app:layout_constraintVertical_bias="0.012" />
+        app:layout_constraintVertical_bias="0.025" />
 
     <ScrollView
-        android:id="@+id/scrollView3"
-        android:layout_width="413dp"
-        android:layout_height="373dp"
-        android:layout_marginTop="7dp"
+        android:id="@+id/sv_outfit"
+        android:layout_width="match_parent"
+        android:layout_height="442dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_outfit"
+        app:layout_constraintTop_toBottomOf="@+id/btn_get_outfit"
         app:layout_constraintVertical_bias="0.0">
 
         <GridLayout
@@ -178,8 +179,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:columnCount="1"
-            android:gravity="center" />
+            android:gravity="center"
+            android:padding="10dp"/>
 
     </ScrollView>
+
+    <Button
+        android:id="@+id/btn_create_outfit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="260dp"
+        android:text="Create my outfit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sv_weather" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
