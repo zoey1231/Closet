@@ -150,37 +150,32 @@
         android:layout_width="229dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="3dp"
         android:gravity="center"
         android:text="Give me some outfit ideas"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sv_weather"
-        app:layout_constraintVertical_bias="0.025" />
+        app:layout_constraintVertical_bias="0.024" />
 
     <ScrollView
         android:id="@+id/sv_outfit"
-        android:layout_width="match_parent"
-        android:layout_height="442dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="80dp"
+        android:layout_width="411dp"
+        android:layout_height="363dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_get_outfit"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="0.102">
 
         <GridLayout
             android:id="@+id/gl_outfit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
             android:columnCount="1"
-            android:gravity="center"
-            android:padding="10dp"/>
+            android:gravity="center" />
 
     </ScrollView>
 

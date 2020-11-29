@@ -409,7 +409,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         //clothes layout
         LinearLayout clothesLayout = new LinearLayout(getContext());
         clothesLayout.setOrientation(LinearLayout.HORIZONTAL);
-        clothesLayout.setPadding(30, 0, 30, 0);
         clothesLayout.addView(image1);
         clothesLayout.addView(image2);
         clothesLayout.addView(image3);

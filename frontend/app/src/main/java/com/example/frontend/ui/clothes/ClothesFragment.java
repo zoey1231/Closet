@@ -337,7 +337,6 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         ConstraintLayout.LayoutParams imageParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         imageParams.width = 300;
         imageParams.height = 300;
-        imageParams.leftMargin = 30;
         image.setLayoutParams(imageParams);
         Bitmap bitmap = getClothesImage(clothesId);
         image.setImageBitmap(bitmap);
@@ -354,12 +353,18 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
         final ConstraintLayout clothes = new ConstraintLayout(getContext());
         clothes.setId(View.generateViewId());
+        ConstraintLayout.LayoutParams clothesParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        clothesParams.width = 300;
+        clothesParams.height = 300;
+        clothesParams.leftMargin = 30;
+        clothes.setLayoutParams(clothesParams);
         clothes.addView(image);
         clothes.addView(spinner);
         ConstraintSet constraint = new ConstraintSet();
         constraint.clone(clothes);
         constraint.connect(spinner.getId(), ConstraintSet.RIGHT, image.getId(), ConstraintSet.RIGHT);
         constraint.applyTo(clothes);
+
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
