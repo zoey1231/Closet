@@ -88,7 +88,7 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         //occasion spinner
         spinner_occasion = findViewById(R.id.sp_occasion_outfit);
 
-        setAdapter(R.array.occasion_array, spinner_occasion);
+        spinnerAdapter.setAdapter(R.array.occasion_array, spinner_occasion,this);
         spinner_occasion.setOnItemSelectedListener(this);
 
         getAllClothesFromServer();
@@ -150,15 +150,6 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-    public void setAdapter(int textArrayResId, @NotNull Spinner spinner) {
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                textArrayResId, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
     }
 
     @Override

@@ -72,10 +72,7 @@ public class FirebaseMsgService extends FirebaseMessagingService {
     public void onNewToken(String token) {
         Log.d(TAG, "Refreshed token: " + token);
 
-        // If you want to send messages to this application instance or
-        // manage this apps subscriptions on the server side, send the
-        // FCM registration token to your app server.
-
+        // send the FCM registration token to your app server.
         sendRegistrationToServer(user_Token,token);
     }
 
@@ -109,11 +106,7 @@ public class FirebaseMsgService extends FirebaseMessagingService {
 
 
     /**
-     * Persist token to third-party servers.
-     *
-     * Modify this method to associate the user's FCM registration token with any
-     * server-side account maintained by your application.
-     *
+     * Persist token to servers and send a notification to user
      * @param token The new token.
      */
     private static void sendRegistrationToServer(String userToken, String token) {
@@ -122,8 +115,8 @@ public class FirebaseMsgService extends FirebaseMessagingService {
         JSONObject messageBody = new JSONObject();
 
         try {
-            messageBody.put("title","test");
-            messageBody.put("body","Welcome to our app: CLOSET!");
+            messageBody.put("title","Welcome");
+            messageBody.put("body","Checkout your closet and outfits' recommendation in our CLOSET app! ");
             message.put("notification",messageBody);
             postData.put("registrationToken", token);
             postData.put("message", message);
