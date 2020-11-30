@@ -62,9 +62,9 @@ jobs:
       - name: remote ssh commands
         uses: appleboy/ssh-action@master
         with:
-          host: "closet-cpen321.westus.cloudapp.azure.com"
-          username: "closet"
-          password: "CLOSETCPEN321!"
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
           port: 22
           script_stop: true
           script: |
