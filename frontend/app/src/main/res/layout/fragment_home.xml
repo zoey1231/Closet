@@ -179,21 +179,21 @@
     <ScrollView
         android:id="@+id/sv_outfit"
         android:layout_width="411dp"
-        android:layout_height="363dp"
+        android:layout_height="367dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_get_outfit"
-        app:layout_constraintVertical_bias="0.102">
+        app:layout_constraintVertical_bias="0.074">
 
         <GridLayout
             android:id="@+id/gl_outfit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="15dp"
             android:columnCount="1"
-            android:gravity="center" />
+            android:gravity="center"
+            android:padding="15dp" />
 
     </ScrollView>
 

@@ -80,7 +80,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
         buttonAdd = root.findViewById(R.id.btn_clothes_add);
         buttonAdd.setOnClickListener(this);
-        allImage = root.findViewById(R.id.iv_all);
+//        allImage = root.findViewById(R.id.iv_all);
+        allImage = root.findViewById(R.id.iv_outerwear);
         allImage.setOnClickListener(this);
         shirtsImage = root.findViewById(R.id.iv_shirts);
         shirtsImage.setOnClickListener(this);
@@ -119,13 +120,14 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 idlingResource.decrement();
                 break;
 
-//            case R.id.iv_outwear:
+ //            case R.id.iv_all:
 //                clothesLayout.removeAllViews();
-//                addClothesByCategory("Outwear");
+//                addAllClothesToCloset();
 //                break;
-            case R.id.iv_all:
+
+            case R.id.iv_outerwear:
                 clothesLayout.removeAllViews();
-                addAllClothesToCloset();
+                addClothesByCategory("Outerwear");
                 break;
 
             case R.id.iv_shirts:
@@ -174,17 +176,18 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             // here you can retrieve your bundle data.
             String clothesId = data.getStringExtra("clothesId");
             String category = data.getStringExtra("category");
+
             clothesIdList.add(clothesId);
-//            if (category.equals("Outwear")) {
-//                categoryMap.put(clothesId, "Outwear");
-//            }
-            if (category.equals("Shirts")) {
+            if (category.equals("Outerwear")) {
+                categoryMap.put(clothesId, "Outerwear");
+            }
+            else if (category.equals("Shirts")) {
                 categoryMap.put(clothesId, "Shirts");
             }
             else if (category.equals("Trousers")) {
                 categoryMap.put(clothesId, "Trousers");
             }
-            else {
+            else if (category.equals("Shoes")){
                 categoryMap.put(clothesId, "Shoes");
             }
             addClothesToCloset(clothesId);
@@ -319,16 +322,16 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 clothesId = clothes.getString("id");
                 clothesIdList.add(clothesId);
             }
-//            if (clothes.getString("category").equals("Outwear")) {
-//                categoryMap.put(clothesId, "Outwear");
-//            }
+            if (clothes.getString("category").equals("Outerwear")) {
+                categoryMap.put(clothesId, "Outerwear");
+            }
             if (clothes.getString("category").equals("Shirts")) {
                 categoryMap.put(clothesId, "Shirts");
             }
             else if (clothes.getString("category").equals("Trousers")) {
                 categoryMap.put(clothesId, "Trousers");
             }
-            else {
+            else if (clothes.getString("category").equals("Shoes")){
                 categoryMap.put(clothesId, "Shoes");
             }
         }
@@ -387,14 +390,14 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     }
 
     private void addClothesByCategory(String category) {
-//        if (category.equals("Outwear")) {
-//            for (int i = 0; i < clothesIdList.size(); i++) {
-//                String clothesId = clothesIdList.get(i);
-//                if (categoryMap.get(clothesId).equals("Outwear")) {
-//                    addClothesToCloset(clothesId);
-//                }
-//            }
-//        }
+        if (category.equals("Outerwear")) {
+            for (int i = 0; i < clothesIdList.size(); i++) {
+                String clothesId = clothesIdList.get(i);
+                if (categoryMap.get(clothesId).equals("Outerwear")) {
+                    addClothesToCloset(clothesId);
+                }
+            }
+        }
         if (category.equals("Shirts")) {
             for (int i = 0; i < clothesIdList.size(); i++) {
                 String clothesId = clothesIdList.get(i);
@@ -411,7 +414,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 }
             }
         }
-        else {
+        else if (category.equals("Shoes")){
             for (int i = 0; i < clothesIdList.size(); i++) {
                 String clothesId = clothesIdList.get(i);
                 if (categoryMap.get(clothesId).equals("Shoes")) {

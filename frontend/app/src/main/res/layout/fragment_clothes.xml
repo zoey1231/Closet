@@ -48,7 +48,7 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/iv_all"
+                android:id="@+id/iv_outerwear"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 app:srcCompat="@drawable/outwear"
@@ -58,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:gravity="center"
-                android:text="All"
+                android:text="Outwear"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
         </LinearLayout>
 
@@ -129,23 +129,23 @@
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="412dp"
-        android:layout_height="433dp"
+        android:layout_width="411dp"
+        android:layout_height="439dp"
         android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gl_category"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.039">
+        app:layout_constraintVertical_bias="0.0">
 
         <GridLayout
             android:id="@+id/gl_clothes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="15dp"
             android:columnCount="3"
-            android:gravity="center" />
+            android:gravity="center"
+            android:padding="15dp" />
 
     </ScrollView>
 

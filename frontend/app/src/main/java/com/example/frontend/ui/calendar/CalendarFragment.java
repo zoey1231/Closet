@@ -54,7 +54,7 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
     private User user;
     private String userToken;
-    private String code;
+    private String code = EMPTY_STRING;
 
     private MaterialCalendarView calendar;
     private ListView events;
@@ -109,9 +109,12 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
     @Override
     public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
-        String month = months.get(date.getMonth() - 1);
-        int year = date.getYear();
-        getEventsFromServer(user.getCode(), userToken, month, year);
+        if (code != EMPTY_STRING) {
+            String month = months.get(date.getMonth() - 1);
+            int year = date.getYear();
+            eventMap.clear();
+            getEventsFromServer(user.getCode(), userToken, month, year);
+        }
     }
 
     @Override

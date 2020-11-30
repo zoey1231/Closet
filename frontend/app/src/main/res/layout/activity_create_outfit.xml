@@ -48,8 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:padding="15dp"
-            android:scrollbars="horizontal" />
+            android:padding="15dp"/>
     </HorizontalScrollView>
 
     <TextView
@@ -80,8 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:padding="15dp"
-            android:scrollbars="horizontal" />
+            android:padding="15dp"/>
     </HorizontalScrollView>
 
     <TextView
@@ -113,8 +111,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:padding="15dp"
-            android:scrollbars="horizontal" />
+            android:padding="15dp"/>
     </HorizontalScrollView>
 
     <Button

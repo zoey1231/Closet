@@ -288,12 +288,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
             }
 
             sendImageToServer(file);
-
-            Intent setImageIntent = new Intent();
-            setImageIntent.putExtra("clothesId", clothesId);
-            setImageIntent.putExtra("category", category);
-            setResult(RESULT_OK, setImageIntent);
-            finish();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -319,7 +313,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-        } else {
         }
     }
 
@@ -357,6 +350,11 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 String responseStr = Objects.requireNonNull(response.body()).string();
                 Log.d(TAG, "Successfully upload image to server:"+responseStr);
 
+                Intent setImageIntent = new Intent();
+                setImageIntent.putExtra("clothesId", clothesId);
+                setImageIntent.putExtra("category", category);
+                setResult(RESULT_OK, setImageIntent);
+                finish();
             }
         });
 
