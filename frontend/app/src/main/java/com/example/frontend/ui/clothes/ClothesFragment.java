@@ -1,7 +1,6 @@
 package com.example.frontend.ui.clothes;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,7 +28,6 @@ import com.example.frontend.EditClothesActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommAsync;
-import com.example.frontend.User;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -62,7 +60,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private String userToken, userId;
 
     private ImageButton buttonAdd;
-    private ImageView outwearImage, shirtsImage, trousersImage, shoesImage;
+    private ImageView allImage, shirtsImage, trousersImage, shoesImage;
     private GridLayout clothesLayout;
 
     private int selectedId;
@@ -82,8 +80,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
         buttonAdd = root.findViewById(R.id.btn_clothes_add);
         buttonAdd.setOnClickListener(this);
-        outwearImage = root.findViewById(R.id.iv_outwear);
-        outwearImage.setOnClickListener(this);
+        allImage = root.findViewById(R.id.iv_all);
+        allImage.setOnClickListener(this);
         shirtsImage = root.findViewById(R.id.iv_shirts);
         shirtsImage.setOnClickListener(this);
         trousersImage = root.findViewById(R.id.iv_trousers);
@@ -121,9 +119,13 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 idlingResource.decrement();
                 break;
 
-            case R.id.iv_outwear:
+//            case R.id.iv_outwear:
+//                clothesLayout.removeAllViews();
+//                addClothesByCategory("Outwear");
+//                break;
+            case R.id.iv_all:
                 clothesLayout.removeAllViews();
-                addClothesByCategory("Outwear");
+                addAllClothesToCloset();
                 break;
 
             case R.id.iv_shirts:
@@ -173,10 +175,10 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             String clothesId = data.getStringExtra("clothesId");
             String category = data.getStringExtra("category");
             clothesIdList.add(clothesId);
-            if (category.equals("Outwear")) {
-                categoryMap.put(clothesId, "Outwear");
-            }
-            else if (category.equals("Shirts")) {
+//            if (category.equals("Outwear")) {
+//                categoryMap.put(clothesId, "Outwear");
+//            }
+            if (category.equals("Shirts")) {
                 categoryMap.put(clothesId, "Shirts");
             }
             else if (category.equals("Trousers")) {
@@ -277,7 +279,9 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     private void deleteClothesFromCloset(int selectedId) {
         ConstraintLayout clothes = root.findViewById(selectedId + 1);
+        String clothesId = clothesIdMap.get(selectedId);
         clothesLayout.removeView(clothes);
+        clothesIdList.remove(clothesId);
         clothesIdMap.remove(selectedId);
     }
 
@@ -315,10 +319,10 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 clothesId = clothes.getString("id");
                 clothesIdList.add(clothesId);
             }
-            if (clothes.getString("category").equals("Outwear")) {
-                categoryMap.put(clothesId, "Outwear");
-            }
-            else if (clothes.getString("category").equals("Shirts")) {
+//            if (clothes.getString("category").equals("Outwear")) {
+//                categoryMap.put(clothesId, "Outwear");
+//            }
+            if (clothes.getString("category").equals("Shirts")) {
                 categoryMap.put(clothesId, "Shirts");
             }
             else if (clothes.getString("category").equals("Trousers")) {
@@ -383,15 +387,15 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     }
 
     private void addClothesByCategory(String category) {
-        if (category.equals("Outwear")) {
-            for (int i = 0; i < clothesIdList.size(); i++) {
-                String clothesId = clothesIdList.get(i);
-                if (categoryMap.get(clothesId).equals("Outwear")) {
-                    addClothesToCloset(clothesId);
-                }
-            }
-        }
-        else if (category.equals("Shirts")) {
+//        if (category.equals("Outwear")) {
+//            for (int i = 0; i < clothesIdList.size(); i++) {
+//                String clothesId = clothesIdList.get(i);
+//                if (categoryMap.get(clothesId).equals("Outwear")) {
+//                    addClothesToCloset(clothesId);
+//                }
+//            }
+//        }
+        if (category.equals("Shirts")) {
             for (int i = 0; i < clothesIdList.size(); i++) {
                 String clothesId = clothesIdList.get(i);
                 if (categoryMap.get(clothesId).equals("Shirts")) {

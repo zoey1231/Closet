@@ -113,8 +113,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         createButton.setOnClickListener(this);
         //createButton.setVisibility(View.GONE);
 
-        refreshWeatherBtn = root.findViewById(R.id.fa_button_refresh_weather);
-        refreshWeatherBtn.setOnClickListener(this);
+//        refreshWeatherBtn = root.findViewById(R.id.fa_button_refresh_weather);
+//        refreshWeatherBtn.setOnClickListener(this);
 
         outfitsLayout = root.findViewById(R.id.gl_outfit);
 
@@ -136,15 +136,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             getOutfitFromServer(userToken);
             getButton.setEnabled(true);
         }
-        if(selectedId == R.id.fa_button_refresh_weather){
-            Log.d(TAG,"clicked fresh weather button");
-            getWeatherData();
-        }
+//        if(selectedId == R.id.fa_button_refresh_weather){
+//            Log.d(TAG,"clicked fresh weather button");
+//            getWeatherData();
+//        }
         else if (selectedId == R.id.btn_create_outfit) {
             createButton.setEnabled(false);
             Intent intent = new Intent(HomeFragment.this.getContext(), CreateOutfitActivity.class);
             startActivity(intent);
-            createButton.setVisibility(View.GONE);
+//            createButton.setVisibility(View.GONE);
+            createButton.setEnabled(true);
         }
         else if(opinionMap.containsKey(selectedId)){
             String[] valueArray = opinionMap.get(selectedId);

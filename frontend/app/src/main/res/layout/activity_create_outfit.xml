@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:padding="25dp"
+            android:padding="15dp"
             android:scrollbars="horizontal" />
     </HorizontalScrollView>
 
@@ -80,7 +80,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:padding="25dp"
+            android:padding="15dp"
             android:scrollbars="horizontal" />
     </HorizontalScrollView>
 
@@ -113,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:padding="25dp"
+            android:padding="15dp"
             android:scrollbars="horizontal" />
     </HorizontalScrollView>
 

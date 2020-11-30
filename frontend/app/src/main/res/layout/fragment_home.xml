@@ -34,21 +34,21 @@
                 android:layout_width="180dp"
                 android:layout_height="200dp">
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fa_button_refresh_weather"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:clickable="true"
-                    android:src="@drawable/ic_refresh"
-                    app:fabSize="mini"
-                    android:elevation="10dp"
-                    app:maxImageSize="30dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tv_today"
-                    app:layout_constraintHorizontal_bias="0.321"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.159" />
+<!--                <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                    android:id="@+id/fa_button_refresh_weather"-->
+<!--                    android:layout_width="40dp"-->
+<!--                    android:layout_height="40dp"-->
+<!--                    android:clickable="true"-->
+<!--                    android:src="@drawable/ic_refresh"-->
+<!--                    app:fabSize="mini"-->
+<!--                    android:elevation="10dp"-->
+<!--                    app:maxImageSize="30dp"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/tv_today"-->
+<!--                    app:layout_constraintHorizontal_bias="0.321"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintVertical_bias="0.159" />-->
 
 
                 <TextView
@@ -59,7 +59,6 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.733"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.164" />
@@ -165,13 +164,14 @@
 
     <Button
         android:id="@+id/btn_get_outfit"
-        android:layout_width="229dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:text="Give me some outfit ideas"
+        android:text="Get one outfit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.182"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sv_weather"
         app:layout_constraintVertical_bias="0.024" />
@@ -201,9 +201,10 @@
         android:id="@+id/btn_create_outfit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="260dp"
-        android:text="Create my outfit"
+        android:layout_marginTop="212dp"
+        android:text="Create one outfit"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.839"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/sv_weather" />
 
