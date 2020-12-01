@@ -1,5 +1,5 @@
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs').promises;
 
 require('dotenv').config();
 
@@ -34,13 +34,13 @@ const postImage = async (req, res, next) => {
     .toLocaleLowerCase();
 
   // limiting to one file extension for now
-  // TODO: allow other image file extension
   if (!ALLOWED_EXTENSIONS.includes(imageFileExtension)) {
-    fs.unlink(tempPath, err => {
-      if (err) return next(new HttpError('Failed to upload image', 500));
-    });
-
-    res.status(403).json({ message: 'Only .jpg files are allowed' });
+    try {
+      await fs.unlink(tempPath);
+    } catch (err) {
+      return next(new HttpError('Failed to upload image', 500));
+    }
+    return res.status(403).json({ message: 'Extension not allowed' });
   }
 
   // setup for saving file
@@ -52,26 +52,14 @@ const postImage = async (req, res, next) => {
   );
 
   try {
-    // check folder exists, else create it
-    if (!fs.existsSync(targetFolder)) {
-      fs.mkdirSync(targetFolder);
-    }
-
-    // move image from temp location to userId location
-    fs.renameSync(tempPath, targetPath, err => {
-      if (err) return next(new HttpError('Unable to move image', 500));
-    });
-
-    // make sure moved image exists
-    if (!fs.existsSync(targetPath)) {
-      return next(new HttpError('Error moving image', 500));
-    }
+    await fs.mkdir(targetFolder);
+    await fs.rename(tempPath, targetPath);
   } catch (exception) {
     LOG.error(req._id, exception.message);
     return next(new HttpError('Failed uploading image', 500));
   }
 
-  res.status(201).json({ message: 'Uploaded image!' }).end();
+  return res.status(201).json({ message: 'Uploaded image!' });
 };
 
 const deleteImage = async (req, res, next) => {
@@ -82,31 +70,36 @@ const deleteImage = async (req, res, next) => {
     return next(new HttpError('Token missing or invalid', 401));
   }
 
-  try {
-    let fileExists;
-    let deletePath;
-    ALLOWED_EXTENSIONS.forEach(extension => {
-      const targetPath = path.join(
-        `./${process.env.IMAGE_FOLDER_NAME}/${userId}/${clothingId}${extension}`
-      );
 
-      if (fs.existsSync(targetPath)) {
-        fileExists = true;
-        deletePath = targetPath;
-      }
-    });
+  let fileExists;
+  let deletePath;
+  for await (const extension of ALLOWED_EXTENSIONS) {
+    const targetPath = path.join(
+      `./${process.env.IMAGE_FOLDER_NAME}/${userId}/${clothingId}${extension}`
+    );
 
-    if (!fileExists || !deletePath) {
-      return next(new HttpError('Image does not exist', 500));
+    try {
+      await fs.access(targetPath);
+      fileExists = true;
+      deletePath = targetPath;
+      break;
+    } catch { 
+      fileExists = false;
     }
-
-    fs.unlinkSync(deletePath);
-  } catch (exception) {
-    LOG.error(req._id, exception.message);
-    return next(new HttpError('Failed to get image', 500));
   }
 
-  res.status(200).json({ message: 'Deleted image' }).end();
+  if (!fileExists || !deletePath) {
+    return next(new HttpError('Image does not exist', 500));
+  }
+
+  try {
+    await fs.unlink(deletePath);
+  } catch (exception) {
+    LOG.error(req._id, exception.message);
+    return next(new HttpError('Failed to delete image', 500));
+  }
+
+  return res.status(200).json({ message: 'Deleted image' });
 };
 
 module.exports = {

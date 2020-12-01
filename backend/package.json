@@ -38,7 +38,11 @@
   "jest": {
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "app.js",
+      "logger.js",
+      "config.js",
+      "firebase.config.js"
     ]
   }
 }
