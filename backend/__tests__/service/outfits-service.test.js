@@ -10,11 +10,16 @@ jest.mock('../../model/outfit');
 const Clothes = require('../../model/clothes');
 jest.mock('../../model/clothes');
 
+const TodayOutfit = require('../../model/today-outfit');
 jest.mock('../../model/today-outfit.js');
 
 const { generateOutfit } = require('../../service/outfits-service');
 
 describe('Outfit service tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const userId = 'USER_ID';
   const oneClothing = {
     _id: '5f9f59acc6f89303de2fd47a',
@@ -40,6 +45,29 @@ describe('Outfit service tests', () => {
   };
 
   it('failed to initialize', async () => {
+    const result = await generateOutfit(userId);
+    expect(result).toBeTruthy();
+    expect(result.success).toEqual(false);
+    expect(result.message).toEqual('Failed to initialize');
+    expect(result.warning).toBeTruthy();
+  });
+
+  it('failed to initialize: database exceptions', async () => {
+    jest
+      .spyOn(Outfit, 'find')
+      .mockImplementationOnce(() => { throw "Error!!!" });
+    jest
+      .spyOn(Clothes, 'find')
+      .mockImplementationOnce(() => { throw "Error!!!" });
+
+    getCalendarEvents.mockImplementationOnce(() => {
+      throw "Error!!!";
+    });
+
+    jest
+      .spyOn(TodayOutfit, 'find')
+      .mockImplementationOnce(() => { throw "Error!!!" });
+
     const result = await generateOutfit(userId);
     expect(result).toBeTruthy();
     expect(result.success).toEqual(false);
@@ -89,7 +117,7 @@ describe('Outfit service tests', () => {
     );
   });
 
-  const clothes = [
+  const normalClothes = [
     oneClothing,
     {
       _id: '5f9f59acc6f89303de2fd47b',
@@ -123,10 +151,10 @@ describe('Outfit service tests', () => {
   it('generate normal outfit', async () => {
     jest
       .spyOn(Outfit, 'find')
-      .mockImplementation(() => Promise.resolve([outfit]));
+      .mockImplementationOnce(() => Promise.resolve([outfit]));
     jest
       .spyOn(Clothes, 'find')
-      .mockImplementation(() => Promise.resolve(clothes));
+      .mockImplementation(() => Promise.resolve(normalClothes));
 
     getCalendarEvents.mockImplementation(() => {
       return {
@@ -173,5 +201,83 @@ describe('Outfit service tests', () => {
       'We have generated all possible outfits. Do you want to create one manually?'
     );
     expect(result.manual).toBeTruthy();
+  });
+
+  const formalClothes = [
+    oneClothing,
+    {
+      _id: '5f9f59acc6f89303de2fd47b',
+      seasons: [],
+      occasions: ['Formal', 'formal'],
+      category: 'Shirt',
+      color: 'Yellow',
+      name: '',
+      user: userId,
+    },
+    {
+      _id: '5f9f59acc6f89303de2fd47c',
+      seasons: [],
+      occasions: ['Formal', 'formal'],
+      category: 'Trousers',
+      color: 'Pink',
+      name: '',
+      user: userId,
+    },
+    {
+      _id: '5f9f59acc6f89303de2fd47d',
+      seasons: [],
+      occasions: ['Formal', 'formal'],
+      category: 'Shoes',
+      color: 'Blue',
+      name: '',
+      user: userId,
+    },
+  ];
+
+  it('generate formal outfit', async () => {
+    jest
+      .spyOn(Outfit, 'find')
+      .mockImplementationOnce(() => Promise.resolve([outfit]));
+    jest
+      .spyOn(Clothes, 'find')
+      .mockImplementation(() => Promise.resolve(formalClothes));
+
+    getCalendarEvents.mockImplementation(() => {
+      return {
+        events: [
+          {
+            summary: 'formal meeting event',
+          },
+        ],
+      };
+    });
+
+    getWeatherInfo.mockImplementation(() => {
+      return {
+        today: {
+          temp: {
+            max: 15,
+          },
+          weather: [
+            {
+              description: 'weather description!',
+            },
+          ],
+        },
+      };
+    });
+
+    let result;
+    result = await generateOutfit(userId);
+    expect(result).toBeTruthy();
+    expect(result.success).toBeTruthy();
+    expect(result.message).toEqual('New outfit generated successfully!');
+    expect(result.outfit).toBeTruthy();
+    expect(result.outfit.user).toEqual(userId);
+    expect(result.outfit.occasions).toEqual(['formal']);
+    expect(result.outfit.seasons).toEqual(['All']);
+    expect(result.outfit.chosenUpperClothes).toBeTruthy();
+    expect(result.outfit.chosenTrousers).toBeTruthy();
+    expect(result.outfit.chosenShoes).toBeTruthy();
   });
 });

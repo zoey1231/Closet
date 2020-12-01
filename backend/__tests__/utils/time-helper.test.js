@@ -68,6 +68,6 @@ describe('Get today date in timezone test', () => {
     const date = dateString.split('-');
     expect(date[0]).toEqual(new Date().getFullYear().toString());
     expect(date[1]).toEqual((new Date().getMonth() + 1).toString());
-    expect(date[2]).toEqual(new Date().getDate().toString());
+    expect(date[2]).toEqual(new Date().toLocaleString('sv', { timeZoneName: 'short' }).substr(8, 2));
   });
 });
