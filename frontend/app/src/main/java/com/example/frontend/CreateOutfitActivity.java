@@ -1,8 +1,10 @@
 package com.example.frontend;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
@@ -94,11 +96,12 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         getAllClothesFromServer();
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onClick(View view) {
-        int viewId = view.getId();
+        int selectedId = view.getId();
 
-        if (viewId == R.id.btn_save_outfit) {
+        if (selectedId == R.id.btn_save_outfit) {
             constructClothAttributeFromCheckBoxes();
             constructClothAttributeClothID();
             sendOutfitToServer(clothAttribute);
@@ -108,34 +111,35 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
             finish();
         }
         else {
-            Drawable highlight = getResources().getDrawable(R.drawable.highlight);
-
-            if (upperClothesIdMap.containsKey(viewId)) {
+            if (upperClothesIdMap.containsKey(selectedId)) {
                 if (upperClothesImage != null) {
-                    upperClothesImage.setBackground(null);
+                    upperClothesImage.setBackgroundColor(android.R.color.transparent);
                 }
-                upperClothesId = upperClothesIdMap.get(viewId);
+                upperClothesId = upperClothesIdMap.get(selectedId);
                 clothesID[0] = upperClothesId;
-                upperClothesImage = view.findViewById(viewId);
-                upperClothesImage.setBackground(highlight);
+                upperClothesImage = view.findViewById(selectedId);
+                upperClothesImage.setBackgroundColor(Color.parseColor("#24D3BF"));
+                upperClothesImage.setPadding(1, 1, 1, 1);
             }
-            else if (trousersIdMap.containsKey(viewId)) {
+            else if (trousersIdMap.containsKey(selectedId)) {
                 if (trousersImage != null) {
-                    trousersImage.setBackground(null);
+                    trousersImage.setBackgroundColor(android.R.color.transparent);
                 }
-                trousersId = trousersIdMap.get(viewId);
+                trousersId = trousersIdMap.get(selectedId);
                 clothesID[1] = trousersId;
-                trousersImage = view.findViewById(viewId);
-                trousersImage.setBackground(highlight);
+                trousersImage = view.findViewById(selectedId);
+                trousersImage.setBackgroundColor(Color.parseColor("#24D3BF"));
+                trousersImage.setPadding(1, 1, 1, 1);
             }
-            else if (shoesIdMap.containsKey(viewId)){
+            else if (shoesIdMap.containsKey(selectedId)){
                 if (shoesImage != null) {
-                    shoesImage.setBackground(null);
+                    shoesImage.setBackgroundColor(android.R.color.transparent);
                 }
-                shoesId = shoesIdMap.get(viewId);
+                shoesId = shoesIdMap.get(selectedId);
                 clothesID[2] = shoesId;
-                shoesImage = view.findViewById(viewId);
-                shoesImage.setBackground(highlight);
+                shoesImage = view.findViewById(selectedId);
+                shoesImage.setBackgroundColor(Color.parseColor("#24D3BF"));
+                shoesImage.setPadding(1, 1, 1, 1);
             }
         }
     }
@@ -291,13 +295,13 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         for (int i = 0; i < clothesArray.length(); i++) {
             JSONObject clothes = clothesArray.getJSONObject(i);
             if (clothes.has("id")) {
-                if (clothes.getString("category").equals("Outwear") || clothes.getString("category").equals("Shirts")) {
+                if (clothes.getString("category").equals("outwear") || clothes.getString("category").equals("shirts")) {
                     upperClothesIdList.add(clothes.getString("id"));
                 }
-                else if (clothes.getString("category").equals("Trousers")) {
+                else if (clothes.getString("category").equals("trousers")) {
                     trousersIdList.add(clothes.getString("id"));
                 }
-                else {
+                else if (clothes.getString("category").equals("shoes")){
                     shoesIdList.add(clothes.getString("id"));
                 }
             }

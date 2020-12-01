@@ -166,15 +166,25 @@
         android:id="@+id/btn_get_outfit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:text="Get one outfit"
+        android:text="Get outfit idea"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.182"
+        app:layout_constraintHorizontal_bias="0.209"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sv_weather"
-        app:layout_constraintVertical_bias="0.024" />
+        app:layout_constraintVertical_bias="0.022" />
+
+    <Button
+        android:id="@+id/btn_create_outfit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create outfit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.79"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sv_weather"
+        app:layout_constraintVertical_bias="0.022" />
 
     <ScrollView
         android:id="@+id/sv_outfit"
@@ -196,17 +206,6 @@
             android:padding="15dp" />
 
     </ScrollView>
-
-    <Button
-        android:id="@+id/btn_create_outfit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="212dp"
-        android:text="Create one outfit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.839"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/sv_weather" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
