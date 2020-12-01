@@ -24,7 +24,6 @@ import com.example.frontend.R;
 import com.example.frontend.RegisterActivity;
 import com.example.frontend.ServerCommAsync;
 import com.example.frontend.User;
-import com.example.frontend.ui.home.HomeFragment;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -65,7 +64,7 @@ public class NotificationsFragment extends Fragment implements View.OnClickListe
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        View root = inflater.inflate(R.layout.fragment_notifications, container, false);
+        View root = inflater.inflate(R.layout.fragment_profile, container, false);
         final TextView textView = root.findViewById(R.id.text_notifications);
 
         userEmail = root.findViewById(R.id.tv_userEmail);
