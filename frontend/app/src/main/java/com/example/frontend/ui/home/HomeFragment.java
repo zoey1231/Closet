@@ -135,7 +135,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         if(selectedId == R.id.btn_get_outfit){
                             idlingResource.increment();
             getButton.setEnabled(false);
-            getOutfitFromServer();
+            getOutfitFromServer(userToken);
             getButton.setEnabled(true);
         }
 //        if(selectedId == R.id.fa_button_refresh_weather){
@@ -276,7 +276,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    public void getOutfitFromServer() {
+    public void getOutfitFromServer(String userToken) {
         ServerCommAsync serverCommunication = new ServerCommAsync();
         Log.d(TAG,"prepared to getOutfitFromServer");
 
@@ -349,9 +349,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                     }
                 });
-                if(message.equals("Failed to generate an outfit, please try again later") && success.equals(EMPTY_STRING)&&warning.equals(EMPTY_STRING)){
-                    getOutfitFromServer();
-                }
+//                if(message.equals("Failed to generate an outfit, please try again later") && success.equals(EMPTY_STRING)&&warning.equals(EMPTY_STRING)){
+//                    getOutfitFromServer();
+//                }
 
             }
         });
@@ -435,9 +435,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                     }
                 });
-                if(message.equals("Failed to generate an outfit, please try again later") && success.equals(EMPTY_STRING)&&warning.equals(EMPTY_STRING)){
-                    getOutfitFromServer();
-                }
+//                if(message.equals("Failed to generate an outfit, please try again later") && success.equals(EMPTY_STRING)&&warning.equals(EMPTY_STRING)){
+//                    getOutfitFromServer();
+//                }
 
             }
         });
