@@ -47,14 +47,14 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class CalendarFragment extends Fragment implements OnDateSelectedListener, View.OnClickListener, OnMonthChangedListener {
+public class CalendarFragment extends Fragment implements OnDateSelectedListener, OnMonthChangedListener, View.OnClickListener {
     private static final String TAG ="CalendarFragment";
     private static final String EMPTY_STRING = "";
     private static final List<String> months = Arrays.asList("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
     private User user;
     private String userToken;
-    private String code;
+    private String code = EMPTY_STRING;
 
     private MaterialCalendarView calendar;
     private ListView events;
@@ -74,7 +74,7 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
         calendar = root.findViewById(R.id.calendar);
         calendar.setDateTextAppearance(View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
-        calendar.setSelectedDate(LocalDate.now());
+        calendar.setOnDateChangedListener(this);
         calendar.setOnMonthChangedListener(this);
 
         events = root.findViewById(R.id.lv_events);
@@ -96,7 +96,6 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
     @Override
     public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-
         calendar.setHeaderTextAppearance(R.style.AppTheme);
 
         eventList =  eventMap.get(date);
@@ -110,10 +109,12 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
     @Override
     public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
-        String month = months.get(date.getMonth() - 1);
-        int year = date.getYear();
-        getEventsFromServer(user.getCode(), userToken, month, year);
-        addEventsToCalendar();
+        if (code != EMPTY_STRING) {
+            String month = months.get(date.getMonth() - 1);
+            int year = date.getYear();
+            eventMap.clear();
+            getEventsFromServer(user.getCode(), userToken, month, year);
+        }
     }
 
     @Override
@@ -153,18 +154,14 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseStr = Objects.requireNonNull(response.body()).string();
                 if (response.isSuccessful()) {
-                    String responseStr = Objects.requireNonNull(response.body()).string();
                     try {
                         JSONArray responseJSON = new JSONArray(responseStr);
                         extractResponseEventData(responseJSON);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }
-                else {
-
                 }
             }
         });
@@ -212,24 +209,17 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
                     eventMap.put(day, events);
                 }
             }
+            addDotsToCalendar();
         }
     }
 
-    private void addEventsToCalendar() {
-        while (eventMap.size() == 0) {
-            Log.d(TAG, "waiting for events");
-        }
-        eventList = eventMap.get(CalendarDay.from(LocalDate.now()));
-
-        if (eventList != null && eventList.size() > 0) {
-            adapter.addItems(eventList);
-        }
-        else {
-            adapter.clear();
-        }
-
-        //add small dots on event days
-        EventDecorator eventDecorator = new EventDecorator(Color.RED, eventMap.keySet());
-        calendar.addDecorator(eventDecorator);
+    private void addDotsToCalendar() {
+        final EventDecorator eventDecorator = new EventDecorator(Color.RED, eventMap.keySet());
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                calendar.addDecorator(eventDecorator);
+            }
+        });
     }
 }

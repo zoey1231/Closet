@@ -39,22 +39,23 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.065"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_title_edit"
-        app:layout_constraintVertical_bias="0.045" />
+        app:layout_constraintVertical_bias="0.043" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/btn_image_edit"
         android:layout_width="139dp"
         android:layout_height="127dp"
         android:layout_marginBottom="40dp"
+        app:srcCompat="@drawable/add"
+        android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="@+id/iv_edit"
         app:layout_constraintEnd_toEndOf="@+id/iv_edit"
         app:layout_constraintStart_toStartOf="@+id/iv_edit"
         app:layout_constraintTop_toBottomOf="@+id/tv_title_edit"
-        app:layout_constraintVertical_bias="0.863"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:layout_constraintVertical_bias="0.863"/>
 
     <Button
         android:id="@+id/btn_save_edit"
@@ -62,6 +63,7 @@
         android:layout_height="43dp"
         android:layout_marginBottom="24dp"
         android:text="Save Updates"
+        android:background="@drawable/customborder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

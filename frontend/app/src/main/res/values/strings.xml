@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">frontend</string>
     <string name="title_home">Home</string>
-    <string name="title_notifications">Notifications</string>
-    <string name="title_clothes">Clothes</string>
     <string name="title_calendar">Calendar</string>
+    <string name="title_clothes">Clothes</string>
+    <string name="title_profile">Profile</string>
 
     <string name="subscribe_to_weather">Subscribe To Weather</string>
     <string name="log_token">Log Token</string>
@@ -23,37 +23,36 @@
     <string name="saturday">SAT</string>
     <string name="sunday">SUN</string>
 
+    <string-array name="edit_delete_array">
+        <item>Edit</item>
+        <item>Delete</item>
+    </string-array>
+
     <string-array name="category_array">
-        <item>Outerwear</item>
-        <item>Shirts</item>
-        <item>Trousers</item>
-        <item>Shoes</item>
-        <item>Accessories</item>
+        <item>outerwear</item>
+        <item>shirts</item>
+        <item>trousers</item>
+        <item>shoes</item>
+        <item>accessories</item>
     </string-array>
 
     <string-array name="color_array">
-        <item>Red</item>
-        <item>Orange</item>
-        <item>Yellow</item>
-        <item>Blue</item>
-        <item>Green</item>
-        <item>Purple</item>
-        <item>Pink</item>
-        <item>Grey</item>
-        <item>White</item>
-        <item>Black</item>
+        <item>red</item>
+        <item>orange</item>
+        <item>yellow</item>
+        <item>blue</item>
+        <item>green</item>
+        <item>purple</item>
+        <item>pink</item>
+        <item>grey</item>
+        <item>white</item>
+        <item>black</item>
     </string-array>
 
     <string-array name="occasion_array">
-        <item>Formal</item>
-        <item>Casual</item>
-        <item>Home</item>
-    </string-array>
-
-    <string-array name="edit_delete_array">
-        <item>Select One</item>
-        <item>Edit</item>
-        <item>Delete</item>
+        <item>formal</item>
+        <item>casual</item>
+        <item>home</item>
     </string-array>
 
 </resources>

@@ -34,6 +34,23 @@
                 android:layout_width="180dp"
                 android:layout_height="200dp">
 
+<!--                <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                    android:id="@+id/fa_button_refresh_weather"-->
+<!--                    android:layout_width="40dp"-->
+<!--                    android:layout_height="40dp"-->
+<!--                    android:clickable="true"-->
+<!--                    android:src="@drawable/ic_refresh"-->
+<!--                    app:fabSize="mini"-->
+<!--                    android:elevation="10dp"-->
+<!--                    app:maxImageSize="30dp"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/tv_today"-->
+<!--                    app:layout_constraintHorizontal_bias="0.321"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintVertical_bias="0.159" />-->
+
+
                 <TextView
                     android:id="@+id/tv_today"
                     android:layout_width="wrap_content"
@@ -44,7 +61,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.143" />
+                    app:layout_constraintVertical_bias="0.164" />
 
                 <TextView
                     android:id="@+id/tv_date_today"
@@ -82,13 +99,6 @@
                     app:layout_constraintStart_toEndOf="@+id/tv_date_today"
                     app:layout_constraintTop_toBottomOf="@+id/tv_today" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <View
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="#03A9F4" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -140,197 +150,64 @@
                     app:layout_constraintStart_toEndOf="@+id/tv_date_tmr"
                     app:layout_constraintTop_toBottomOf="@+id/tv_tmr"
                     app:layout_constraintVertical_bias="0.254" />
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="#03A9F4"
+                    tools:layout_editor_absoluteX="10dp"
+                    tools:layout_editor_absoluteY="10dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
     </ScrollView>
 
     <Button
-        android:id="@+id/btn_outfit"
-        android:layout_width="229dp"
+        android:id="@+id/btn_get_outfit"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="3dp"
-        android:gravity="center"
-        android:text="Give me some outfit ideas"
+        android:text="Get outfit idea"
+        android:background="@drawable/customborder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.209"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sv_weather"
-        app:layout_constraintVertical_bias="0.025" />
+        app:layout_constraintVertical_bias="0.022" />
+
+    <Button
+        android:id="@+id/btn_create_outfit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create outfit"
+        android:background="@drawable/customborder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.79"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sv_weather"
+        app:layout_constraintVertical_bias="0.022" />
 
     <ScrollView
         android:id="@+id/sv_outfit"
-        android:layout_width="match_parent"
-        android:layout_height="442dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="80dp"
-        android:visibility="visible"
+        android:layout_width="411dp"
+        android:layout_height="367dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_outfit">
+        app:layout_constraintTop_toBottomOf="@+id/btn_get_outfit"
+        app:layout_constraintVertical_bias="0.074">
 
-        <RelativeLayout
-            android:id="@+id/rl_outfit"
+        <GridLayout
+            android:id="@+id/gl_outfit"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginTop="40dp"
-            android:visibility="invisible"
-            tools:visibility="visible">
-
-            <LinearLayout
-                android:id="@+id/ll_outfit1"
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_outfit1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="4dp"
-                    android:text="This will be the outfit title"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.056"
-                    tools:text="My outfit1" />
-
-                <LinearLayout
-                    android:id="@+id/ll_clothes_outfit1"
-                    android:layout_width="match_parent"
-                    android:layout_height="147dp"
-                    android:orientation="horizontal"
-                    android:padding="25dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_outfit1"
-                    app:layout_constraintVertical_bias="1.0">
-
-                    <ImageView
-                        android:id="@+id/iv_clothes1_outfit1"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_weight="1"/>
-
-                    <ImageView
-                        android:id="@+id/iv_clothes2_outfit1"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_marginLeft="30dp"
-                        android:layout_weight="1"/>
-
-                    <ImageView
-                        android:id="@+id/iv_clothes3_outfit1"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_marginLeft="30dp"
-                        android:layout_weight="1"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_btns_outfit1"
-                    android:layout_width="match_parent"
-                    android:layout_height="34dp"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ll_clothes_outfit1">
-
-                    <Button
-                        android:id="@+id/btn_like_outfit1"
-                        android:layout_width="0dip"
-                        android:layout_height="35dp"
-                        android:layout_marginLeft="40dp"
-                        android:layout_marginRight="40dp"
-                        android:layout_weight="1"
-                        android:text="LIke it!" />
-
-                    <Button
-                        android:id="@+id/btn_dislike_outfit1"
-                        android:layout_width="0dip"
-                        android:layout_height="35dp"
-                        android:layout_marginLeft="40dp"
-                        android:layout_marginRight="40dp"
-                        android:layout_weight="1"
-                        android:text="Dislike" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/view_dislike"
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:visibility="invisible"
-                tools:visibility="visible">
-
-                <View
-                    android:id="@+id/go_blind_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="220dp"
-                    android:background="#9F5E5D5D"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tv_will_not_display"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:text="We will not suggest this outfit any more, OR "
-                    android:textColor="#E10A0A"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/go_blind_view"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/go_blind_view"
-                    app:layout_constraintVertical_bias="0.10">
-                </TextView>
-
-                <ImageButton
-                    android:id="@+id/btn_undo"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:src="@drawable/icon_undo_70"
-                    android:background="@null"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/go_blind_view"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_will_not_display"
-                    app:layout_constraintVertical_bias="0.37000002" />
-
-                <TextView
-                    android:id="@+id/tv_undo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Undo"
-                    android:textColor="#45B48F"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-
-                    app:layout_constraintBottom_toBottomOf="@+id/go_blind_view"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/btn_undo"
-                    app:layout_constraintVertical_bias="0.00" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </RelativeLayout>
+            android:layout_height="match_parent"
+            android:columnCount="1"
+            android:gravity="center"
+            android:padding="15dp" />
 
     </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 

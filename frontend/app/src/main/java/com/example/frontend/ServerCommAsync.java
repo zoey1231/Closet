@@ -55,4 +55,15 @@ public class ServerCommAsync {
         call.enqueue(callback);
         return call;
     }
+    public Call deleteWithAuthentication(String url,String userToken, Callback callback) {
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization","Bearer "+ userToken)
+                .delete()
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
 }
