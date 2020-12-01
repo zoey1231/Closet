@@ -12,6 +12,7 @@ describe('Closet integration tests', () => {
     server = http.createServer(app);
     server.listen(done);
     api = supertest(server);
+    jest.setTimeout(60000);
   });
 
   let res, userId, token, clothesId, outfitId;

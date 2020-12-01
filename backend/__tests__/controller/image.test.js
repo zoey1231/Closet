@@ -65,6 +65,19 @@ describe('Image controller tests', () => {
     expect(res.body.message).toEqual('Uploaded image!');
   });
 
+  it('500 post image with invalid file extension', async () => {
+    const res = await api
+      .post(`/api/images/${userId}/${clothingId}`)
+      .set('Authorization', `Bear ${token}`)
+      .attach(
+        'ClothingImage',
+        "../backend/README.md"
+      );
+
+    expect(res.statusCode).toEqual(403);
+    expect(res.body.message).toEqual('Extension not allowed');
+  });
+
   it('200 get image ok after uploaded', async () => {
     const res = await api.get(
       `/UserClothingImages/${userId}/${clothingId}.png`
@@ -89,6 +102,15 @@ describe('Image controller tests', () => {
 
     expect(res.statusCode).toEqual(200);
     expect(res.body.message).toEqual('Deleted image');
+  });
+
+  it('500 image not found', async () => {
+    const res = await api
+      .delete(`/api/images/${userId}/${clothingId}`)
+      .set('Authorization', `Bear ${token}`);
+
+    expect(res.statusCode).toEqual(500);
+    expect(res.body.message).toEqual('Image does not exist');
   });
 
   it('404 image not found after deleted', async () => {
