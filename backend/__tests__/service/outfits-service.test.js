@@ -112,9 +112,7 @@ describe('Outfit service tests', () => {
 
     expect(result).toBeTruthy();
     expect(result.success).toEqual(false);
-    expect(result.message).toEqual(
-      'Too few clothes in your closet, please add more clothes to get an outfit!'
-    );
+    expect(result.message).toEqual('Too few clothes in your closet, please add more clothes to get an outfit!');
   });
 
   const normalClothes = [
