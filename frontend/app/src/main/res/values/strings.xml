@@ -23,6 +23,11 @@
     <string name="saturday">SAT</string>
     <string name="sunday">SUN</string>
 
+    <string-array name="edit_delete_array">
+        <item>Edit</item>
+        <item>Delete</item>
+    </string-array>
+
     <string-array name="category_array">
         <item>outerwear</item>
         <item>shirts</item>
@@ -48,12 +53,6 @@
         <item>formal</item>
         <item>casual</item>
         <item>home</item>
-    </string-array>
-
-    <string-array name="edit_delete_array">
-        <item>Select One</item>
-        <item>Edit</item>
-        <item>Delete</item>
     </string-array>
 
 </resources>

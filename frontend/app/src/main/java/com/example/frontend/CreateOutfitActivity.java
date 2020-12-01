@@ -4,14 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridLayout;
@@ -21,6 +18,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -60,19 +59,21 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
     private HashMap<Integer, String> upperClothesIdMap = new HashMap<>();
     private HashMap<Integer, String> trousersIdMap = new HashMap<>();
     private HashMap<Integer, String> shoesIdMap = new HashMap<>();
+    private HashMap<Integer, Integer> iconMap = new HashMap<>();
 
     private JSONObject clothAttribute = new JSONObject();
     String[] clothesID = new String[3];
     JSONArray clothes = new JSONArray();
-    private String upperClothesId = EMPTY_STRING;
-    private String trousersId = EMPTY_STRING;
-    private String shoesId = EMPTY_STRING;
     private Spinner spinner_occasion;
     private String message = EMPTY_STRING;
 
-    private ImageView upperClothesImage;
-    private ImageView trousersImage;
-    private ImageView shoesImage;
+    private static final int UPPERCLOTHES = 0;
+    private static final int TROUSESRS = 1;
+    private static final int SHOES = 2;
+
+    private ImageView upperClothesIcon;
+    private ImageView trousersIcon;
+    private ImageView shoesIcon;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -112,34 +113,34 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         }
         else {
             if (upperClothesIdMap.containsKey(selectedId)) {
-                if (upperClothesImage != null) {
-                    upperClothesImage.setBackgroundColor(android.R.color.transparent);
+                if (upperClothesIcon != null && upperClothesIcon.getVisibility() == View.VISIBLE) {
+                    upperClothesIcon.setVisibility(View.INVISIBLE);
                 }
-                upperClothesId = upperClothesIdMap.get(selectedId);
-                clothesID[0] = upperClothesId;
-                upperClothesImage = view.findViewById(selectedId);
-                upperClothesImage.setBackgroundColor(Color.parseColor("#24D3BF"));
-                upperClothesImage.setPadding(1, 1, 1, 1);
+                String clothesId = upperClothesIdMap.get(selectedId);
+                clothesID[UPPERCLOTHES] = clothesId;
+                int iconId = iconMap.get(selectedId);
+                upperClothesIcon = view.findViewById(iconId);
+                upperClothesIcon.setVisibility(View.VISIBLE);
             }
             else if (trousersIdMap.containsKey(selectedId)) {
-                if (trousersImage != null) {
-                    trousersImage.setBackgroundColor(android.R.color.transparent);
+                if (trousersIcon != null && trousersIcon.getVisibility() == View.VISIBLE) {
+                    trousersIcon.setVisibility(View.INVISIBLE);
                 }
-                trousersId = trousersIdMap.get(selectedId);
-                clothesID[1] = trousersId;
-                trousersImage = view.findViewById(selectedId);
-                trousersImage.setBackgroundColor(Color.parseColor("#24D3BF"));
-                trousersImage.setPadding(1, 1, 1, 1);
+                String clothesId = trousersIdMap.get(selectedId);
+                clothesID[TROUSESRS] = clothesId;
+                int iconId = iconMap.get(selectedId);
+                trousersIcon = view.findViewById(iconId);
+                trousersIcon.setVisibility(View.VISIBLE);
             }
             else if (shoesIdMap.containsKey(selectedId)){
-                if (shoesImage != null) {
-                    shoesImage.setBackgroundColor(android.R.color.transparent);
+                if (shoesIcon != null && shoesIcon.getVisibility() == View.VISIBLE) {
+                    shoesIcon.setVisibility(View.INVISIBLE);
                 }
-                shoesId = shoesIdMap.get(selectedId);
-                clothesID[2] = shoesId;
-                shoesImage = view.findViewById(selectedId);
-                shoesImage.setBackgroundColor(Color.parseColor("#24D3BF"));
-                shoesImage.setPadding(1, 1, 1, 1);
+                String clothesId = shoesIdMap.get(selectedId);
+                clothesID[SHOES] = clothesId;
+                int iconId = iconMap.get(selectedId);
+                shoesIcon = view.findViewById(iconId);
+                shoesIcon.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -220,46 +221,69 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
     }
 
 
-    private ImageView addClothesOnUI(Bitmap bitmap) {
+    private void addClothesOnUI(String clothesId, String category) {
         ImageView image = new ImageView(this);
-        GridLayout.LayoutParams clothesParams = new GridLayout.LayoutParams();
+        image.setId(View.generateViewId());
+        ConstraintLayout.LayoutParams imageParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        imageParams.width = 300;
+        imageParams.height = 300;
+        image.setLayoutParams(imageParams);
+        String userId = user.getUserId();
+        Bitmap bitmap = getClothesImage(userId, clothesId);
+        image.setImageBitmap(bitmap);
+
+        ImageView icon = new ImageView(this);
+        icon.setId(View.generateViewId());
+        ConstraintLayout.LayoutParams iconParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+        iconParams.width = 90;
+        iconParams.height = 90;
+        icon.setLayoutParams(iconParams);
+        icon.setVisibility(View.INVISIBLE);
+        icon.setBackgroundResource(R.drawable.checked);
+
+        ConstraintLayout clothes = new ConstraintLayout(this);
+        clothes.setId(View.generateViewId());
+        ConstraintLayout.LayoutParams clothesParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         clothesParams.width = 300;
         clothesParams.height = 300;
-        image.setLayoutParams(clothesParams);
-        image.setImageBitmap(bitmap);
-        image.setOnClickListener(this);
+        clothes.setLayoutParams(clothesParams);
+        clothes.addView(image);
+        clothes.addView(icon);
+        ConstraintSet constraint = new ConstraintSet();
+        constraint.clone(clothes);
+        constraint.connect(icon.getId(), ConstraintSet.RIGHT, image.getId(), ConstraintSet.RIGHT);
+        constraint.connect(icon.getId(), ConstraintSet.BOTTOM, image.getId(), ConstraintSet.BOTTOM);
+        constraint.applyTo(clothes);
+        clothes.setOnClickListener(this);
 
-        return image;
+        if (category.equals("upperClothes")) {
+            upperClothesLayout.addView(clothes);
+            upperClothesIdMap.put(clothes.getId(), clothesId);
+        }
+        else if (category.equals("trousers")) {
+            trousersLayout.addView(clothes);
+            trousersIdMap.put(clothes.getId(), clothesId);
+        }
+        else if (category.equals("shoes")) {
+            shoesLayout.addView(clothes);
+            shoesIdMap.put(clothes.getId(), clothesId);
+        }
+        iconMap.put(clothes.getId(), icon.getId());
     }
 
     private void addAllClothesOnUI() {
-        String userId = user.getUserId();
-
         for (int i = 0; i < upperClothesIdList.size(); i++) {
             String clothesId = upperClothesIdList.get(i);
-            Bitmap bitmap = getClothesImage(userId, clothesId);
-            ImageView image = addClothesOnUI(bitmap);
-            image.setId(View.generateViewId());
-            upperClothesLayout.addView(image);
-            upperClothesIdMap.put(image.getId(), clothesId);
+            addClothesOnUI(clothesId, "upperClothes");
         }
-
         for (int i = 0; i < trousersIdList.size(); i++) {
             String clothesId = trousersIdList.get(i);
-            Bitmap bitmap = getClothesImage(userId, clothesId);
-            ImageView image = addClothesOnUI(bitmap);
-            image.setId(View.generateViewId());
-            trousersLayout.addView(image);
-            trousersIdMap.put(image.getId(), clothesId);
+            addClothesOnUI(clothesId, "trousers");
         }
 
         for (int i = 0; i < shoesIdList.size(); i++) {
             String clothesId = shoesIdList.get(i);
-            Bitmap bitmap = getClothesImage(userId, clothesId);
-            ImageView image = addClothesOnUI(bitmap);
-            image.setId(View.generateViewId());
-            shoesLayout.addView(image);
-            shoesIdMap.put(image.getId(), clothesId);
+            addClothesOnUI(clothesId, "shoes");
         }
     }
 

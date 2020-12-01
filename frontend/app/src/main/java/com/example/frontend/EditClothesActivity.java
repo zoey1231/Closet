@@ -65,8 +65,7 @@ public class EditClothesActivity extends AppCompatActivity implements View.OnCli
     private String path;
     private String clothesId = EMPTY_STRING;
     private File file;
-    private ImageView image;
-    private ImageButton imageButton;
+    private ImageView image, imageButton;
     private Button saveButton;
     private TextView text;
 

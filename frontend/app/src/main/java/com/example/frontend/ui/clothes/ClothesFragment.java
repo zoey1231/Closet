@@ -59,8 +59,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
 
     private String userToken, userId;
 
-    private ImageButton buttonAdd;
-    private ImageView allImage, shirtsImage, trousersImage, shoesImage;
+    private ImageView buttonAdd, allImage, shirtsImage, trousersImage, shoesImage;
     private GridLayout clothesLayout;
 
     private int selectedId;
@@ -390,7 +389,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     }
 
     private void addClothesByCategoryFromServer(String category) {
-        if (category.equals("Outerwear")) {
+        if (category.equals("outerwear")) {
             for (int i = 0; i < clothesIdList.size(); i++) {
                 String clothesId = clothesIdList.get(i);
                 if (categoryMap.get(clothesId).equals("outerwear")) {
@@ -398,7 +397,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 }
             }
         }
-        if (category.equals("Shirts")) {
+        if (category.equals("shirts")) {
             for (int i = 0; i < clothesIdList.size(); i++) {
                 String clothesId = clothesIdList.get(i);
                 if (categoryMap.get(clothesId).equals("shirts")) {
@@ -406,7 +405,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 }
             }
         }
-        else if (category.equals("Trousers")) {
+        else if (category.equals("trousers")) {
             for (int i = 0; i < clothesIdList.size(); i++) {
                 String clothesId = clothesIdList.get(i);
                 if (categoryMap.get(clothesId).equals("trousers")) {
@@ -414,7 +413,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 }
             }
         }
-        else if (category.equals("Shoes")){
+        else if (category.equals("shoes")){
             for (int i = 0; i < clothesIdList.size(); i++) {
                 String clothesId = clothesIdList.get(i);
                 if (categoryMap.get(clothesId).equals("shoes")) {

@@ -21,15 +21,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/btn_clothes_add"
-        android:layout_width="65dp"
-        android:layout_height="67dp"
-        android:src="@android:drawable/ic_menu_add"
+        android:layout_width="54dp"
+        android:layout_height="58dp"
+        android:layout_marginEnd="16dp"
+        app:srcCompat="@drawable/add"
+        android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.02" />
 
     <GridLayout
         android:id="@+id/gl_category"

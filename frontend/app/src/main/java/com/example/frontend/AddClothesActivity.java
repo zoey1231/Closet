@@ -57,8 +57,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private static final String EMPTY_STRING = "";
 
     private User user;
-    private ImageView image;
-    private ImageButton imageButton;
+    private ImageView image, imageButton;
     private Button saveButton;
     private TextView text;
     private String path;
