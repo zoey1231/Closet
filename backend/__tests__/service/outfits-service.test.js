@@ -23,7 +23,7 @@ describe('Outfit service tests', () => {
   const userId = 'USER_ID';
   const oneClothing = {
     _id: '5f9f59acc6f89303de2fd47a',
-    seasons: [],
+    seasons: ['Fall', 'Winter'],
     occasions: ['Home'],
     category: 'Outerwear',
     color: 'Red',
@@ -31,15 +31,15 @@ describe('Outfit service tests', () => {
     user: userId,
   };
   const outfit = {
-    _id: -1793359594,
+    _id: 1234567890,
     clothes: [
       '5fa7611755db7d66c8bc38f9',
       '5fa7853455db7d66c8bc38ff',
       '5fa7857555db7d66c8bc3901',
     ],
     occasions: ['normal'],
-    seasons: ['Winter'],
-    opinion: 'unknown',
+    seasons: ['Winter', 'Fall', 'Spring', 'Summer', 'All'],
+    opinion: 'like',
     user: userId,
     created: new Date(),
   };
@@ -121,7 +121,7 @@ describe('Outfit service tests', () => {
     oneClothing,
     {
       _id: '5f9f59acc6f89303de2fd47b',
-      seasons: [],
+      seasons: ['Fall', 'Winter'],
       occasions: ['Home'],
       category: 'Shirt',
       color: 'Yellow',
@@ -130,7 +130,7 @@ describe('Outfit service tests', () => {
     },
     {
       _id: '5f9f59acc6f89303de2fd47c',
-      seasons: [],
+      seasons: ['Fall', 'Winter'],
       occasions: ['Home'],
       category: 'Trousers',
       color: 'Pink',
@@ -139,7 +139,7 @@ describe('Outfit service tests', () => {
     },
     {
       _id: '5f9f59acc6f89303de2fd47d',
-      seasons: [],
+      seasons: ['Fall', 'Winter'],
       occasions: ['Home'],
       category: 'Shoes',
       color: 'Blue',
@@ -148,13 +148,22 @@ describe('Outfit service tests', () => {
     },
   ];
 
+  const todayOutfitNormal = {
+    hashId: 1234567890,
+    returnedTime: "TIME",
+    user: "5f9f59acc6f89303de2fd47d"
+  }
+
   it('generate normal outfit', async () => {
     jest
       .spyOn(Outfit, 'find')
-      .mockImplementationOnce(() => Promise.resolve([outfit]));
+      .mockImplementation(() => Promise.resolve([outfit]));
     jest
       .spyOn(Clothes, 'find')
       .mockImplementation(() => Promise.resolve(normalClothes));
+    jest
+      .spyOn(TodayOutfit, 'find')
+      .mockImplementation(() => Promise.resolve([todayOutfitNormal]));
 
     getCalendarEvents.mockImplementation(() => {
       return {
@@ -189,18 +198,10 @@ describe('Outfit service tests', () => {
     expect(result.outfit).toBeTruthy();
     expect(result.outfit.user).toEqual(userId);
     expect(result.outfit.occasions).toEqual(['normal']);
-    expect(result.outfit.seasons).toEqual(['Fall']);
+    expect(result.outfit.seasons).toBeTruthy();
     expect(result.outfit.chosenUpperClothes).toBeTruthy();
     expect(result.outfit.chosenTrousers).toBeTruthy();
     expect(result.outfit.chosenShoes).toBeTruthy();
-
-    result = await generateOutfit(userId);
-    expect(result).toBeTruthy();
-    expect(result.success).toBeFalsy();
-    expect(result.message).toEqual(
-      'We have generated all possible outfits. Do you want to create one manually?'
-    );
-    expect(result.manual).toBeTruthy();
   });
 
   const formalClothes = [
