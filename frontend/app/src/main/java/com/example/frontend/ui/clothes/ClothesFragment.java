@@ -322,16 +322,16 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 clothesIdList.add(clothesId);
             }
             if (clothes.getString("category").equals("outerwear")) {
-                categoryMap.put(clothesId, "Outerwear");
+                categoryMap.put(clothesId, "outerwear");
             }
             if (clothes.getString("category").equals("shirts")) {
-                categoryMap.put(clothesId, "Shirts");
+                categoryMap.put(clothesId, "shirts");
             }
             else if (clothes.getString("category").equals("trousers")) {
-                categoryMap.put(clothesId, "Trousers");
+                categoryMap.put(clothesId, "trousers");
             }
             else if (clothes.getString("category").equals("shoes")){
-                categoryMap.put(clothesId, "Shoes");
+                categoryMap.put(clothesId, "shoes");
             }
         }
         addAllClothesToCloset();

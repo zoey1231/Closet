@@ -23,19 +23,20 @@
 
     <Button
         android:id="@+id/logOut_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="93dp"
+        android:layout_height="45dp"
         android:layout_centerHorizontal="true"
-        android:text="Log Out"
-        android:textSize="15sp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:background="@drawable/customborder"
+        android:text="Log Out"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editProfile_btn"
-        app:layout_constraintVertical_bias="0.076" />
+        app:layout_constraintVertical_bias="0.082" />
 
     <TextView
         android:id="@+id/tv_userEmail"
@@ -82,14 +83,14 @@
 
     <Button
         android:id="@+id/editProfile_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="EDIT PROFILE"
+        android:layout_width="111dp"
+        android:layout_height="48dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:background="@drawable/customborder"
+        android:text="Edit profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_city"
         app:layout_constraintVertical_bias="0.352" />

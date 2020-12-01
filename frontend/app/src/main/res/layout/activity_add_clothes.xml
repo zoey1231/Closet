@@ -61,6 +61,7 @@
         android:layout_height="43dp"
         android:layout_marginBottom="24dp"
         android:text="Save Clothes"
+        android:background="@drawable/customborder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

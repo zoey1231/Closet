@@ -18,7 +18,8 @@
         android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Get event" />
+        android:text="Get event"
+        android:background="@drawable/customborder"/>
 
     <ListView
         android:id="@+id/lv_events"
