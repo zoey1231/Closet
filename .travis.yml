@@ -6,6 +6,6 @@ cache:
 before_install: 
   - cd backend
   - cp .env.sample .env
-install: npm install
-before_script: sleep 15
+install: npm ci
+before_script: sleep 5
 script: npm test
