@@ -23,15 +23,15 @@
 
     <ImageView
         android:id="@+id/btn_clothes_add"
-        android:layout_width="46dp"
-        android:layout_height="51dp"
+        android:layout_width="41dp"
+        android:layout_height="46dp"
         android:layout_marginEnd="16dp"
-        app:srcCompat="@drawable/add"
         android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.02"/>
+        app:layout_constraintVertical_bias="0.027"
+        app:srcCompat="@drawable/add" />
 
     <GridLayout
         android:id="@+id/gl_category"

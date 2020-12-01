@@ -605,7 +605,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         undoBtnParams.verticalBias = (float) 0.37;
         undoBtn.setLayoutParams(undoBtnParams);
         undoBtn.setBackground(null);
-        undoBtn.setImageResource(R.drawable.icon_undo_70);
+        undoBtn.setImageResource(R.drawable.undo);
         undoBtn.setOnClickListener(this);
 
         //Undo text
@@ -618,7 +618,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         undoTextParams.endToEnd = dislikeLayout.getId();
         undoText.setLayoutParams(undoTextParams);
         undoText.setText("Undo");
-        undoText.setTextColor(Color.parseColor("#45B48F"));
+        undoText.setTextColor(Color.parseColor("#5DBCD2"));
         undoText.setTextSize(20);
         undoText.setTypeface(willNotDisplayText.getTypeface(), Typeface.BOLD);
         undoText.setOnClickListener(this);

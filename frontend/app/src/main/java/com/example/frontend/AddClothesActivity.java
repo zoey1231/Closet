@@ -1,6 +1,7 @@
 package com.example.frontend;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -36,6 +37,7 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.EmptyStackException;
 import java.util.Objects;
 
 import okhttp3.Call;
@@ -60,7 +62,6 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private ImageView image, imageButton;
     private Button saveButton;
     private TextView text;
-    private String path;
     private File file;
 
     private JSONObject clothAttribute = new JSONObject();
@@ -162,8 +163,9 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 imageButton.setVisibility(View.GONE);
                 text.setVisibility(View.GONE);
                 Intent selectImageIntent = new Intent(Intent.ACTION_PICK);
-                selectImageIntent.setType("image/*");
+                selectImageIntent.setType("image/jpeg");
                 startActivityForResult(selectImageIntent, 1);
+
                 idlingResource.decrement();
                 break;
 
@@ -298,6 +300,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
         Uri uri;
         InputStream stream;
         Bitmap bitmap;
+        String path = EMPTY_STRING;
 
         if (resultCode == RESULT_OK) {
             try {
@@ -316,11 +319,20 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     }
 
     private String getPath(Uri uri) {
-        String[] projection = {MediaStore.MediaColumns.DATA};
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        int index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(index);
+        ContentResolver resolver = getApplicationContext().getContentResolver();
+        String path = EMPTY_STRING;
+
+        if (resolver.getType(uri) == null) {
+            path = uri.getPath();
+        }
+        else {
+            String[] projection = {MediaStore.MediaColumns.DATA};
+            Cursor cursor = resolver.query(uri, projection, null, null, null);
+            int index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+            cursor.moveToFirst();
+            path = cursor.getString(index);
+        }
+        return path;
     }
 
     private void sendImageToServer(File file) {
@@ -347,13 +359,15 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = Objects.requireNonNull(response.body()).string();
-                Log.d(TAG, "Successfully upload image to server:"+responseStr);
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "Successfully upload image to server:"+responseStr);
 
-                Intent setImageIntent = new Intent();
-                setImageIntent.putExtra("clothesId", clothesId);
-                setImageIntent.putExtra("category", category);
-                setResult(RESULT_OK, setImageIntent);
-                finish();
+                    Intent setImageIntent = new Intent();
+                    setImageIntent.putExtra("clothesId", clothesId);
+                    setImageIntent.putExtra("category", category);
+                    setResult(RESULT_OK, setImageIntent);
+                    finish();
+                }
             }
         });
 
