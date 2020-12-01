@@ -30,6 +30,7 @@ describe('Outfit service tests', () => {
     name: '',
     user: userId,
   };
+
   const outfit = {
     _id: 1234567890,
     clothes: [
@@ -40,6 +41,20 @@ describe('Outfit service tests', () => {
     occasions: ['normal'],
     seasons: ['Winter', 'Fall', 'Spring', 'Summer', 'All'],
     opinion: 'like',
+    user: userId,
+    created: new Date(),
+  };
+
+  const outfitAnother = {
+    _id: 987654321,
+    clothes: [
+      '5fa7611755db7d66c8bc38f9',
+      '5fa7853455db7d66c8bc38ff',
+      '5fa7857555db7d66c8bc3901',
+    ],
+    occasions: ['normal'],
+    seasons: ['Winter', 'Fall', 'Spring', 'Summer', 'All'],
+    opinion: 'unknown',
     user: userId,
     created: new Date(),
   };
@@ -78,7 +93,7 @@ describe('Outfit service tests', () => {
   it('failed generate outfit: need more clothes', async () => {
     jest
       .spyOn(Outfit, 'find')
-      .mockImplementation(() => Promise.resolve([outfit]));
+      .mockImplementation(() => Promise.resolve([outfitAnother]));
     jest
       .spyOn(Clothes, 'find')
       .mockImplementation(() => Promise.resolve([oneClothing]));
