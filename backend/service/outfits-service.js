@@ -111,9 +111,11 @@ const generateOutfit = async user_id => {
 
   // Return only formal outfits generated today
   const getTodayFormalOutfits = () => {
-    TodayFormalOutfits = TodayOutfits.filter(outfit =>
-      outfit.occasions.includes('formal')
-    );
+    if (!TodayOutfits || TodayOutfits.length > 0) {
+      TodayFormalOutfits = TodayOutfits.filter(outfit =>
+        outfit.occasions.includes('formal')
+      );
+    }
   };
 
   // Return today's weather information
@@ -470,12 +472,12 @@ const generateOutfit = async user_id => {
       );
 
       if (likedNormalOutfitsWithSeason.length) {
-        numOfTries = 0;
+        let numOfTries = 0;
 
         while (numOfTries < likedNormalOutfitsWithSeason.length) {
           const chosenOutfit =
             likedNormalOutfitsWithSeason[
-              randomInt(likedNormalOutfitsWithSeason.length)
+            randomInt(likedNormalOutfitsWithSeason.length)
             ];
 
           if (!TodayOutfitsIds.includes(chosenOutfit._id)) {
