@@ -19,7 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Get event"
-        android:background="@drawable/customborder"/>
+        android:background="@drawable/customborder"
+        android:foreground="?android:attr/selectableItemBackground"/>
 
     <ListView
         android:id="@+id/lv_events"

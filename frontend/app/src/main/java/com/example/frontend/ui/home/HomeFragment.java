@@ -135,7 +135,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         if(selectedId == R.id.btn_get_outfit){
                             idlingResource.increment();
             getButton.setEnabled(false);
-            getOutfitFromServer();
+            getOutfitFromServer(userToken);
             getButton.setEnabled(true);
         }
 //        if(selectedId == R.id.fa_button_refresh_weather){
@@ -276,7 +276,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    public void getOutfitFromServer() {
+    public void getOutfitFromServer(String userToken) {
         ServerCommAsync serverCommunication = new ServerCommAsync();
         Log.d(TAG,"prepared to getOutfitFromServer");
 
@@ -328,7 +328,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             //retrieve outfit data from server's response
                             responseJson = new JSONObject(responseStr);
                             extractResponseOutfitData(responseJson);
-                            idlingResource.decrement();
+//                            idlingResource.decrement();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -339,23 +339,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 } else {
                     Log.d(TAG,"Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
-
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
                     if(!message.equals(EMPTY_STRING)&& !warning.equals(EMPTY_STRING)){
                         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                         Toast.makeText(getContext(), warning, Toast.LENGTH_SHORT).show();
-                    }else if(message.equals("We have generated all possible outfits. Do you want to create one manually?")){
-                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                     }
 
                     }
                 });
-                if(message.equals("Failed to generate an outfit, please try again later") && warning.equals(EMPTY_STRING)){
-                    Log.d(TAG,"try to get an outfit again. Call getOutfitFromServer() again");
-                    getOutfitFromServer();
-                }
+//                if(message.equals("Failed to generate an outfit, please try again later") && success.equals(EMPTY_STRING)&&warning.equals(EMPTY_STRING)){
+//                    getOutfitFromServer();
+//                }
 
             }
         });
@@ -435,15 +431,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         if(!message.equals(EMPTY_STRING)&& !warning.equals(EMPTY_STRING)){
                             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                             Toast.makeText(getContext(), warning, Toast.LENGTH_SHORT).show();
-                        }else if(message.equals("We have generated all possible outfits. Do you want to create one manually?")){
-                            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                         }
 
                     }
                 });
-                if(message.equals("Failed to generate an outfit, please try again later") && warning.equals(EMPTY_STRING)){
-                    getOutfitFromServer();
-                }
+//                if(message.equals("Failed to generate an outfit, please try again later") && success.equals(EMPTY_STRING)&&warning.equals(EMPTY_STRING)){
+//                    getOutfitFromServer();
+//                }
 
             }
         });
@@ -611,7 +605,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         undoBtnParams.verticalBias = (float) 0.37;
         undoBtn.setLayoutParams(undoBtnParams);
         undoBtn.setBackground(null);
-        undoBtn.setImageResource(R.drawable.icon_undo_70);
+        undoBtn.setImageResource(R.drawable.undo);
         undoBtn.setOnClickListener(this);
 
         //Undo text
@@ -624,7 +618,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         undoTextParams.endToEnd = dislikeLayout.getId();
         undoText.setLayoutParams(undoTextParams);
         undoText.setText("Undo");
-        undoText.setTextColor(Color.parseColor("#45B48F"));
+        undoText.setTextColor(Color.parseColor("#5DBCD2"));
         undoText.setTextSize(20);
         undoText.setTypeface(willNotDisplayText.getTypeface(), Typeface.BOLD);
         undoText.setOnClickListener(this);

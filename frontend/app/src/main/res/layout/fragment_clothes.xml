@@ -23,14 +23,14 @@
 
     <ImageView
         android:id="@+id/btn_clothes_add"
-        android:layout_width="46dp"
-        android:layout_height="51dp"
+        android:layout_width="41dp"
+        android:layout_height="46dp"
         android:layout_marginEnd="16dp"
-        android:background="@android:color/transparent"
+        android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.02"
+        app:layout_constraintVertical_bias="0.027"
         app:srcCompat="@drawable/add" />
 
     <GridLayout
@@ -54,6 +54,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 app:srcCompat="@drawable/outwear"
+                android:foreground="?android:attr/selectableItemBackground"
                 tools:src="@tools:sample/avatars" />
 
             <TextView
@@ -75,6 +76,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 app:srcCompat="@drawable/shirt"
+                android:foreground="?android:attr/selectableItemBackground"
                 tools:src="@tools:sample/avatars" />
 
             <TextView
@@ -96,6 +98,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 app:srcCompat="@drawable/trouser"
+                android:foreground="?android:attr/selectableItemBackground"
                 tools:src="@tools:sample/avatars" />
 
             <TextView
@@ -117,6 +120,7 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 app:srcCompat="@drawable/shoes"
+                android:foreground="?android:attr/selectableItemBackground"
                 tools:src="@tools:sample/avatars" />
 
             <TextView

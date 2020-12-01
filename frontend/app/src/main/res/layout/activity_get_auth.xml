@@ -24,6 +24,7 @@
         android:layout_marginTop="8dp"
         android:text="Authenticate"
         android:background="@drawable/customborder"
+        android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.209"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,6 +60,7 @@
         android:layout_marginBottom="132dp"
         android:text="Go back to app"
         android:background="@drawable/customborder"
+        android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

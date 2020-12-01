@@ -79,7 +79,7 @@ public class AddClothesTest {
         IdlingRegistry idlingRegistry_activity = IdlingRegistry.getInstance();
         idlingRegistry_activity.register(idlingResourceAddClothes);
 
-        Uri uri = Uri.fromFile(new File("/storage/emulated/0/Download/images.jpg"));
+        Uri uri = Uri.fromFile(new File("/storage/emulated/0/Download/test.jpg"));
         Intent data = new Intent();
         data.setData(uri);
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, data);
@@ -95,18 +95,18 @@ public class AddClothesTest {
         onView(withId(R.id.tv_add)).check(matches(not(isDisplayed())));
 
         onView(withId(R.id.sp_category_add)).perform(click());
-        onData(allOf(is(instanceOf(String.class)), is("Shirts"))).perform(click());
-        onView(withId(R.id.sp_category_add)).check(matches(withSpinnerText(containsString("Shirts"))));
+        onData(allOf(is(instanceOf(String.class)), is("shirts"))).perform(click());
+        onView(withId(R.id.sp_category_add)).check(matches(withSpinnerText(containsString("shirts"))));
 
         onView(withId(R.id.sp_color_add)).perform(click());
-        onData(allOf(is(instanceOf(String.class)), is("White"))).perform(click());
-        onView(withId(R.id.sp_color_add)).check(matches(withSpinnerText(containsString("White"))));
+        onData(allOf(is(instanceOf(String.class)), is("white"))).perform(click());
+        onView(withId(R.id.sp_color_add)).check(matches(withSpinnerText(containsString("white"))));
 
         onView(withId(R.id.cb_spring_add)).perform(click()).check(matches(isChecked()));
 
         onView(withId(R.id.sp_occasion_add)).perform(click());
-        onData(allOf(is(instanceOf(String.class)), is("Home"))).perform(click());
-        onView(withId(R.id.sp_occasion_add)).check(matches(withSpinnerText(containsString("Home"))));
+        onData(allOf(is(instanceOf(String.class)), is("home"))).perform(click());
+        onView(withId(R.id.sp_occasion_add)).check(matches(withSpinnerText(containsString("home"))));
 
         onView(withId(R.id.et_name_add)).perform(replaceText("T-shirt"), closeSoftKeyboard());
 

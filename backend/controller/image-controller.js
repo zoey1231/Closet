@@ -53,9 +53,17 @@ const postImage = async (req, res, next) => {
 
   try {
     await fs.mkdir(targetFolder);
+  } catch (exception) {
+    if (exception.code !== 'EEXIST') {
+      LOG.error(req._id, exception);
+      return next(new HttpError('Failed uploading image', 500));
+    }
+  }
+
+  try {
     await fs.rename(tempPath, targetPath);
   } catch (exception) {
-    LOG.error(req._id, exception.message);
+    LOG.error(req._id, exception);
     return next(new HttpError('Failed uploading image', 500));
   }
 
@@ -83,7 +91,7 @@ const deleteImage = async (req, res, next) => {
       fileExists = true;
       deletePath = targetPath;
       break;
-    } catch { 
+    } catch {
       fileExists = false;
     }
   }
