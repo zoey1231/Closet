@@ -1,4 +1,4 @@
-const outfits = [];
+let outfits = [];
 
 class TodayOutfit {
   constructor(outfit) {
@@ -11,6 +11,10 @@ class TodayOutfit {
 
   static find() {
     return Promise.resolve(outfits);
+  }
+
+  static deleteMany() {
+    outfits = [];
   }
 }
 

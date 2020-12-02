@@ -327,10 +327,7 @@ const generateOutfit = async user_id => {
       !formalShoes.length
     ) {
       let warning =
-        'We notice you have the following events today, but you do not have enough formal clothes!\n';
-      TodayFormalEvents.forEach(event => {
-        warning += `${event}\n`;
-      });
+        'We notice you have some formal events today, but you do not have enough formal clothes!';
 
       // Generate a normal outfit instead
       const result = await createNormalOutfit();
@@ -477,7 +474,7 @@ const generateOutfit = async user_id => {
         while (numOfTries < likedNormalOutfitsWithSeason.length) {
           const chosenOutfit =
             likedNormalOutfitsWithSeason[
-            randomInt(likedNormalOutfitsWithSeason.length)
+              randomInt(likedNormalOutfitsWithSeason.length)
             ];
 
           if (!TodayOutfitsIds.includes(chosenOutfit._id)) {

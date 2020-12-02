@@ -34,4 +34,7 @@ outfitsRouter.post(
   outfitsController.createOneOutfit
 );
 
+// Delete all today returned outfits
+outfitsRouter.delete('/today', outfitsController.deleteTodayOutfits);
+
 module.exports = outfitsRouter;
