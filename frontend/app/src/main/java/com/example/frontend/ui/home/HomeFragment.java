@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -27,12 +26,10 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
-import com.example.frontend.CreateOutfitActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommAsync;
 import com.example.frontend.User;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -71,7 +68,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private Button getButton, createButton;
     private GridLayout outfitsLayout;
-    private FloatingActionButton refreshWeatherBtn;
     private JSONObject outfit_opinion = new JSONObject();
     private boolean like = false;
     private boolean dislike = false;
@@ -114,9 +110,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         createButton.setOnClickListener(this);
         outfitsLayout = root.findViewById(R.id.gl_outfit);
 
-//        refreshWeatherBtn = root.findViewById(R.id.fa_button_refresh_weather);
-//        refreshWeatherBtn.setOnClickListener(this);
-
         getWeatherData();
 
         Log.d(TAG, "testing: outfit list size is " + outfitIdList.size());
@@ -138,12 +131,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             getOutfitFromServer(userToken);
             getButton.setEnabled(true);
         }
-//        if(selectedId == R.id.fa_button_refresh_weather){
-//            Log.d(TAG,"clicked fresh weather button");
-//            getWeatherData();
-//        }
         else if (selectedId == R.id.btn_create_outfit) {
             createButton.setEnabled(false);
+
             Intent createOutfitIntent = new Intent(HomeFragment.this.getContext(), CreateOutfitActivity.class);
             startActivityForResult(createOutfitIntent, 1);
             createButton.setEnabled(true);
@@ -298,7 +288,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    public void getOutfitFromServer(String userToken) {
+    public void getOutfitFromServer(final String userToken) {
         ServerCommAsync serverCommunication = new ServerCommAsync();
         Log.d(TAG,"prepared to getOutfitFromServer");
 
@@ -356,6 +346,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                     }
                 });
+                if(message.equals("Failed to generate an outfit, please try again later") && warning.equals(EMPTY_STRING)){
+                    Log.d(TAG,"try to get an outfit again. Call getOutfitFromServer() again");
+                    getOutfitFromServer(userToken);
+                }
             }
         });
     }

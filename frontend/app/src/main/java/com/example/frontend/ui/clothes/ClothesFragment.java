@@ -22,8 +22,6 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.test.espresso.idling.CountingIdlingResource;
 
-import com.example.frontend.AddClothesActivity;
-import com.example.frontend.EditClothesActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommAsync;

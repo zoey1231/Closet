@@ -1,4 +1,4 @@
-package com.example.frontend;
+package com.example.frontend.ui.calendar;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.frontend.R;
 
 public class GetAuthActivity extends AppCompatActivity implements View.OnClickListener {
 

@@ -158,7 +158,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     else{
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                final Toast toast = makeText(LoginActivity.this,"Login successfully",Toast.LENGTH_SHORT);
+                                final Toast toast = makeText(LoginActivity.this,"Login successfully",Toast.LENGTH_LONG);
                                 toast.show();
                             }
                         });

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditClothesActivity">
+    tools:context=".ui.clothes.EditClothesActivity">
 
     <TextView
         android:id="@+id/tv_title_edit"

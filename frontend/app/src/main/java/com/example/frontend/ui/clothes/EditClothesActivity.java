@@ -1,4 +1,4 @@
-package com.example.frontend;
+package com.example.frontend.ui.clothes;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -26,6 +26,12 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.frontend.MainActivity;
+import com.example.frontend.R;
+import com.example.frontend.ServerCommAsync;
+import com.example.frontend.User;
+import com.example.frontend.spinnerAdapter;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;

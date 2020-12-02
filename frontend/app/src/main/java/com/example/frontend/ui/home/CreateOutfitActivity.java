@@ -1,4 +1,4 @@
-package com.example.frontend;
+package com.example.frontend.ui.home;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -20,6 +20,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+
+import com.example.frontend.MainActivity;
+import com.example.frontend.R;
+import com.example.frontend.ServerCommAsync;
+import com.example.frontend.User;
+import com.example.frontend.spinnerAdapter;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
