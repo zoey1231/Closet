@@ -2,19 +2,10 @@ package com.example.frontend;
 
 
 import android.os.Bundle;
-import android.view.MenuItem;
 
-import com.example.frontend.ui.calendar.CalendarFragment;
-import com.example.frontend.ui.clothes.ClothesFragment;
-import com.example.frontend.ui.home.HomeFragment;
-import com.example.frontend.ui.notifications.NotificationsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;

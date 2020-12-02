@@ -68,6 +68,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
     private static HashMap<Integer, String> clothesIdMap = new HashMap<>();
     private static HashMap<String, String> categoryMap = new HashMap<>();
 
+    private static String selectedCategory = EMPTY_STRING;
+
     static View root;
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_add_clothes_request");
 
@@ -94,6 +96,7 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             getAllClothesFromServer();
         }
         addAllClothesToCloset();
+        selectedCategory = "all";
 
         return root;
     }
@@ -119,29 +122,28 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
                 idlingResource.decrement();
                 break;
 
- //            case R.id.iv_all:
-//                clothesLayout.removeAllViews();
-//                addAllClothesToCloset();
-//                break;
-
             case R.id.iv_outerwear:
                 clothesLayout.removeAllViews();
                 addClothesByCategoryFromServer("outerwear");
+                selectedCategory = "outerwear";
                 break;
 
             case R.id.iv_shirts:
                 clothesLayout.removeAllViews();
                 addClothesByCategoryFromServer("shirts");
+                selectedCategory = "shirts";
                 break;
 
             case R.id.iv_trousers:
                 clothesLayout.removeAllViews();
                 addClothesByCategoryFromServer("trousers");
+                selectedCategory = "trousers";
                 break;
 
             case R.id.iv_shoes:
                 clothesLayout.removeAllViews();
                 addClothesByCategoryFromServer("shoes");
+                selectedCategory = "shoes";
                 break;
 
             default:
@@ -189,7 +191,10 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
             else if (category.equals("shoes")){
                 categoryMap.put(clothesId, "shoes");
             }
-            addClothesToCloset(clothesId);
+
+            if (category.equals(selectedCategory) || selectedCategory.equals("all")) {
+                addClothesToCloset(clothesId);
+            }
         }
 
         else if (resultCode == Activity.RESULT_OK && requestCode == EDIT) {

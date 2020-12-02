@@ -118,6 +118,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         getWeatherData();
 
+        Log.d(TAG, "testing: outfit list size is " + outfitIdList.size());
         if (outfitIdList.size() == 0) {
             getMultipleOutfitsFromServer();
         }
@@ -340,19 +341,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } else {
                     Log.d(TAG,"Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
                 }
+
                 getActivity().runOnUiThread(new Runnable() {
                     public void run() {
-                    if(!message.equals(EMPTY_STRING)&& !warning.equals(EMPTY_STRING)){
+                    if (!message.equals(EMPTY_STRING)){
                         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    }
+                    if (!warning.equals(EMPTY_STRING)) {
                         Toast.makeText(getContext(), warning, Toast.LENGTH_SHORT).show();
                     }
 
                     }
                 });
-//                if(message.equals("Failed to generate an outfit, please try again later") && success.equals(EMPTY_STRING)&&warning.equals(EMPTY_STRING)){
-//                    getOutfitFromServer();
-//                }
-
             }
         });
     }
@@ -426,19 +426,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } else {
                     Log.d(TAG,"Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
                 }
-                getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        if(!message.equals(EMPTY_STRING)&& !warning.equals(EMPTY_STRING)){
-                            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                            Toast.makeText(getContext(), warning, Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                });
-//                if(message.equals("Failed to generate an outfit, please try again later") && success.equals(EMPTY_STRING)&&warning.equals(EMPTY_STRING)){
-//                    getOutfitFromServer();
-//                }
-
             }
         });
     }
@@ -595,16 +582,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
 
         //Undo imageButton
-        ImageButton undoBtn = new ImageButton(getContext());
+        ImageView undoBtn = new ImageView(getContext());
         undoBtn.setId(View.generateViewId());
         ConstraintLayout.LayoutParams undoBtnParams= new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        undoBtnParams.height = 100;
+        undoBtnParams.width = 100;
         undoBtnParams.topToBottom = willNotDisplayText.getId();
         undoBtnParams.bottomToBottom = dislikeLayout.getId();
         undoBtnParams.startToStart = dislikeLayout.getId();
         undoBtnParams.endToEnd = dislikeLayout.getId();
         undoBtnParams.verticalBias = (float) 0.37;
         undoBtn.setLayoutParams(undoBtnParams);
-        undoBtn.setBackground(null);
         undoBtn.setImageResource(R.drawable.undo);
         undoBtn.setOnClickListener(this);
 

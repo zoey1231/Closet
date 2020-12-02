@@ -1,4 +1,4 @@
-package com.example.frontend.ui.notifications;
+package com.example.frontend.ui.profile;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -38,7 +38,7 @@ import okhttp3.Response;
 
 import static android.widget.Toast.makeText;
 
-public class NotificationsFragment extends Fragment implements View.OnClickListener {
+public class ProfileFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "NotificationFrag";
     private static final String EMPTY_STRING = "";
     private final int EDIT = 1;
@@ -94,7 +94,7 @@ public class NotificationsFragment extends Fragment implements View.OnClickListe
                 Log.d(TAG, "clicked log out button");
                 //delete the userToken record
                 user.setUserToken("");
-                Intent intent = new Intent(NotificationsFragment.this.getActivity(), RegisterActivity.class);
+                Intent intent = new Intent(ProfileFragment.this.getActivity(), RegisterActivity.class);
                 startActivity(intent);
                 break;
             case R.id.editProfile_btn:
