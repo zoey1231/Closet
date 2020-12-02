@@ -1,4 +1,4 @@
-package com.example.frontend;
+package com.example.frontend.ui.clothes;
 
 import android.Manifest;
 import android.content.ContentResolver;
@@ -26,6 +26,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.test.espresso.idling.CountingIdlingResource;
+
+import com.example.frontend.MainActivity;
+import com.example.frontend.R;
+import com.example.frontend.ServerCommAsync;
+import com.example.frontend.User;
+import com.example.frontend.spinnerAdapter;
 
 import org.jetbrains.annotations.NotNull;
 import java.io.File;

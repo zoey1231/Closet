@@ -1,4 +1,4 @@
-package com.example.frontend;
+package com.example.frontend.ui.clothes;
 
 import java.util.ArrayList;
 

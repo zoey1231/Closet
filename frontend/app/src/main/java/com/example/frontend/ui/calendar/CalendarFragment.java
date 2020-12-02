@@ -17,10 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
-import com.example.frontend.CalendarAdapter;
-import com.example.frontend.Event;
-import com.example.frontend.EventDecorator;
-import com.example.frontend.GetAuthActivity;
 import com.example.frontend.MainActivity;
 import com.example.frontend.R;
 import com.example.frontend.ServerCommAsync;

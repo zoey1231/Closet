@@ -30,10 +30,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity" />
-        <activity android:name=".GetAuthActivity"/>
-        <activity android:name=".AddClothesActivity"/>
-        <activity android:name=".EditClothesActivity" />
-        <activity android:name=".CreateOutfitActivity" />
+        <activity android:name=".ui.calendar.GetAuthActivity"/>
+        <activity android:name=".ui.clothes.AddClothesActivity"/>
+        <activity android:name=".ui.clothes.EditClothesActivity" />
+        <activity android:name=".ui.home.CreateOutfitActivity" />
 
         <!--        <activity android:name=".CalendarActivity"></activity>-->
 <!--        <fragment android:name=".CalendarFragment"></fragment>-->
