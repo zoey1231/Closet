@@ -1,23 +1,14 @@
 package com.example.frontend;
 
 
-import android.os.IBinder;
-
-import android.view.WindowManager;
-
 import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.Root;
 
 import androidx.test.espresso.idling.CountingIdlingResource;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.LargeTest;
 
 import androidx.test.runner.AndroidJUnit4;
-
 import com.example.frontend.ui.home.HomeFragment;
-
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -111,26 +102,4 @@ public class GetOutfitTest {
 
     }
 
-    class ToastMatcher extends TypeSafeMatcher<Root> {
-
-        @Override
-        public boolean matchesSafely(Root root) {
-            int type = root.getWindowLayoutParams().get().type;
-            if ((type == WindowManager.LayoutParams.TYPE_TOAST)) {
-                IBinder windowToken = root.getDecorView().getWindowToken();
-                IBinder appToken = root.getDecorView().getApplicationWindowToken();
-                if (windowToken == appToken) {
-                    return true;
-                    //means this window isn't contained by any other windows.
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public void describeTo(Description description) {
-
-            description.appendText("ToastMatcher");
-        }
-    }
 }
