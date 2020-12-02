@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private boolean like = false;
     private boolean dislike = false;
     private boolean undoDislike = false;
-    private String opinion = EMPTY_STRING;
+    private String opinion = "unknown";
 
     static CountingIdlingResource idlingResource = new CountingIdlingResource("send_get_outfit_request");
     private String message = EMPTY_STRING;
@@ -168,14 +168,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                String outfitId = outfitIdMap.get(selectedId);
-                int outfitIndex = outfitIdList.indexOf(outfitId);
-                outfitIdList.remove(outfitIndex);
-                clothesIdList.remove(outfitIndex*3+2);
-                clothesIdList.remove(outfitIndex*3+1);
-                clothesIdList.remove(outfitIndex*3);
             }else if(likeOrDislike.equals("unknown")){
-
                 Log.d(TAG,"clicked undo opinion");
                 undoDislike = true;
                 opinion = "unknown";
@@ -185,6 +178,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     e.printStackTrace();
                 }
             }
+
+//            if (opinion.equals("dislike")) {
+//                String outfitId = outfitIdMap.get(selectedId);
+//                int outfitIndex = outfitIdList.indexOf(outfitId);
+//                outfitIdList.remove(outfitIndex);
+//                clothesIdList.remove(outfitIndex*3+2);
+//                clothesIdList.remove(outfitIndex*3+1);
+//                clothesIdList.remove(outfitIndex*3);
+//            }
+
             //send response to server
                 idlingResource.increment();
             sendOutfitOpinionToServer(outfit_opinion,outfitID);
@@ -324,40 +327,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     if(responseJson.has("warning")){
                         warning = responseJson.getString("warning");
                     }
-                    if (responseJson.has("manual")) {
-                        if (responseJson.getBoolean("manual")) {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    createButton.setVisibility(View.VISIBLE);
-                                }
-                            });
-                        }
-                    }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-
                 if (response.isSuccessful()) {
-                    if(success.equals("true")){
-                        Log.d(TAG,"[response.isSuccessful()]Outfit request is successful\n"+responseStr);
-                        try {
-                            //retrieve outfit data from server's response
-                            responseJson = new JSONObject(responseStr);
-                            extractResponseOutfitData(responseJson);
+                    Log.d(TAG,"Outfit request is unsuccessful: " + responseStr);
+                    try {
+                        //retrieve outfit data from server's response
+                        responseJson = new JSONObject(responseStr);
+                        extractResponseOutfitData(responseJson.getJSONObject("outfit"));
 //                            idlingResource.decrement();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }else if(success.equals("false")){
-                        Log.d(TAG,"[response.isSuccessful()]Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-
                 } else {
-                    Log.d(TAG,"Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
+                    Log.d(TAG,"Outfit request is unsuccessful");
                 }
 
                 getActivity().runOnUiThread(new Runnable() {
@@ -391,65 +376,32 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = Objects.requireNonNull(response.body()).string();
-
                 JSONObject responseJson;
-                try {
-                    responseJson = new JSONObject(responseStr);
-                    if(responseJson.has("success")){
-                        success = responseJson.getString("success");
-                    }
-                    if(responseJson.has("message")){
-                        message = responseJson.getString("message");
-                    }
-                    if(responseJson.has("warning")){
-                        warning = responseJson.getString("warning");
-                    }
-                    if (responseJson.has("manual")) {
-                        if (responseJson.getBoolean("manual")) {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    createButton.setVisibility(View.VISIBLE);
-                                }
-                            });
-                        }
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
                 if (response.isSuccessful()) {
-                    if(success.equals("true")){
-                        Log.d(TAG,"[response.isSuccessful()]Outfit request is successful\n"+responseStr);
-                        JSONArray outfitsArray = new JSONArray();
-                        try {
-                            //retrieve outfit data from server's response
-                            responseJson = new JSONObject(responseStr);
-                            if (responseJson.has("outfits")) {
-                                outfitsArray = responseJson.getJSONArray("outfits");
-                            }
-                            for (int i = 0; i < outfitsArray.length(); i++) {
-                                extractResponseOutfitData(responseJson);
-                            }
-                            idlingResource.decrement();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                    JSONArray outfitArray = new JSONArray();
+                    Log.d(TAG,"Outfit request is unsuccessful: " + responseStr);
+                    try {
+                        //retrieve outfit data from server's response
+                        responseJson = new JSONObject(responseStr);
+                        if (responseJson.has("outfits")) {
+                            outfitArray = responseJson.getJSONArray("outfits");
                         }
-
-                    }else if(success.equals("false")){
-                        Log.d(TAG,"[response.isSuccessful()]Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
+                        for (int i = 0; i < outfitArray.length(); i++) {
+                            extractResponseOutfitData(outfitArray.getJSONObject(i));
+                        }
+//                        idlingResource.decrement();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-
                 } else {
-                    Log.d(TAG,"Outfit request is unsuccessful:\n "+"message: "+message+" warning: "+warning);
+                    Log.d(TAG,"Outfit request is unsuccessful");
                 }
             }
         });
     }
 
-    private void extractResponseOutfitData(JSONObject responseJSON) throws JSONException{
-        JSONObject outfitJSON = responseJSON.getJSONObject("outfit");
+    private void extractResponseOutfitData(JSONObject outfitJSON) throws JSONException{
         JSONObject upperClothesJSON = outfitJSON.getJSONObject("chosenUpperClothes");
         JSONObject trousersJSON = outfitJSON.getJSONObject("chosenTrousers");
         JSONObject shoesJSON = outfitJSON.getJSONObject("chosenShoes");
@@ -461,6 +413,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         try {
             if (outfitJSON.has("_id")) {
+                Log.d(TAG, "extracting outfit id");
                 outfitId = outfitJSON.getString("_id");
                 outfitIdList.add(outfitId);
             }
@@ -496,6 +449,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         LinearLayout.LayoutParams image1Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         image1Params.width = 300;
         image1Params.height = 300;
+        image1Params.leftMargin = 45;
         image1.setLayoutParams(image1Params);
         image1.setImageBitmap(getClothesImage(upperClothesId));
 
@@ -504,7 +458,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         LinearLayout.LayoutParams image2Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         image2Params.width = 300;
         image2Params.height = 300;
-        image2Params.leftMargin = 30;
+        image2Params.leftMargin = 45;
         image2.setLayoutParams(image2Params);
         image2.setImageBitmap(getClothesImage(trousersId));
 
@@ -513,7 +467,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         LinearLayout.LayoutParams image3Params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         image3Params.width = 300;
         image3Params.height = 300;
-        image3Params.leftMargin = 30;
+        image3Params.leftMargin = 45;
         image3.setLayoutParams(image3Params);
         image3.setImageBitmap(getClothesImage(shoesId));
 
@@ -568,7 +522,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         //dislike constraint layout(undo screen)
         ConstraintLayout dislikeLayout = new ConstraintLayout(getContext());
         dislikeLayout.setId(View.generateViewId());
-        dislikeLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        dislikeLayout.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 400));
 
         //gray filter
         View gray_filter_view  = new View(getContext());
@@ -586,8 +540,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         TextView willNotDisplayText = new TextView(getContext());
         willNotDisplayText.setId(View.generateViewId());
         willNotDisplayText.setText("We will not suggest this outfit any more, OR ");
-        willNotDisplayText.setPadding(16,16,16,0);
-        willNotDisplayText.setTextColor(Color.parseColor("#E10A0A"));
+        willNotDisplayText.setPadding(20,10,20,0);
+        willNotDisplayText.setTextColor(Color.parseColor("#FAFAFA"));
         willNotDisplayText.setTextSize(18);
         willNotDisplayText.setTypeface(willNotDisplayText.getTypeface(), Typeface.BOLD);
         ConstraintLayout.LayoutParams willNotDisplayTextParams= new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -609,7 +563,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         undoBtnParams.bottomToBottom = dislikeLayout.getId();
         undoBtnParams.startToStart = dislikeLayout.getId();
         undoBtnParams.endToEnd = dislikeLayout.getId();
-        undoBtnParams.verticalBias = (float) 0.37;
+        undoBtnParams.verticalBias = (float) 0.15;
         undoBtn.setLayoutParams(undoBtnParams);
         undoBtn.setImageResource(R.drawable.undo);
         undoBtn.setOnClickListener(this);
@@ -639,7 +593,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         //Main relative layout
         final RelativeLayout mainLayout = new RelativeLayout(getContext());
         mainLayout.setId(View.generateViewId());
-        mainLayout.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 500));
+        mainLayout.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 450));
         mainLayout.addView(outfitLayout);
         mainLayout.addView(dislikeLayout);
 

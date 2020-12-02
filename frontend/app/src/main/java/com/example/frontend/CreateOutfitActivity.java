@@ -242,6 +242,7 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
         ConstraintLayout.LayoutParams clothesParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         clothesParams.width = 300;
         clothesParams.height = 300;
+        clothesParams.leftMargin = 45;
         clothes.setLayoutParams(clothesParams);
         clothes.addView(image);
         clothes.addView(icon);

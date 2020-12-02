@@ -192,22 +192,21 @@
 
     <ScrollView
         android:id="@+id/sv_outfit"
-        android:layout_width="411dp"
-        android:layout_height="360dp"
+        android:layout_width="408dp"
+        android:layout_height="345dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_get_outfit"
-        app:layout_constraintVertical_bias="0.15">
+        app:layout_constraintVertical_bias="0.16">
 
         <GridLayout
             android:id="@+id/gl_outfit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:columnCount="1"
-            android:gravity="center"
-            android:padding="15dp" />
+            android:gravity="center" />
 
     </ScrollView>
 

@@ -366,7 +366,8 @@ public class ClothesFragment extends Fragment implements View.OnClickListener, A
         ConstraintLayout.LayoutParams clothesParams = new ConstraintLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
         clothesParams.width = 300;
         clothesParams.height = 300;
-        clothesParams.leftMargin = 30;
+        clothesParams.leftMargin = 45;
+        clothesParams.bottomMargin = 45;
         clothes.setLayoutParams(clothesParams);
         clothes.addView(image);
         clothes.addView(spinner);
