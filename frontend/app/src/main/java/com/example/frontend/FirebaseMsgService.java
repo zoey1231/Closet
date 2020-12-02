@@ -102,9 +102,6 @@ public class FirebaseMsgService extends FirebaseMessagingService {
 
     }
 
-
-
-
     /**
      * Persist token to servers and send a notification to user
      * @param token The new token.

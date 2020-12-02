@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -90,6 +92,21 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
             button.setVisibility(View.GONE);
         }
 
+        if (eventMap.containsKey(CalendarDay.today())) {
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    List<Event> eventList = eventMap.get(CalendarDay.today());
+                    List<String> summaryList = new ArrayList<>();
+                    for (int i = 0; i < eventList.size(); i++) {
+                        summaryList.add(eventList.get(i).getSummary());
+                    }
+                    String toast = "You have " + summaryList + " today, don't forget to wear appropriate clothes!";
+                    Log.d(TAG, "testing: toast is " + toast);
+                    Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
         return root;
     }
 
@@ -108,7 +125,7 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
     @Override
     public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
-        if (code != EMPTY_STRING) {
+        if (!code.equals(EMPTY_STRING)) {
             String month = months.get(date.getMonth() - 1);
             int year = date.getYear();
             eventMap.clear();

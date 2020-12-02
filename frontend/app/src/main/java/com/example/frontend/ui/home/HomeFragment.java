@@ -1,5 +1,6 @@
 package com.example.frontend.ui.home;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -127,8 +128,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return root;
     }
 
-
-
     @Override
     public void onClick(View view) {
 
@@ -145,9 +144,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 //        }
         else if (selectedId == R.id.btn_create_outfit) {
             createButton.setEnabled(false);
-            Intent intent = new Intent(HomeFragment.this.getContext(), CreateOutfitActivity.class);
-            startActivity(intent);
-//            createButton.setVisibility(View.GONE);
+            Intent createOutfitIntent = new Intent(HomeFragment.this.getContext(), CreateOutfitActivity.class);
+            startActivityForResult(createOutfitIntent, 1);
             createButton.setEnabled(true);
         }
         else if(opinionMap.containsKey(selectedId)){
@@ -191,6 +189,26 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 idlingResource.increment();
             sendOutfitOpinionToServer(outfit_opinion,outfitID);
 
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+            // here you can retrieve your bundle data.
+            String outfitId = data.getStringExtra("outfitId");
+            String upperClothesId = data.getStringExtra("upperClothesId");
+            String trousersId = data.getStringExtra("trousersId");
+            String shoesId = data.getStringExtra("shoesId");
+
+            outfitIdList.add(outfitId);
+            clothesIdList.add(upperClothesId);
+            clothesIdList.add(trousersId);
+            clothesIdList.add(shoesId);
+
+            addOutfitOnUI(outfitId, upperClothesId, trousersId, shoesId);
         }
     }
 
@@ -359,7 +377,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     public void getMultipleOutfitsFromServer() {
         ServerCommAsync serverCommunication = new ServerCommAsync();
-        Log.d(TAG,"prepared to getOutfitFromServer");
+        Log.d(TAG,"prepared to getMultipleOutfitFromServer");
 
         serverCommunication.getWithAuthentication("http://closet-cpen321.westus.cloudapp.azure.com/api/outfits/multiple",userToken, new Callback() {
             @Override
@@ -436,10 +454,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         JSONObject trousersJSON = outfitJSON.getJSONObject("chosenTrousers");
         JSONObject shoesJSON = outfitJSON.getJSONObject("chosenShoes");
 
+        String outfitId  = EMPTY_STRING;
         String upperClothesId = EMPTY_STRING;
         String trousersId = EMPTY_STRING;
         String shoesId = EMPTY_STRING;
-        String outfitId  = EMPTY_STRING;
 
         try {
             if (outfitJSON.has("_id")) {

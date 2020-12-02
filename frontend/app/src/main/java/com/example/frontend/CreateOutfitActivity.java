@@ -106,10 +106,6 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
             constructClothAttributeFromCheckBoxes();
             constructClothAttributeClothID();
             sendOutfitToServer(clothAttribute);
-            Intent intent = new Intent();
-            //TODO:  intent.putExtra() etc.
-            setResult(RESULT_OK, intent);
-            finish();
         }
         else {
             if (upperClothesIdMap.containsKey(selectedId)) {
@@ -377,34 +373,36 @@ public class CreateOutfitActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = Objects.requireNonNull(response.body()).string();
+                String outfitId = EMPTY_STRING;
                 Log.d(TAG,responseStr);
                 JSONObject responseJson = null;
                 try {
                     responseJson = new JSONObject(responseStr);
-                    if(responseJson.has("message"))
+                    if(responseJson.has("message")) {
                         message = responseJson.getString("message");
+                    }
+                    if (responseJson.getJSONObject("outfit").has("_id")) {
+                        outfitId = responseJson.getJSONObject("outfit").getString("_id");
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 if (response.isSuccessful()) {
-                    //make a toast to let the server's message display to the user
+                     // make a toast to let the server's message display to the user
+                     runOnUiThread(new Runnable() {
+                        public void run() {
+                            final Toast toast = makeText(CreateOutfitActivity.this,"Successfully create an outfit!",Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                     });
 
-                    if(Objects.requireNonNull(responseJson).has("message") ){
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                final Toast toast = makeText(CreateOutfitActivity.this,message,Toast.LENGTH_LONG);
-                                toast.show();
-                            }
-                        });
-                    }
-                    else{
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                final Toast toast = makeText(CreateOutfitActivity.this,"Successfully create an outfit!",Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        });
-                    }
+                    Intent setOutfitIntent = new Intent();
+                    setOutfitIntent.putExtra("outfitId", outfitId);
+                    setOutfitIntent.putExtra("upperClothesId", clothesID[UPPERCLOTHES]);
+                    setOutfitIntent.putExtra("trousersId", clothesID[TROUSESRS]);
+                    setOutfitIntent.putExtra("shoesId", clothesID[SHOES]);
+                    setResult(RESULT_OK, setOutfitIntent);
+                    finish();
                 }else {
                     // Request not successful
                     if(Objects.requireNonNull(responseJson).has("message") ){
