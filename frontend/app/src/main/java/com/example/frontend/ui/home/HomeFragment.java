@@ -126,7 +126,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         int selectedId = view.getId();
         if(selectedId == R.id.btn_get_outfit){
-                            idlingResource.increment();
+            idlingResource.increment();
             getButton.setEnabled(false);
             getOutfitFromServer(userToken);
             getButton.setEnabled(true);
@@ -327,7 +327,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         //retrieve outfit data from server's response
                         responseJson = new JSONObject(responseStr);
                         extractResponseOutfitData(responseJson.getJSONObject("outfit"));
-//                            idlingResource.decrement();
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -346,6 +346,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                     }
                 });
+                idlingResource.decrement();
                 if(message.equals("Failed to generate an outfit, please try again later") && warning.equals(EMPTY_STRING)){
                     Log.d(TAG,"try to get an outfit again. Call getOutfitFromServer() again");
                     getOutfitFromServer(userToken);
