@@ -8,6 +8,7 @@ const Clothes = require('../model/clothes');
 const { generateOutfit } = require('../service/outfits-service');
 const { hashCode } = require('../utils/hash');
 const LOG = require('../utils/logger');
+const TodayOutfit = require('../model/today-outfit');
 
 const getOneOutfit = async (req, res, next) => {
   const { userId } = req.userData;
@@ -252,9 +253,23 @@ const createOneOutfit = async (req, res, next) => {
   });
 };
 
+const deleteTodayOutfits = async (req, res, next) => {
+  const { userId } = req.userData;
+
+  try {
+    await TodayOutfit.deleteMany({ user: userId });
+  } catch (exception) {
+    LOG.error(req._id, exception.message);
+    return next(new HttpError('Failed deleting today outfits', 500));
+  }
+
+  res.status(200).json({ message: 'Today outfits deleted successfully!' });
+};
+
 module.exports = {
   getOneOutfit,
   getMultipleOutfits,
   updateUserOpinion,
   createOneOutfit,
+  deleteTodayOutfits,
 };
