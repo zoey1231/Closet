@@ -976,6 +976,52 @@ describe('Closet integration tests', () => {
     testClothesIds = [];
   });
 
+  it('should have correct response for DELETE /api/outfits/today', async () => {
+    // Post all necessary clothes for testing
+    for (const clothes of testClothesArray) {
+      res = await api
+        .post(`/api/clothes/${userId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send(clothes);
+      expect(res.statusCode).toEqual(201);
+      testClothesIds.push(res.body.id);
+    }
+
+    // Get an outfit
+    res = await api
+      .get('/api/outfits/one')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.success).toBeTruthy();
+    expect(res.body.message).toEqual('New outfit generated successfully!');
+    expect(res.body.outfit.opinion).toEqual('unknown');
+    expect(res.body.outfit.user).toEqual(userId);
+    expect(res.body.outfit._id).toEqual(
+      hashCode(
+        res.body.outfit.chosenUpperClothes.id +
+          res.body.outfit.chosenTrousers.id +
+          res.body.outfit.chosenShoes.id
+      )
+    );
+
+    // Delete today returned outfits
+    res = await api
+      .delete('/api/outfits/today')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toEqual('Today outfits deleted successfully!');
+
+    // Clear all clothes
+    for (const id of testClothesIds) {
+      res = await api
+        .delete(`/api/clothes/${userId}/${id}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.message).toEqual('Deleted clothing');
+    }
+    testClothesIds = [];
+  });
+
   afterAll(async done => {
     fs.rmdirSync('../backend/static/UserClothingImages/', { recursive: true });
     await mongoose.connection.db.dropDatabase();

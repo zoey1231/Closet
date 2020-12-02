@@ -195,6 +195,15 @@ describe('Outfit controller tests', () => {
     expect(res.body.updatedOutfit).toEqual({ opinion: 'OPINION' });
   });
 
+  it('200 delete today outfits', async () => {
+    const res = await api
+      .delete(`/api/outfits/today`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.message).toEqual('Today outfits deleted successfully!');
+  });
+
   afterAll(async done => {
     await mongoose.connection.db.dropDatabase();
     await mongoose.connection.close();
