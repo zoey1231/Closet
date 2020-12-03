@@ -17,6 +17,8 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -55,8 +57,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         progressBar_register = findViewById(R.id.progressBar_register);
         btn_signup.setOnClickListener(this);
         linkToLogin.setOnClickListener(this);
-
-
     }
 
 
@@ -83,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         String inputPassword = ePassword.getText().toString().trim();
 
         //ensure all input fields are not empty
-        if(TextUtils.isEmpty(inputEmail) || TextUtils.isEmpty(inputName) || TextUtils.isEmpty(inputPassword)){
+        if(TextUtils.isEmpty(inputName) || !(isEmailValid(inputEmail))|| inputPassword.length() != 6){
             makeText(RegisterActivity.this,"Please enter all the fields correctly",Toast.LENGTH_SHORT).show();
             return;
         }else {
@@ -102,6 +102,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             }
             return;
         }
+    }
+
+    public static boolean isEmailValid(String email) {
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     private void sendUserDataToServer(final JSONObject userData) {
