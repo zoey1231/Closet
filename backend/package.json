@@ -8,7 +8,10 @@
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "docker": "cross-env NODE_ENV=docker node index.js",
     "test": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage",
-    "testCoverage": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage --json --outputFile=jest.results.json"
+    "testCoverage": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage --json --outputFile=jest.results.json",
+    "test:users": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage \"users-controller.test.js\" \"users.test.js\"",
+    "test:outfits": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage \"outfits-controller.test.js\" \"outfits-service.test.js\" \"outfits.test.js\"",
+    "test:closet": "cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles --coverage \"closet.test.js\""
   },
   "author": "",
   "license": "ISC",
