@@ -976,7 +976,7 @@ describe('Closet integration tests', () => {
     testClothesIds = [];
   });
 
-  it('should have correct response for DELETE /api/outfits/today', async () => {
+  it('should have correct response for DELETE /api/outfits/all', async () => {
     // Post all necessary clothes for testing
     for (const clothes of testClothesArray) {
       res = await api
@@ -1006,10 +1006,10 @@ describe('Closet integration tests', () => {
 
     // Delete today returned outfits
     res = await api
-      .delete('/api/outfits/today')
+      .delete('/api/outfits/all')
       .set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toEqual(200);
-    expect(res.body.message).toEqual('Today outfits deleted successfully!');
+    expect(res.body.message).toEqual('Outfits deleted successfully!');
 
     // Clear all clothes
     for (const id of testClothesIds) {

@@ -195,13 +195,13 @@ describe('Outfit controller tests', () => {
     expect(res.body.updatedOutfit).toEqual({ opinion: 'OPINION' });
   });
 
-  it('200 delete today outfits', async () => {
+  it('200 delete all outfits', async () => {
     const res = await api
-      .delete(`/api/outfits/today`)
+      .delete(`/api/outfits/all`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body.message).toEqual('Today outfits deleted successfully!');
+    expect(res.body.message).toEqual('Outfits deleted successfully!');
   });
 
   afterAll(async done => {
