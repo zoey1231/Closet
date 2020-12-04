@@ -66,6 +66,7 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
     private ImageView image, imageButton;
     private Button saveButton;
     private TextView text;
+
     private File file;
 
     private JSONObject clothAttribute = new JSONObject();
@@ -177,10 +178,15 @@ public class AddClothesActivity extends AppCompatActivity implements View.OnClic
                 constructClothAttributeFromCheckBoxes(clothAttribute,TAG,checkBox_spring,checkBox_summer,checkBox_fall,checkBox_winter,checkBox_all);
                 constructClothAttributeClothName(clothAttribute,TAG,clothName);
 //                send the cloth data to server
-                sendClothDataToServer(clothAttribute,TAG,AddClothesActivity.this);
-
-                final Toast toast = makeText(AddClothesActivity.this,"Successfully added clothes!",Toast.LENGTH_SHORT);
-                toast.show();
+                if (file == null) {
+                    final Toast toast = makeText(AddClothesActivity.this,"You haven't selected an image!",Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                else {
+                    sendClothDataToServer(clothAttribute,TAG,AddClothesActivity.this);
+                    final Toast toast = makeText(AddClothesActivity.this,"Successfully added clothes!",Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 break;
 
             default:

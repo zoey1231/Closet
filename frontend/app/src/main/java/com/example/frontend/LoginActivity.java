@@ -5,7 +5,6 @@ import androidx.test.espresso.idling.CountingIdlingResource;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +16,8 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -76,8 +77,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String inputPassword = ePassword.getText().toString().trim();
 
         //ensure all input fields are not empty
-        if (TextUtils.isEmpty(inputEmail) || TextUtils.isEmpty(inputPassword)) {
-            makeText(LoginActivity.this, "Please enter all the fields correctly", Toast.LENGTH_SHORT).show();
+        if(!(isEmailValid(inputEmail))|| inputPassword.length() != 6){
+            makeText(LoginActivity.this,"Please enter all the fields correctly",Toast.LENGTH_SHORT).show();
+            return;
         } else {
             //send the input fields to the server
             JSONObject postUserData = new JSONObject();
@@ -92,6 +94,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 e.printStackTrace();
             }
         }
+    }
+
+    public static boolean isEmailValid(String email) {
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     private void sendUserDataToServer(final JSONObject userData) {
