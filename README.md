@@ -13,7 +13,8 @@
 **Android mobile Application**: java, Android Studio, javascript, MongoDB, Microsoft Azure, Codacy, Travis CI, CI/CD on GitHub
 
 ## Project description
-Closet is an Android mobile app that tries to help people who have trouble deciding what to wear tomorrow. Users can upload pictures of their clothes and add the corresponding names and tags in the app. Users can check the weather, suggested outfit ideas, calendar, clothes by category, and profile in the Closet app. The app automatically provides users with a list of outfit suggestions on the home page based on users preferences (likes/dislikes), weather, holidays and special events.
+Closet is an Android mobile app that tries to help people who have trouble deciding what to wear tomorrow. Users can manage thier closet by add/update/delete a cloth and view clothes by category. Moreover, users can check the weather, suggested outfit ideas, calendar, and profile in the Closet app.  The app automatically provides users with a list of outfit suggestions on the home page based on users preferences (likes/dislikes), weather, holidays and special events.
+
 ## Highlights
 #### External API calls:
 * Check calendar for special events (Google Calendar)
