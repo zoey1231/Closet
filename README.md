@@ -8,6 +8,13 @@
 <br>
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/9d397e8a128e4ae7aeddd36a93d2fc83)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CPEN321Closet/closet&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/CPEN321Closet/closet/branch/master/graph/badge.svg?token=SHTOLLX2SH)](https://codecov.io/gh/CPEN321Closet/closet)
+# Project videos
+Wanna see a demo and/or get an overview about our code structure? Check out our project videos on Youtube:
+* **App Overview & Demo** https://youtu.be/IygTZ6mzBz8
+* Frontend code overview & testing https://youtu.be/64sgykUhcQw
+* Backend code and components overview https://youtu.be/eNJ_2u6z5ig
+* Backend testing 
+* Our project's Codacy quality checking & Travis CI overview 
 
 # Azure Server
 - VM Name: `closet`
