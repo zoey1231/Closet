@@ -36,8 +36,8 @@ Wanna see a demo and/or get an overview about our code structure? Check out our 
 * Our project's **Codacy quality checking & Travis CI overview** https://youtu.be/T-SWvZZSY-w
 
 ## Other Resources
-### **released apk**: **Closet.apk**
-### **Design and Implementation Documents**: All under **Documentation folder**
+#### Try out our released apk : **Closet.apk**
+#### Design and Implementation Documents: All under Documentation folder
 
 # Azure Server
 - VM Name: `closet`
