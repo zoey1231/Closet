@@ -15,6 +15,16 @@
 ## Project description
 Closet is an Android mobile app that tries to help people who have trouble deciding what to wear tomorrow. Users can manage thier closet by add/update/delete a cloth and view clothes by category. Moreover, users can check the weather, suggested outfit ideas, calendar, and profile in the Closet app.  The app automatically provides users with a list of outfit suggestions on the home page based on users preferences (likes/dislikes), weather, holidays and special events.
 
+
+Here are part of the sample screenshots:
+
+![login_home_like_dislike_combine.jpg](./Screenshots/login_home_like_dislike_combine.jpg)
+Login page             home page                  user indicate like/dislike                          
+
+![closet_addClothes_createOutfits.jpg](./Screenshots/closet_addClothes_createOutfits.jpg)
+
+![calender_profile.jpg](./Screenshots/calender_profile.jpg)
+
 ## Highlights
 #### External API calls:
 * Check calendar for special events (Google Calendar)
