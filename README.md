@@ -19,7 +19,7 @@ Closet is an Android mobile app that tries to help people who have trouble decid
 Here are part of the sample screenshots:
 
 ![login_home_like_dislike_combine.jpg](./Screenshots/login_home_like_dislike_combine.jpg)
-Login page             home page                  user indicate like/dislike                          
+  Login page                        home page                                          user indicate like/dislike                          
 
 ![closet_addClothes_createOutfits.jpg](./Screenshots/closet_addClothes_createOutfits.jpg)
 
