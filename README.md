@@ -9,6 +9,8 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/9d397e8a128e4ae7aeddd36a93d2fc83)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CPEN321Closet/closet&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/CPEN321Closet/closet/branch/master/graph/badge.svg?token=SHTOLLX2SH)](https://codecov.io/gh/CPEN321Closet/closet)
 
+## Keywords
+**Android Application**: java, Android Studio, javascript, Microsoft Azure, Codacy, Travis CI
 
 # Project videos
 Wanna see a demo and/or get an overview about our code structure? Check out our project videos on Youtube!
