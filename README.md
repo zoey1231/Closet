@@ -10,7 +10,7 @@
 [![codecov](https://codecov.io/gh/CPEN321Closet/closet/branch/master/graph/badge.svg?token=SHTOLLX2SH)](https://codecov.io/gh/CPEN321Closet/closet)
 
 ## Keywords
-**Android Application**: java, Android Studio, javascript, Microsoft Azure, Codacy, Travis CI
+**Android Application**: java, Android Studio, javascript, MongoDB, Microsoft Azure, Codacy, Travis CI, CI/CD on GitHub
 
 # Project videos
 Wanna see a demo and/or get an overview about our code structure? Check out our project videos on Youtube!
